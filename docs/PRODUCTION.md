@@ -1,66 +1,51 @@
 # geck0 Landing — Production Checklist
 
-## Required Vercel environment variables
+## Environment variables (Vercel)
 
-| Variable | Required | Purpose |
-|----------|----------|---------|
-| `NEXT_PUBLIC_SITE_URL` | Yes | `https://geck0.ai` |
-| `NEXT_PUBLIC_APP_URL` | Yes | `https://app.geck0.ai` |
-| `MAILCHIMP_*` (3 vars) | Yes | Waitlist API |
-| `MAILCHIMP_DOUBLE_OPTIN` | Yes | `true` for GDPR |
-| `BLOB_READ_WRITE_TOKEN` or `SLACK_WEBHOOK_URL` | Yes | Contact form persistence |
-| `NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL` | Recommended | Analytics |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` | Recommended | Bot protection (set both) |
-| `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` | Recommended | Distributed rate limits |
-| `ADMIN_API_KEY` | Recommended | Subscribe admin health ping |
+| Variable | Status | Purpose |
+|----------|--------|---------|
+| `NEXT_PUBLIC_SITE_URL` | ✅ Set | `https://geck0.ai` |
+| `NEXT_PUBLIC_APP_URL` | ✅ Set | `https://app.geck0.ai` |
+| `MAILCHIMP_*` (3 vars) | ✅ Set | Waitlist API |
+| `MAILCHIMP_DOUBLE_OPTIN` | ✅ Set | GDPR double opt-in |
+| `BLOB_READ_WRITE_TOKEN` | ✅ Set | Contact form → Vercel Blob |
+| `KV_REST_API_*` | ✅ Set | Distributed rate limiting (Upstash KV) |
+| `NEXT_PUBLIC_TURNSTILE_*` + `TURNSTILE_SECRET_KEY` | ✅ Set | Bot protection (replace dummy keys with Cloudflare production keys) |
+| `ADMIN_API_KEY` | ✅ Set | Admin subscribe health ping |
+| `NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL` | ✅ Set | Analytics |
+| `SLACK_WEBHOOK_URL` | ⬜ Optional | Slack contact notifications |
+| `SENTRY_DSN` | ⬜ Optional | Error monitoring |
+| `NEXT_PUBLIC_GA_ID` | ⬜ Optional | Google Analytics 4 |
 
-## Vercel Blob (contact storage)
+## Waitlist source attribution
 
-```bash
-vercel blob create-store geck0-landing-contacts --access private --yes \
-  --environment production --environment preview
-```
+Each surface sends a distinct Mailchimp tag via `source`:
 
-This auto-adds `BLOB_READ_WRITE_TOKEN` to the project.
+| Surface | Source tag | Component |
+|---------|------------|-----------|
+| Hero | `hero` | `Hero.tsx` |
+| Footer CTA | `footer` | `CtaFooter.tsx` |
+| Login | `login` | `LoginView.tsx` |
+| Enterprise | `enterprise` | `enterprise/page.tsx` |
+| Blog | `blog` | `BlogList.tsx` |
 
-## Upstash Redis (rate limiting)
-
-1. Vercel Dashboard → Integrations → Upstash → Add to `geck0-landing`
-2. Create Redis database (free tier OK)
-3. Connect to Production + Preview
-4. Redeploy — env vars `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are injected
-
-## Cloudflare Turnstile
-
-1. [Cloudflare Dashboard](https://dash.cloudflare.com/) → Turnstile → Add site
-2. Domain: `geck0.ai`
-3. Add `NEXT_PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` to Vercel
-4. Redeploy
-
-## Pre-launch verification
+## Commands
 
 ```bash
 npm run typecheck && npm run lint && npm run build
-npm run smoke                    # against https://geck0.ai
+npm run smoke                    # production smoke tests
+npm run check:mailchimp          # domain auth (needs local env)
 curl -H "Authorization: Bearer $ADMIN_API_KEY" https://geck0.ai/api/subscribe
 ```
 
-Manual checks:
-- [ ] OG preview: https://www.opengraph.xyz/?url=https://geck0.ai
-- [ ] Mobile: Hero, nav menu, forms, cookie banner
-- [ ] EN/KO switch + tab title per page
-- [ ] Subscribe + contact forms end-to-end
-- [ ] Cookie decline blocks Plausible
-- [ ] Mailchimp domain authenticated (SPF/DKIM)
-- [ ] `/status` shows all services green
+## Remaining manual steps
+
+1. **Cloudflare Turnstile (real keys)** — Replace dummy keys with production site keys at [dash.cloudflare.com](https://dash.cloudflare.com) → Turnstile → Add `geck0.ai`
+2. **Mailchimp domain auth** — Mailchimp → Account → Domains → add `geck0.ai` → configure SPF/DKIM DNS
+3. **Slack webhook** (optional) — Create incoming webhook → `SLACK_WEBHOOK_URL` on Vercel
+4. **Sentry** (optional) — Create project → `SENTRY_DSN` + `NEXT_PUBLIC_SENTRY_DSN` on Vercel
+5. **app.geck0.ai** — Deploy product app to this subdomain (redirect to landing removed)
 
 ## CI
 
-GitHub Actions on push to `master`: typecheck, lint, build.
-
-## Smoke tests
-
-```bash
-npm run smoke          # production
-npm run smoke:local    # localhost:3000
-```
+GitHub Actions: typecheck, lint, build, production smoke tests on `master`.
