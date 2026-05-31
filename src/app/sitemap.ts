@@ -20,14 +20,18 @@ const staticPages = [
   "/cookies",
 ];
 
+/** Evaluated once per build — avoids shifting lastModified on every sitemap request */
+const STATIC_LAST_MODIFIED = new Date(
+  process.env.VERCEL_GIT_COMMIT_DATE ?? "2026-05-31T00:00:00.000Z"
+);
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPosts();
-  const now = new Date();
 
   return [
     ...staticPages.map((path) => ({
       url: getSiteUrl(path === "/" ? "" : path),
-      lastModified: now,
+      lastModified: STATIC_LAST_MODIFIED,
       changeFrequency: path === "/" || path === "/blog" ? ("weekly" as const) : ("monthly" as const),
       priority: path === "/" ? 1 : path === "/pricing" || path === "/enterprise" ? 0.8 : 0.6,
     })),

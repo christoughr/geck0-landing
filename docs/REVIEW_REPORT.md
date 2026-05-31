@@ -98,22 +98,19 @@ const BOOT_TIME = Date.now();
 
 ---
 
-## 3. 추가 권장 사항 (미구현, 우선순위순)
+## 3. 추가 권장 사항 — ✅ 구현 완료 (commit after 249eef6)
 
-### High
-1. **`/api/subscribe` GET 엔드포인트 — admin key 없으면 404 반환 맞음, but 응답에 `isMailchimpConfigured()` 노출**
-   - `configured` 필드 제거 또는 production에서 항상 404로 처리 권장
-2. **OG 이미지 절대 경로**: `metadata.ts`에서 `/og-image.png`가 상대 경로 → `getSiteUrl("/og-image.png")`로 교체 필요 (일부 크롤러 미인식)
-3. **`alternates.languages` in metadata**: 현재 KO/EN 모두 같은 canonical URL → hreflang이 무의미. URL-based locale routing 도입 또는 제거 권장
-
-### Medium
-4. **`contact-store.ts` Blob 읽기-수정-쓰기 패턴**: race condition 가능 (동시 요청 시 마지막 write 승). JSONL append-only 방식(`x-add-random-suffix: 1`)으로 교체 고려
-5. **`JsonLd.tsx` logo 필드**: `getSiteUrl("/og-image.png")` 대신 실제 정사각 logo URL 사용 (Schema.org `Organization.logo` 권장 spec)
-6. **`sitemap.ts`**: `lastModified: now`가 모든 정적 페이지에 적용 → 크롤러 과부하. 빌드 타임 고정값 또는 실제 수정일 사용 권장
-
-### Low
-7. **`globals.css` `.synapse-node` keyframe**: SynapseCanvas가 canvas 방식으로 전환 후 CSS 클래스는 미사용 → 정리 가능
-8. **Navbar `menuOpen` 상태**: 모바일 메뉴 오픈 시 `body` scroll lock 없음 (UX 개선)
+| # | 항목 | 처리 |
+|---|------|------|
+| 1 | GET `/api/subscribe` config 노출 | admin 인증 시 `{ ok: true }`만 반환 |
+| 2 | OG 이미지 절대 경로 | `getOgImageUrl()` → metadata + blog |
+| 3 | hreflang 무의미 duplicate | `?lang=ko` / `?lang=en` alternates + x-default |
+| 4 | contact-store race condition | submission별 unique blob (`contacts/{day}/{id}.json`) |
+| 5 | JsonLd logo | `ImageObject` + `favicon.svg` 절대 URL |
+| 6 | sitemap lastModified | 빌드 타임 고정 (`VERCEL_GIT_COMMIT_DATE` fallback) |
+| 7 | globals.css `.synapse-node` | 미사용 keyframe 제거 |
+| 8 | Navbar scroll lock | `body.nav-scroll-lock` on mobile menu |
+| 9 | ESLint version mismatch | eslint@8 + eslint-config-next@14.2.35 |
 
 ---
 

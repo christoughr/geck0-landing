@@ -1,4 +1,4 @@
-import { getSiteUrl } from "@/lib/site";
+import { getSiteUrl, getLogoUrl } from "@/lib/site";
 import { siteConfig } from "@/config/site";
 
 export default function JsonLd() {
@@ -9,7 +9,12 @@ export default function JsonLd() {
         "@type": "Organization",
         name: "geck0",
         url: getSiteUrl(),
-        logo: getSiteUrl("/og-image.png"),
+        logo: {
+          "@type": "ImageObject",
+          url: getLogoUrl(),
+          width: 32,
+          height: 32,
+        },
         email: siteConfig.email,
         description: "B2B AI knowledge management platform",
         sameAs: [

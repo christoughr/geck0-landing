@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { translations, Locale } from "./i18n/translations";
 import { getPageContent } from "./i18n/pageContent";
-import { getSiteUrl } from "./site";
+import { getSiteUrl, getOgImageUrl, getLogoUrl } from "./site";
 import { getServerLocale } from "./locale-server";
 
 export { getServerLocale } from "./locale-server";
@@ -14,10 +14,17 @@ type PageMetaInput = {
   noIndex?: boolean;
 };
 
+function localeAlternateUrl(canonical: string, lang: "ko" | "en"): string {
+  const url = new URL(canonical);
+  url.searchParams.set("lang", lang);
+  return url.toString();
+}
+
 export async function buildPageMetadata(input: PageMetaInput): Promise<Metadata> {
   const locale = await getServerLocale();
   const t = translations[locale];
   const canonical = getSiteUrl(input.path === "/" ? "" : input.path);
+  const ogImage = getOgImageUrl();
 
   let title = input.title?.[locale];
   let description = input.description?.[locale];
@@ -39,8 +46,9 @@ export async function buildPageMetadata(input: PageMetaInput): Promise<Metadata>
     alternates: {
       canonical,
       languages: {
-        "ko-KR": canonical,
-        "en-US": canonical,
+        "ko-KR": localeAlternateUrl(canonical, "ko"),
+        "en-US": localeAlternateUrl(canonical, "en"),
+        "x-default": canonical,
       },
     },
     openGraph: {
@@ -50,13 +58,13 @@ export async function buildPageMetadata(input: PageMetaInput): Promise<Metadata>
       siteName: "geck0",
       type: "website",
       locale: locale === "ko" ? "ko_KR" : "en_US",
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: title }],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["/og-image.png"],
+      images: [ogImage],
       site: "@geck0_ai",
     },
   };
@@ -71,3 +79,5 @@ export async function buildPageMetadata(input: PageMetaInput): Promise<Metadata>
 export function getMetaForLocale(locale: Locale) {
   return translations[locale].meta;
 }
+
+export { getOgImageUrl, getLogoUrl };

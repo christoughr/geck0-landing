@@ -5,40 +5,26 @@ export interface ContactEntry {
   at: string;
 }
 
+/** Append-only: one blob per submission — no read-modify-write race */
 async function persistToBlob(entry: ContactEntry): Promise<boolean> {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) return false;
 
   try {
-    const line = JSON.stringify(entry) + "\n";
-    const pathname = `contacts/${new Date().toISOString().slice(0, 7)}.jsonl`;
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const day = entry.at.slice(0, 10);
+    const pathname = `contacts/${day}/${id}.json`;
 
-    const listRes = await fetch(
-      `https://blob.vercel-storage.com/?prefix=${encodeURIComponent(pathname)}`,
-      { headers: { authorization: `Bearer ${token}` } }
-    );
-
-    let existing = "";
-    if (listRes.ok) {
-      const list = (await listRes.json()) as { blobs?: { url: string; pathname: string }[] };
-      const blob = list.blobs?.find((b) => b.pathname === pathname);
-      if (blob) {
-        const getRes = await fetch(blob.url);
-        if (getRes.ok) existing = await getRes.text();
-      }
-    }
-
-    await fetch(`https://blob.vercel-storage.com/${pathname}`, {
+    const res = await fetch(`https://blob.vercel-storage.com/${pathname}`, {
       method: "PUT",
       headers: {
         authorization: `Bearer ${token}`,
-        "content-type": "text/plain",
-        "x-add-random-suffix": "0",
+        "content-type": "application/json",
       },
-      body: existing + line,
+      body: JSON.stringify(entry),
     });
 
-    return true;
+    return res.ok;
   } catch (err) {
     console.error("[contact-store:blob]", err);
     return false;
@@ -50,14 +36,14 @@ async function notifySlack(entry: ContactEntry): Promise<boolean> {
   if (!webhook) return false;
 
   try {
-    await fetch(webhook, {
+    const res = await fetch(webhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         text: `📩 New contact from geck0.ai\n*${entry.name}* (${entry.email})\n${entry.message}`,
       }),
     });
-    return true;
+    return res.ok;
   } catch (err) {
     console.error("[contact-store:slack]", err);
     return false;

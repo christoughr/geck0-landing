@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
-import { getSiteUrl } from "@/lib/site";
+import { getSiteUrl, getOgImageUrl } from "@/lib/site";
 import PageShell from "@/components/PageShell";
 import MarkdownContent from "@/components/MarkdownContent";
 import BlogPostBack from "@/components/BlogPostBack";
@@ -27,7 +27,7 @@ export function generateMetadata({ params }: Props): Metadata {
       description: post.excerpt,
       url,
       type: "article",
-      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+      images: [{ url: getOgImageUrl(), width: 1200, height: 630 }],
     },
   };
 }

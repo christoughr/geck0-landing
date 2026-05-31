@@ -30,6 +30,11 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
+  useEffect(() => {
+    document.body.classList.toggle("nav-scroll-lock", menuOpen);
+    return () => document.body.classList.remove("nav-scroll-lock");
+  }, [menuOpen]);
+
   const navLinks = [
     { label: t.nav.product, href: "/#features" },
     { label: t.nav.howItWorks, href: "/#how-it-works" },
