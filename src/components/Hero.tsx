@@ -56,16 +56,19 @@ export default function Hero() {
           <span className="gradient-text">{t.hero.headline2}</span>
         </motion.h1>
 
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25 }}
-          className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-2"
+          className="mb-8 sm:mb-10 px-2"
         >
-          {t.hero.sub}
-          <br className="hidden md:block" />
-          {t.hero.sub2}
-        </motion.p>
+          <p className="text-[13px] sm:text-sm md:text-base lg:text-lg text-white/60 max-w-[100vw] md:max-w-none md:whitespace-nowrap mx-auto leading-snug">
+            {t.hero.sub}
+          </p>
+          <p className="mt-3 text-sm sm:text-base md:text-lg text-white/45 max-w-2xl mx-auto leading-relaxed">
+            {t.hero.sub2}
+          </p>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
