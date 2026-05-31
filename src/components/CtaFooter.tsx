@@ -1,76 +1,15 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import Reveal from "./Reveal";
+import WaitlistForm from "./WaitlistForm";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { footerLinks } from "@/config/site";
 import { siteConfig } from "@/config/site";
-import HoneypotField from "./HoneypotField";
-import TurnstileWidget from "./TurnstileWidget";
-import { isTurnstileEnabled } from "@/lib/turnstile-client";
 
 export function CtaSection() {
-  const { t, locale } = useI18n();
-  const [email, setEmail] = useState("");
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [message, setMessage] = useState("");
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const onTurnstile = useCallback((token: string) => setTurnstileToken(token), []);
-  const onTurnstileExpire = useCallback(() => setTurnstileToken(""), []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!email.trim()) {
-      setMessage(t.cta.invalid);
-      setStatus("error");
-      return;
-    }
-
-    if (isTurnstileEnabled() && !turnstileToken) {
-      setMessage(t.cta.error);
-      setStatus("error");
-      return;
-    }
-
-    setStatus("loading");
-    setMessage("");
-
-    const fd = new FormData(e.currentTarget);
-
-    try {
-      const res = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          source: "footer",
-          _gotcha: fd.get("_gotcha"),
-          turnstileToken: turnstileToken || undefined,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setMessage(data.error === "Invalid email" ? t.cta.invalid : t.cta.error);
-        setStatus("error");
-        return;
-      }
-
-      setMessage(t.cta.success);
-      setStatus("success");
-      setEmail("");
-      setTurnstileToken("");
-    } catch {
-      setMessage(t.cta.error);
-      setStatus("error");
-    }
-  };
+  const { t } = useI18n();
 
   return (
     <section
@@ -86,76 +25,12 @@ export function CtaSection() {
 
       <div className="relative max-w-2xl mx-auto text-center">
         <Reveal>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            {t.cta.title}
-          </h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">{t.cta.title}</h2>
           <p className="text-white/50 text-base sm:text-lg mb-8">{t.cta.subtitle}</p>
         </Reveal>
 
         <Reveal delay={0.15}>
-          <form
-            ref={formRef}
-            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto relative"
-            onSubmit={handleSubmit}
-          >
-            <HoneypotField />
-            <input
-              id="waitlist-email"
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t.cta.placeholder}
-              aria-label={t.cta.placeholder}
-              disabled={status === "loading"}
-              className="flex-1 min-h-[48px] bg-navy-800/80 border border-navy-600/50 text-white placeholder:text-white/30 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 focus-visible:ring-2 focus-visible:ring-purple-400/40 transition-colors disabled:opacity-50"
-            />
-            <button
-              type="submit"
-              disabled={
-                status === "loading" ||
-                (isTurnstileEnabled() && !turnstileToken)
-              }
-              aria-busy={status === "loading"}
-              className="min-h-[48px] bg-purple-400 hover:bg-purple-600 disabled:bg-purple-600/50 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors duration-200 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-purple-400/60"
-            >
-              {status === "loading" ? "⋯" : t.cta.button}
-            </button>
-          </form>
-
-          <TurnstileWidget onToken={onTurnstile} onExpire={onTurnstileExpire} />
-
-          <div aria-live="polite" aria-atomic="true">
-            {message && (
-              <p
-                className={`text-sm mt-4 ${
-                  status === "success" ? "text-teal-400" : "text-coral-400"
-                }`}
-              >
-                {message}
-              </p>
-            )}
-          </div>
-
-          <p className="text-white/30 text-xs mt-4">
-            {locale === "ko" ? (
-              <>
-                가입하면{" "}
-                <Link href="/terms" className="underline hover:text-white/50">이용약관</Link>
-                {" "}및{" "}
-                <Link href="/privacy" className="underline hover:text-white/50">개인정보처리방침</Link>
-                에 동의하는 것으로 간주됩니다
-              </>
-            ) : (
-              <>
-                By signing up you agree to our{" "}
-                <Link href="/terms" className="underline hover:text-white/50">Terms</Link>
-                {" "}and{" "}
-                <Link href="/privacy" className="underline hover:text-white/50">Privacy Policy</Link>
-              </>
-            )}
-          </p>
+          <WaitlistForm source="footer" variant="footer" showLegal />
         </Reveal>
       </div>
     </section>

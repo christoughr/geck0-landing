@@ -8,8 +8,10 @@ type LimiterCache = Map<string, Ratelimit>;
 let upstashLimiters: LimiterCache | null = null;
 
 function getUpstashLimiter(limit: number, windowMs: number, prefix: string): Ratelimit | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url =
+    process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token =
+    process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
   if (!url || !token) return null;
 
   if (!upstashLimiters) upstashLimiters = new Map();
@@ -78,7 +80,8 @@ export async function rateLimit(
 
 export function isDistributedRateLimitConfigured(): boolean {
   return Boolean(
-    process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) ||
+      (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
   );
 }
 

@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    instrumentationHook: true,
+  },
   // Redirects for canonical domain — mirrors vercel.json for non-Vercel environments
   async redirects() {
     return [
@@ -18,12 +21,6 @@ const nextConfig = {
       {
         source: "/:path*",
         has: [{ type: "host", value: "app.geck0.info" }],
-        destination: "https://geck0.ai/login",
-        permanent: true,
-      },
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "app.geck0.ai" }],
         destination: "https://geck0.ai/login",
         permanent: true,
       },

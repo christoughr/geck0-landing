@@ -35,23 +35,7 @@
     },
     {
       "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "app.geck0.info"
-        }
-      ],
-      "destination": "https://geck0.ai/login",
-      "permanent": true
-    },
-    {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "app.geck0.ai"
-        }
-      ],
+      "has": [{ "type": "host", "value": "app.geck0.info" }],
       "destination": "https://geck0.ai/login",
       "permanent": true
     },

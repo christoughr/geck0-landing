@@ -214,6 +214,8 @@ export const translations = {
       subtitle: "지식 관리, AI, 조직 성장에 관한 인사이트",
       readMore: "읽기 →",
       back: "← 블로그로 돌아가기",
+      waitlistTitle: "geck0 베타 소식 받기",
+      waitlistSub: "신규 글과 제품 업데이트를 이메일로 받아보세요.",
     },
     enterprise: {
       title: "Enterprise",
@@ -226,6 +228,9 @@ export const translations = {
         { title: "전담 CS", desc: "Customer Success Manager와 SLA 보장." },
       ],
       cta: "영업팀에 문의하기",
+      ctaSub: "베타 우선 접근을 원하시면 이메일을 남겨주세요.",
+      contactAlt: "상세 문의가 필요하신가요?",
+      contactLink: "고객 지원 페이지",
     },
     pricingPage: {
       title: "가격",
@@ -508,6 +513,8 @@ export const translations = {
       subtitle: "Insights on knowledge management, AI, and organizational growth",
       readMore: "Read →",
       back: "← Back to blog",
+      waitlistTitle: "Get geck0 beta updates",
+      waitlistSub: "New posts and product updates in your inbox.",
     },
     enterprise: {
       title: "Enterprise",
@@ -520,6 +527,9 @@ export const translations = {
         { title: "Dedicated CS", desc: "Customer Success Manager and SLA guarantee." },
       ],
       cta: "Contact sales",
+      ctaSub: "Leave your email for priority beta access.",
+      contactAlt: "Need a detailed inquiry?",
+      contactLink: "Contact support",
     },
     pricingPage: {
       title: "Pricing",

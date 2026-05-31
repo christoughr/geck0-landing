@@ -59,7 +59,9 @@ export async function buildHealthReport(uptimeSec: number): Promise<HealthReport
   checks.rateLimit = {
     ok: isDistributedRateLimitConfigured(),
     detail: isDistributedRateLimitConfigured()
-      ? "Upstash Redis active"
+      ? process.env.KV_REST_API_URL
+        ? "Vercel KV / Upstash active"
+        : "Upstash Redis active"
       : "In-memory fallback (resets on cold start)",
   };
 

@@ -7,6 +7,7 @@ export const siteConfig = {
   statusUrl: process.env.NEXT_PUBLIC_STATUS_URL ?? "/status",
   twitter: "@geck0_ai",
   linkedin: "https://linkedin.com/company/geck0",
+  betaCustomerCount: process.env.NEXT_PUBLIC_BETA_COUNT ?? "47",
 };
 
 export type FooterLink = { href: string; external?: boolean };

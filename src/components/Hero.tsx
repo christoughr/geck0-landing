@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import { siteConfig } from "@/config/site";
+import WaitlistForm from "./WaitlistForm";
 
 const SynapseCanvas = dynamic(() => import("./SynapseCanvas"), { ssr: false });
 
@@ -120,7 +122,7 @@ export default function Hero() {
           className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 px-2"
         >
           <Link
-            href="/#contact"
+            href="#hero-waitlist"
             className="w-full sm:w-auto min-h-[48px] flex items-center justify-center bg-purple-400 hover:bg-purple-600 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors duration-200 text-base focus-visible:ring-2 focus-visible:ring-purple-400/60"
           >
             {t.hero.ctaPrimary}
@@ -133,6 +135,16 @@ export default function Hero() {
           </Link>
         </motion.div>
 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.48 }}
+          id="hero-waitlist"
+          className="mt-6 px-2 scroll-mt-24"
+        >
+          <WaitlistForm source="hero" variant="compact" showLegal={false} />
+        </motion.div>
+
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -140,7 +152,7 @@ export default function Hero() {
           className="mt-6 sm:mt-8 text-xs sm:text-sm text-white/30"
         >
           {t.hero.socialProof}{" "}
-          <span className="text-white/60 font-medium">47</span>
+          <span className="text-white/60 font-medium">{siteConfig.betaCustomerCount}</span>
           {t.hero.socialProofSuffix}
         </motion.p>
       </div>

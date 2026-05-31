@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import PageShell from "@/components/PageShell";
 import Reveal from "@/components/Reveal";
+import WaitlistForm from "@/components/WaitlistForm";
 
 export default function EnterprisePage() {
   const { t } = useI18n();
@@ -36,12 +37,14 @@ export default function EnterprisePage() {
         </div>
 
         <Reveal className="text-center">
-          <Link
-            href="/#contact"
-            className="inline-block bg-purple-400 hover:bg-purple-600 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors"
-          >
-            {t.enterprise.cta} →
-          </Link>
+          <p className="text-white/50 text-sm mb-6 max-w-md mx-auto">{t.enterprise.ctaSub}</p>
+          <WaitlistForm source="enterprise" variant="inline" className="max-w-md mx-auto" />
+          <p className="mt-6 text-white/35 text-sm">
+            {t.enterprise.contactAlt}{" "}
+            <Link href="/support" className="text-purple-400 hover:text-purple-300">
+              {t.enterprise.contactLink}
+            </Link>
+          </p>
         </Reveal>
       </div>
     </PageShell>

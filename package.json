@@ -9,9 +9,11 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "smoke": "node scripts/smoke-test.mjs",
-    "smoke:local": "node scripts/smoke-test.mjs http://localhost:3000"
+    "smoke:local": "node scripts/smoke-test.mjs http://localhost:3000",
+    "check:mailchimp": "node scripts/check-mailchimp-domain.mjs"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.55.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
     "@vercel/blob": "^2.4.0",

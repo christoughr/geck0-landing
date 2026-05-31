@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import Reveal from "./Reveal";
+import WaitlistForm from "./WaitlistForm";
 
 interface BlogPostPreview {
   slug: string;
@@ -60,6 +61,12 @@ export default function BlogList({ posts }: { posts: BlogPostPreview[] }) {
           </Reveal>
         ))}
       </div>
+
+      <Reveal delay={0.2} className="mt-16 pt-12 border-t border-navy-600/30 text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">{t.blog.waitlistTitle}</h2>
+        <p className="text-white/50 text-sm mb-6">{t.blog.waitlistSub}</p>
+        <WaitlistForm source="blog" variant="inline" className="max-w-md mx-auto" />
+      </Reveal>
     </div>
   );
 }

@@ -16,13 +16,14 @@ function applySecurityHeaders(res: NextResponse): void {
 
   const plausibleHost = "https://plausible.io";
   const turnstileHost = "https://challenges.cloudflare.com";
+  const gaHost = "https://www.googletagmanager.com https://www.google-analytics.com";
 
   res.headers.set(
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${plausibleHost} ${turnstileHost}`,
-      `connect-src 'self' ${plausibleHost} ${turnstileHost} https://blob.vercel-storage.com`,
+      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${plausibleHost} ${turnstileHost} ${gaHost}`,
+      `connect-src 'self' ${plausibleHost} ${turnstileHost} ${gaHost} https://blob.vercel-storage.com`,
       "img-src 'self' data: blob: https:",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' data:",

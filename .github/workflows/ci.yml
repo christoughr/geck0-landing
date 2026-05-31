@@ -27,3 +27,21 @@ jobs:
         env:
           NEXT_PUBLIC_SITE_URL: https://geck0.ai
           NEXT_PUBLIC_APP_URL: https://app.geck0.ai
+
+  smoke:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run smoke
+        env:
+          SMOKE_BASE_URL: https://geck0.ai
