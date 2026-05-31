@@ -19,9 +19,19 @@ export function isHoneypotTriggered(body: Record<string, unknown>): boolean {
   return typeof trap === "string" && trap.trim().length > 0;
 }
 
+export function isTurnstileConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() &&
+      process.env.TURNSTILE_SECRET_KEY?.trim()
+  );
+}
+
+export function isTurnstileRequired(): boolean {
+  return isTurnstileConfigured();
+}
+
 export async function verifyTurnstile(token: unknown): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true;
+  if (!isTurnstileConfigured()) return true;
 
   if (typeof token !== "string" || !token.trim()) return false;
 
@@ -29,7 +39,7 @@ export async function verifyTurnstile(token: unknown): Promise<boolean> {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      secret,
+      secret: process.env.TURNSTILE_SECRET_KEY!,
       response: token,
     }),
   });

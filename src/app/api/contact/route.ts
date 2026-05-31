@@ -7,7 +7,7 @@ const MAX_BODY = 8000;
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const { ok } = rateLimit(`contact:${ip}`, 5, 60_000);
+  const { ok } = await rateLimit(`contact:${ip}`, 5, 60_000);
   if (!ok) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }

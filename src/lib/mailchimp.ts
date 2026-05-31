@@ -50,3 +50,32 @@ export function isMailchimpConfigured(): boolean {
       process.env.MAILCHIMP_SERVER_PREFIX
   );
 }
+
+export async function pingMailchimp(): Promise<{ ok: boolean; detail?: string }> {
+  const apiKey = process.env.MAILCHIMP_API_KEY;
+  const listId = process.env.MAILCHIMP_LIST_ID;
+  const serverPrefix = process.env.MAILCHIMP_SERVER_PREFIX;
+
+  if (!apiKey || !listId || !serverPrefix) {
+    return { ok: false, detail: "Not configured" };
+  }
+
+  try {
+    const auth = Buffer.from(`anystring:${apiKey}`).toString("base64");
+    const res = await fetch(
+      `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${listId}`,
+      {
+        headers: { Authorization: `Basic ${auth}` },
+        next: { revalidate: 0 },
+      }
+    );
+
+    if (res.ok) return { ok: true, detail: "List reachable" };
+    return { ok: false, detail: `HTTP ${res.status}` };
+  } catch (err) {
+    return {
+      ok: false,
+      detail: err instanceof Error ? err.message : "Request failed",
+    };
+  }
+}

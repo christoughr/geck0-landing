@@ -9,6 +9,7 @@ import { footerLinks } from "@/config/site";
 import { siteConfig } from "@/config/site";
 import HoneypotField from "./HoneypotField";
 import TurnstileWidget from "./TurnstileWidget";
+import { isTurnstileEnabled } from "@/lib/turnstile-client";
 
 export function CtaSection() {
   const { t, locale } = useI18n();
@@ -26,6 +27,12 @@ export function CtaSection() {
 
     if (!email.trim()) {
       setMessage(t.cta.invalid);
+      setStatus("error");
+      return;
+    }
+
+    if (isTurnstileEnabled() && !turnstileToken) {
+      setMessage(t.cta.error);
       setStatus("error");
       return;
     }
@@ -106,7 +113,10 @@ export function CtaSection() {
             />
             <button
               type="submit"
-              disabled={status === "loading"}
+              disabled={
+                status === "loading" ||
+                (isTurnstileEnabled() && !turnstileToken)
+              }
               aria-busy={status === "loading"}
               className="min-h-[48px] bg-purple-400 hover:bg-purple-600 disabled:bg-purple-600/50 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors duration-200 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-purple-400/60"
             >

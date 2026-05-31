@@ -6,12 +6,20 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 import PageShell from "./PageShell";
 import { ContentPage } from "./ContentPage";
 
+type ServiceStatus = "operational" | "degraded" | "unavailable" | "not_configured";
+
 interface HealthData {
-  status: string;
+  status: "operational" | "degraded" | "unavailable";
   scope?: string;
   timestamp: string;
-  services: Record<string, string>;
-  _meta?: { uptimeSec?: number; note?: string };
+  deployment?: string;
+  services: Record<string, ServiceStatus>;
+  checks?: Record<string, { ok: boolean; detail?: string }>;
+  _meta?: {
+    uptimeSec?: number;
+    note?: string;
+    rateLimitBackend?: "upstash" | "memory";
+  };
 }
 
 function formatUptime(seconds: number, locale: "ko" | "en"): string {
@@ -19,6 +27,23 @@ function formatUptime(seconds: number, locale: "ko" | "en"): string {
   const m = Math.floor((seconds % 3600) / 60);
   if (locale === "ko") return h > 0 ? `${h}시간 ${m}분` : `${m}분`;
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+function statusColor(status: ServiceStatus): string {
+  if (status === "operational") return "text-teal-400";
+  if (status === "degraded") return "text-amber-400";
+  if (status === "not_configured") return "text-white/40";
+  return "text-coral-400";
+}
+
+function statusLabel(status: ServiceStatus, locale: "ko" | "en"): string {
+  const labels: Record<ServiceStatus, { ko: string; en: string }> = {
+    operational: { ko: "정상", en: "Operational" },
+    degraded: { ko: "제한", en: "Degraded" },
+    unavailable: { ko: "오류", en: "Unavailable" },
+    not_configured: { ko: "미설정", en: "Not configured" },
+  };
+  return labels[status][locale];
 }
 
 export default function StatusLive() {
@@ -44,7 +69,13 @@ export default function StatusLive() {
   const serviceLabels: Record<string, { ko: string; en: string }> = {
     website: { ko: "웹사이트", en: "Website" },
     api: { ko: "API", en: "API" },
+    mailchimp: { ko: "웨이트리스트 (Mailchimp)", en: "Waitlist (Mailchimp)" },
+    contact: { ko: "문의 저장", en: "Contact storage" },
+    turnstile: { ko: "봇 방어 (Turnstile)", en: "Bot protection (Turnstile)" },
+    rateLimit: { ko: "Rate limit", en: "Rate limit" },
   };
+
+  const overallOk = health?.status === "operational";
 
   return (
     <PageShell>
@@ -56,9 +87,13 @@ export default function StatusLive() {
             ? locale === "ko"
               ? "마케팅 사이트 정상 운영 중"
               : "Marketing site operational"
-            : locale === "ko"
-            ? "상태 확인 중..."
-            : "Checking status..."
+            : health?.status === "degraded"
+              ? locale === "ko"
+                ? "일부 서비스 제한 또는 미설정"
+                : "Some services degraded or not configured"
+              : locale === "ko"
+                ? "상태 확인 중..."
+                : "Checking status..."
         }
       >
         <p className="text-white/40 text-xs mb-6 leading-relaxed">{t.status.disclaimer}</p>
@@ -76,16 +111,29 @@ export default function StatusLive() {
                   key={key}
                   className="flex items-center justify-between bg-navy-800/60 border border-navy-600/30 rounded-xl px-4 sm:px-5 py-4 min-h-[52px]"
                 >
-                  <span className="text-white text-sm font-medium">
-                    {serviceLabels[key]?.[locale] ?? key}
-                  </span>
-                  <span className="flex items-center gap-2 text-teal-400 text-sm">
-                    <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
-                    {status === "operational"
-                      ? locale === "ko"
-                        ? "정상"
-                        : "Operational"
-                      : status}
+                  <div>
+                    <span className="text-white text-sm font-medium block">
+                      {serviceLabels[key]?.[locale] ?? key}
+                    </span>
+                    {health.checks?.[key]?.detail && (
+                      <span className="text-white/30 text-xs mt-0.5 block">
+                        {health.checks[key].detail}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`flex items-center gap-2 text-sm ${statusColor(status)}`}>
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        status === "operational"
+                          ? "bg-teal-400 animate-pulse"
+                          : status === "degraded"
+                            ? "bg-amber-400"
+                            : status === "not_configured"
+                              ? "bg-white/30"
+                              : "bg-coral-400"
+                      }`}
+                    />
+                    {statusLabel(status, locale)}
                   </span>
                 </div>
               ))}
@@ -99,6 +147,18 @@ export default function StatusLive() {
                     {" · "}
                     {locale === "ko" ? "업타임" : "Uptime"}:{" "}
                     {formatUptime(health._meta.uptimeSec, locale)}
+                  </>
+                )}
+                {health._meta?.rateLimitBackend && (
+                  <>
+                    {" · "}
+                    Rate limit: {health._meta.rateLimitBackend}
+                  </>
+                )}
+                {!overallOk && health.deployment && (
+                  <>
+                    {" · "}
+                    deploy: {health.deployment}
                   </>
                 )}
               </p>

@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addMailchimpSubscriber, isMailchimpConfigured } from "@/lib/mailchimp";
+import { addMailchimpSubscriber, isMailchimpConfigured, pingMailchimp } from "@/lib/mailchimp";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { isHoneypotTriggered, sanitizeSource, verifyTurnstile } from "@/lib/api-utils";
 
+const MAX_BODY = 4096;
+
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  const { ok } = rateLimit(`subscribe:${ip}`, 10, 60_000);
+  const { ok } = await rateLimit(`subscribe:${ip}`, 10, 60_000);
   if (!ok) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
   try {
+    const contentLength = Number(request.headers.get("content-length") ?? 0);
+    if (contentLength > MAX_BODY) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+
     const body = await request.json();
 
     if (isHoneypotTriggered(body)) {
@@ -67,5 +74,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  return NextResponse.json({ ok: true });
+  const mailchimp = await pingMailchimp();
+
+  return NextResponse.json({
+    ok: mailchimp.ok,
+    mailchimp,
+    doubleOptIn: process.env.MAILCHIMP_DOUBLE_OPTIN === "true",
+    timestamp: new Date().toISOString(),
+  });
 }

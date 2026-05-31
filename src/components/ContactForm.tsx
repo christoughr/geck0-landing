@@ -5,6 +5,7 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 import Reveal from "./Reveal";
 import HoneypotField from "./HoneypotField";
 import TurnstileWidget from "./TurnstileWidget";
+import { isTurnstileEnabled } from "@/lib/turnstile-client";
 
 export default function ContactForm() {
   const { t } = useI18n();
@@ -19,6 +20,7 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!consent) return;
+    if (isTurnstileEnabled() && !turnstileToken) return;
 
     const fd = new FormData(e.currentTarget);
     setStatus("loading");
@@ -121,7 +123,11 @@ export default function ContactForm() {
 
         <button
           type="submit"
-          disabled={status === "loading" || !consent}
+          disabled={
+            status === "loading" ||
+            !consent ||
+            (isTurnstileEnabled() && !turnstileToken)
+          }
           aria-busy={status === "loading"}
           className="w-full sm:w-auto bg-purple-400 hover:bg-purple-600 disabled:opacity-50 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors focus-visible:ring-2 focus-visible:ring-purple-400/60"
         >

@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { I18nProvider } from "@/lib/i18n/I18nProvider";
 import { getServerLocale } from "@/lib/locale-server";
 import { buildPageMetadata } from "@/lib/metadata";
-import { getSiteUrl } from "@/lib/site";
 import CookieConsent from "@/components/CookieConsent";
 import Analytics from "@/components/Analytics";
 import JsonLd from "@/components/JsonLd";
@@ -14,8 +13,6 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
-
-export const metadataBase = new URL(getSiteUrl());
 
 export const viewport: Viewport = {
   width: "device-width",

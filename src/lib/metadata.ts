@@ -41,6 +41,7 @@ export async function buildPageMetadata(input: PageMetaInput): Promise<Metadata>
   description = description ?? t.meta.description;
 
   const metadata: Metadata = {
+    metadataBase: new URL(getSiteUrl()),
     title,
     description,
     alternates: {

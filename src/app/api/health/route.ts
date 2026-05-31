@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
+import { buildHealthReport } from "@/lib/health-checks";
 
 const BOOT_TIME = Date.now();
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  return NextResponse.json({
-    status: "operational",
-    scope: "marketing-site",
-    timestamp: new Date().toISOString(),
-    deployment: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local",
-    services: {
-      website: "operational",
-      api: "operational",
-    },
-    _meta: {
-      note: "geck0.ai marketing landing only. Product app status: app.geck0.ai",
-      uptimeSec: Math.floor((Date.now() - BOOT_TIME) / 1000),
+  const report = await buildHealthReport(
+    Math.floor((Date.now() - BOOT_TIME) / 1000)
+  );
+
+  const httpStatus =
+    report.status === "unavailable" ? 503 : report.status === "degraded" ? 200 : 200;
+
+  return NextResponse.json(report, {
+    status: httpStatus,
+    headers: {
+      "Cache-Control": "no-store, max-age=0",
     },
   });
 }

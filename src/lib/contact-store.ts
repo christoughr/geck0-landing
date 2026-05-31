@@ -1,9 +1,15 @@
+import { put } from "@vercel/blob";
+
 export interface ContactEntry {
   name: string;
   email: string;
   message: string;
   at: string;
   company?: string;
+}
+
+export function isContactStorageConfigured(): boolean {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.SLACK_WEBHOOK_URL);
 }
 
 async function persistToBlob(entry: ContactEntry): Promise<boolean> {
@@ -15,16 +21,13 @@ async function persistToBlob(entry: ContactEntry): Promise<boolean> {
     const day = entry.at.slice(0, 10);
     const pathname = `contacts/${day}/${id}.json`;
 
-    const res = await fetch(`https://blob.vercel-storage.com/${pathname}`, {
-      method: "PUT",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(entry),
+    await put(pathname, JSON.stringify(entry), {
+      access: "private",
+      contentType: "application/json",
+      token,
     });
 
-    return res.ok;
+    return true;
   } catch (err) {
     console.error("[contact-store:blob]", err);
     return false;
