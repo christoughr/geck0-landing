@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -11,11 +11,24 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 32);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+  const onScroll = useCallback(() => {
+    setScrolled(window.scrollY > 32);
   }, []);
+
+  useEffect(() => {
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [onScroll]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   const navLinks = [
     { label: t.nav.product, href: "/#features" },
@@ -70,7 +83,9 @@ export default function Navbar() {
           <button
             className="text-white/70 hover:text-white"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={t.nav.menuOpen}
+            aria-label={menuOpen ? t.nav.menuClose : t.nav.menuOpen}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               {menuOpen ? (
@@ -87,7 +102,12 @@ export default function Navbar() {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden bg-navy-800/98 backdrop-blur-md border-t border-navy-600/50 px-6 py-4 flex flex-col gap-4">
+        <div
+          id="mobile-nav"
+          role="navigation"
+          aria-label={t.nav.menuLabel}
+          className="md:hidden bg-navy-800/98 backdrop-blur-md border-t border-navy-600/50 px-6 py-4 flex flex-col gap-4"
+        >
           {navLinks.map((l) => (
             <Link
               key={l.href}

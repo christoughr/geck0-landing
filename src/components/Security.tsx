@@ -1,9 +1,10 @@
 "use client";
 
+import { Lock, Shield, Globe, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import Reveal from "./Reveal";
 
-const icons = ["🔒", "🛡️", "🇪🇺", "⚡"];
+const icons = [Lock, Shield, Globe, Zap];
 
 export default function Security() {
   const { t } = useI18n();
@@ -20,15 +21,18 @@ export default function Security() {
         </Reveal>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {t.security.items.map(({ title, desc }, i) => (
-            <Reveal key={title} delay={i * 0.1}>
-              <div className="bg-navy-800/60 border border-navy-600/30 rounded-2xl p-6 h-full">
-                <span className="text-2xl mb-3 block">{icons[i]}</span>
-                <h3 className="text-white font-semibold mb-2">{title}</h3>
-                <p className="text-white/55 text-sm leading-relaxed">{desc}</p>
-              </div>
-            </Reveal>
-          ))}
+          {t.security.items.map(({ title, desc }, i) => {
+            const Icon = icons[i] ?? Lock;
+            return (
+              <Reveal key={title} delay={i * 0.1}>
+                <div className="bg-navy-800/60 border border-navy-600/30 rounded-2xl p-6 h-full">
+                  <Icon className="w-6 h-6 text-purple-400 mb-3" aria-hidden="true" />
+                  <h3 className="text-white font-semibold mb-2">{title}</h3>
+                  <p className="text-white/55 text-sm leading-relaxed">{desc}</p>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

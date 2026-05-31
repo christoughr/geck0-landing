@@ -2,6 +2,11 @@ export type Locale = "ko" | "en";
 
 export const translations = {
   ko: {
+    meta: {
+      title: "geck0 — 지식이 연결될 때, 회사가 진화합니다",
+      description:
+        "geck0는 회사의 흩어진 지식을 시냅스처럼 연결하는 AI 지식 관리 플랫폼입니다. 슬랙, 노션, 드라이브의 모든 정보가 살아있는 지식으로 연결됩니다.",
+    },
     nav: {
       product: "제품",
       howItWorks: "작동 원리",
@@ -12,6 +17,8 @@ export const translations = {
       login: "로그인",
       cta: "무료로 시작하기",
       menuOpen: "메뉴 열기",
+      menuClose: "메뉴 닫기",
+      menuLabel: "주 메뉴",
     },
     hero: {
       badge: "B2B AI 지식 관리 플랫폼",
@@ -70,6 +77,7 @@ export const translations = {
       label: "제품 미리보기",
       title: "한 화면에서 회사 지식 전체를",
       subtitle: "질문 하나로 연결된 답변과 근거 문서를 즉시 확인하세요",
+      sidebar: ["대시보드", "Knowledge Graph", "Q&A", "Insights"],
       query: "지난 분기 고객 이탈 원인 분석해줘",
       answer: "3가지 주요 패턴이 감지되었습니다. 온보딩 지연(42%), API 응답 속도(31%), 지원 SLA 미준수(27%)가 핵심 원인입니다.",
       sources: "근거 문서 4건",
@@ -254,15 +262,27 @@ export const translations = {
       learnMore: "자세히 보기",
       accept: "동의",
     },
+    contact: {
+      name: "이름",
+      email: "이메일",
+      message: "메시지",
+      submit: "문의 보내기",
+      success: "문의가 접수되었습니다. 곧 연락드리겠습니다.",
+      error: "오류가 발생했습니다. hello@geck0.ai 으로 직접 연락해 주세요.",
+    },
     logoBar: {
       label: "베타 고객사",
       companies: ["Series A SaaS", "Fintech Startup", "E-commerce Platform", "DevTools Co.", "HealthTech", "AI Startup", "B2B Marketplace"],
+    },
+    status: {
+      loading: "상태 확인 중...",
     },
     login: {
       title: "geck0에 로그인",
       subtitle: "워크스페이스에 접속하세요",
       email: "이메일",
       password: "비밀번호",
+      emailPlaceholder: "you@company.com",
       signIn: "로그인",
       or: "또는",
       continueWith: "Continue with",
@@ -273,6 +293,11 @@ export const translations = {
     },
   },
   en: {
+    meta: {
+      title: "geck0 — When knowledge connects, companies evolve",
+      description:
+        "geck0 connects scattered company knowledge across Slack, Notion, and Drive — like synapses in a brain. Ask anything. Your entire company answers.",
+    },
     nav: {
       product: "Product",
       howItWorks: "How it works",
@@ -283,6 +308,8 @@ export const translations = {
       login: "Log in",
       cta: "Start free",
       menuOpen: "Open menu",
+      menuClose: "Close menu",
+      menuLabel: "Main menu",
     },
     hero: {
       badge: "B2B AI Knowledge Platform",
@@ -341,6 +368,7 @@ export const translations = {
       label: "Product preview",
       title: "All company knowledge, one screen",
       subtitle: "One question — instant answers with source documents",
+      sidebar: ["Dashboard", "Knowledge Graph", "Q&A", "Insights"],
       query: "Analyze customer churn causes from last quarter",
       answer: "3 key patterns detected: onboarding delay (42%), API latency (31%), support SLA misses (27%).",
       sources: "4 source documents",
@@ -525,15 +553,27 @@ export const translations = {
       learnMore: "Learn more",
       accept: "Accept",
     },
+    contact: {
+      name: "Name",
+      email: "Email",
+      message: "Message",
+      submit: "Send message",
+      success: "Message received. We'll be in touch soon.",
+      error: "Something went wrong. Email us at hello@geck0.ai",
+    },
     logoBar: {
       label: "Beta customers",
       companies: ["Series A SaaS", "Fintech Startup", "E-commerce Platform", "DevTools Co.", "HealthTech", "AI Startup", "B2B Marketplace"],
+    },
+    status: {
+      loading: "Loading...",
     },
     login: {
       title: "Sign in to geck0",
       subtitle: "Access your workspace",
       email: "Email",
       password: "Password",
+      emailPlaceholder: "you@company.com",
       signIn: "Sign in",
       or: "or",
       continueWith: "Continue with",

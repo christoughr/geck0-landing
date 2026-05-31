@@ -1,13 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
+import { saveContact } from "@/lib/contact-store";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
-const inquiries: Array<{ name: string; email: string; message: string; at: string }> = [];
+const MAX_BODY = 8000;
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const { ok } = rateLimit(`contact:${ip}`, 5, 60_000);
+  if (!ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   try {
+    const contentLength = Number(request.headers.get("content-length") ?? 0);
+    if (contentLength > MAX_BODY) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+
     const { name, email, message } = await request.json();
 
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
       return NextResponse.json({ error: "All fields required" }, { status: 400 });
+    }
+
+    if (message.trim().length > 5000) {
+      return NextResponse.json({ error: "Message too long" }, { status: 400 });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,22 +39,12 @@ export async function POST(request: NextRequest) {
       at: new Date().toISOString(),
     };
 
-    inquiries.push(entry);
-    console.log("[contact]", JSON.stringify(entry));
+    const { persisted } = await saveContact(entry);
 
-    // Production: forward to Slack webhook, Resend, or CRM via env
-    const webhook = process.env.SLACK_WEBHOOK_URL;
-    if (webhook) {
-      await fetch(webhook, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          text: `📩 New contact from geck0.ai\n*${entry.name}* (${entry.email})\n${entry.message}`,
-        }),
-      });
-    }
-
-    return NextResponse.json({ message: "Received", id: inquiries.length });
+    return NextResponse.json({
+      message: "Received",
+      persisted,
+    });
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

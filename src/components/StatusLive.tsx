@@ -15,7 +15,7 @@ interface HealthData {
 }
 
 export default function StatusLive() {
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +59,7 @@ export default function StatusLive() {
         {loading && !health ? (
           <div className="flex items-center gap-3 text-white/40 text-sm">
             <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
-            Loading...
+            {t.status.loading}
           </div>
         ) : (
           <div className="space-y-3">

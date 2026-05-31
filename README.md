@@ -1,88 +1,79 @@
-# geck0 — Landing Page
+# geck0 Landing Page
 
-## 빠른 시작 (Cursor에서)
+Production marketing site for [geck0.ai](https://geck0.ai) — B2B AI knowledge platform.
+
+## Quick start
 
 ```bash
 npm install
 npm run dev
 ```
 
-→ `http://localhost:3000` 에서 확인
+Open `http://localhost:3000`
 
----
+## Stack
 
-## 프로젝트 구조
+- **Next.js 14** App Router, TypeScript, Tailwind CSS
+- **Framer Motion** — section animations
+- **Canvas 2D** — Hero synapse background (`SynapseCanvas.tsx`)
+- **i18n** — KO/EN via cookie + localStorage (`geck0-locale`)
+- **Plausible** — analytics (cookie-consent gated)
+- **Mailchimp** — waitlist API
+- **Vercel** — hosting + GitHub auto-deploy
+
+## Project structure
 
 ```
 src/
-├── app/
-│   ├── layout.tsx        # 메타데이터, 폰트 (Inter)
-│   ├── page.tsx          # 메인 페이지 (모든 섹션 조합)
-│   └── globals.css       # 기본 스타일, CSS 변수
-│
-└── components/
-    ├── Navbar.tsx         # 고정 네비게이션 바 (스크롤 감지)
-    ├── Hero.tsx           # 히어로 섹션 + 시냅스 캔버스 애니메이션
-    ├── Problem.tsx        # 문제 제시 (지식 사일로, 유실, 반복 실수)
-    ├── Features.tsx       # 3가지 핵심 기능 카드
-    ├── HowItWorks.tsx     # 작동 원리 3단계 + 연동 서비스 목록
-    ├── SocialProof.tsx    # 지표 4개 + 고객 후기 3개
-    ├── Pricing.tsx        # 3단계 가격 플랜
-    └── CtaFooter.tsx      # 이메일 CTA + 푸터
+├── app/              # Routes, API handlers, sitemap, robots
+├── components/       # UI sections
+├── config/site.ts    # Brand constants, footer links
+├── lib/
+│   ├── i18n/         # translations.ts, pageContent.ts, I18nProvider
+│   ├── metadata.ts   # Localized SEO metadata
+│   ├── locale.ts     # Cookie-based locale
+│   ├── rate-limit.ts # API rate limiting
+│   └── contact-store.ts  # Blob + Slack persistence
+├── content/blog/     # MDX blog posts
+middleware.ts         # Security headers, ?lang= cookie setter
+public/
+├── favicon.svg
+└── og-image.png
 ```
 
----
+## Environment variables
 
-## 브랜드 컬러 (tailwind.config.ts)
+Copy `.env.example` → `.env.local`. Production vars live in Vercel.
 
-| 토큰 | 색상 | 용도 |
-|------|------|------|
-| `purple-400` | `#7F77DD` | 주색 — 로고, CTA, 링크 |
-| `teal-400`   | `#1D9E75` | 성장/성공 상태 |
-| `coral-400`  | `#D85A30` | 변화/에너지/경고 |
-| `navy-900`   | `#1A1A2E` | 주 배경 |
+| Variable | Purpose |
+|----------|---------|
+| `NEXT_PUBLIC_SITE_URL` | Canonical site URL |
+| `NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL` | Plausible script (consent-gated) |
+| `MAILCHIMP_*` | Waitlist subscription |
+| `SLACK_WEBHOOK_URL` | Contact form notifications |
+| `BLOB_READ_WRITE_TOKEN` | Durable contact form storage |
+| `ADMIN_API_KEY` | Protects GET `/api/subscribe` |
 
----
+## Locale / SEO
 
-## 커스터마이징 체크리스트
+- Switch language: navbar **EN/KO** button or `?lang=en` / `?lang=ko`
+- Tab title updates with locale via `DocumentMeta` + server cookie
+- All public routes have `generateMetadata` with KO/EN variants
 
-### 텍스트 교체
-- `src/components/Hero.tsx` — 메인 헤드라인, 서브 카피
-- `src/components/SocialProof.tsx` — 실제 고객 후기로 교체
-- `src/components/Pricing.tsx` — 실제 가격으로 업데이트
-- `src/app/layout.tsx` — 메타 description, OG 이미지
+## Deploy
 
-### 기능 추가 권장
-- `framer-motion` 이미 설치됨 — 섹션 등장 애니메이션 추가 가능
-- `src/components/Hero.tsx`의 `SynapseCanvas` — 노드 수, 색상, 속도 조정 가능
-- CTA 폼 → 실제 이메일 수집 서비스 연동 (Mailchimp, ConvertKit 등)
-- Navbar CTA → 실제 회원가입 페이지 링크 연결
-
-### 이미지 추가
-- `/public` 폴더에 OG 이미지 (`og-image.png`, 1200×630) 추가
-- 로고 SVG → `src/components/Navbar.tsx`의 텍스트 로고를 `<Image>`로 교체 가능
-
----
-
-## 배포 (Vercel 권장)
+GitHub `master` → Vercel auto-deploy:
 
 ```bash
-npx vercel --prod
+git push origin master
 ```
 
-또는 Vercel 대시보드에서 GitHub 레포 연결
+Manual: `vercel --prod`
+
+## Synapse animation
+
+See `docs/SYNAPSE_BRIEF.md` for full technical brief (for design/animation review).
 
 ---
 
-## 브랜드 가이드라인
-
-전체 브랜드 가이드라인은 `../geck0_brand_guidelines.docx` 참고
-
-**핵심 원칙:**
-- 이름은 항상 소문자 `geck0` (절대 대문자 금지)
-- 태그라인: `지식이 연결될 때, 회사가 진화합니다`
-- 톤: 지적이되 가볍게, 기술 언어 최소화
-
----
-
-*geck0 Landing v1.0 · 2024*
+*geck0 · hello@geck0.ai*

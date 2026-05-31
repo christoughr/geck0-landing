@@ -18,7 +18,6 @@ const staticPages = [
   "/privacy",
   "/terms",
   "/cookies",
-  "/login",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

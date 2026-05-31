@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { getSiteUrl } from "@/lib/site";
 import PageShell from "@/components/PageShell";
 import MarkdownContent from "@/components/MarkdownContent";
 import BlogPostBack from "@/components/BlogPostBack";
@@ -16,7 +17,19 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: Props): Metadata {
   const post = getPostBySlug(params.slug);
   if (!post) return { title: "Not found" };
-  return { title: `${post.title} — geck0 Blog`, description: post.excerpt };
+  const url = getSiteUrl(`/blog/${params.slug}`);
+  return {
+    title: `${post.title} — geck0 Blog`,
+    description: post.excerpt,
+    alternates: { canonical: url },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url,
+      type: "article",
+      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    },
+  };
 }
 
 export default function BlogPostPage({ params }: Props) {

@@ -19,6 +19,16 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .synapse-node {
+    animation: none;
+  }
+}
+
 body {
   background-color: #1A1A2E;
   color: #ffffff;

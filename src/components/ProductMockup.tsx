@@ -43,20 +43,18 @@ export default function ProductMockup() {
               <div className="flex min-h-[320px]">
                 {/* Sidebar */}
                 <div className="hidden sm:block w-48 border-r border-navy-600/30 p-4 space-y-3">
-                  {["Dashboard", "Knowledge Graph", "Q&A", "Insights"].map(
-                    (item, i) => (
-                      <div
-                        key={item}
-                        className={`text-xs px-3 py-2 rounded-lg ${
-                          i === 2
-                            ? "bg-purple-400/20 text-purple-300"
-                            : "text-white/30"
-                        }`}
-                      >
-                        {item}
-                      </div>
-                    )
-                  )}
+                  {t.mockup.sidebar.map((item, i) => (
+                    <div
+                      key={item}
+                      className={`text-xs px-3 py-2 rounded-lg ${
+                        i === 2
+                          ? "bg-purple-400/20 text-purple-300"
+                          : "text-white/30"
+                      }`}
+                    >
+                      {item}
+                    </div>
+                  ))}
                 </div>
 
                 {/* Main content */}

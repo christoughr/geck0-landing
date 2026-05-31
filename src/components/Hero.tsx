@@ -1,9 +1,11 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
-import SynapseCanvas from "./SynapseCanvas";
+
+const SynapseCanvas = dynamic(() => import("./SynapseCanvas"), { ssr: false });
 
 export default function Hero() {
   const { t } = useI18n();

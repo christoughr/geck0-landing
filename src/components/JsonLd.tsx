@@ -1,4 +1,5 @@
 import { getSiteUrl } from "@/lib/site";
+import { siteConfig } from "@/config/site";
 
 export default function JsonLd() {
   const schema = {
@@ -9,19 +10,17 @@ export default function JsonLd() {
         name: "geck0",
         url: getSiteUrl(),
         logo: getSiteUrl("/og-image.png"),
-        email: "hello@geck0.ai",
+        email: siteConfig.email,
         description: "B2B AI knowledge management platform",
-        sameAs: [],
+        sameAs: [
+          `https://twitter.com/${siteConfig.twitter.replace("@", "")}`,
+          siteConfig.linkedin,
+        ],
       },
       {
         "@type": "WebSite",
         name: "geck0",
         url: getSiteUrl(),
-        potentialAction: {
-          "@type": "SearchAction",
-          target: `${getSiteUrl("/blog")}?q={search_term_string}`,
-          "query-input": "required name=search_term_string",
-        },
       },
       {
         "@type": "SoftwareApplication",

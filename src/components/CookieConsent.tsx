@@ -4,19 +4,27 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
+const CONSENT_KEY = "geck0-cookie-consent";
+
+function persistConsent() {
+  document.cookie = `${CONSENT_KEY}=accepted; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+}
+
 export default function CookieConsent() {
   const { t } = useI18n();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem("geck0-cookie-consent")) {
+    if (!localStorage.getItem(CONSENT_KEY)) {
       setVisible(true);
     }
   }, []);
 
   const accept = () => {
-    localStorage.setItem("geck0-cookie-consent", "accepted");
+    localStorage.setItem(CONSENT_KEY, "accepted");
+    persistConsent();
     setVisible(false);
+    window.dispatchEvent(new Event("geck0-cookie-consent"));
   };
 
   if (!visible) return null;

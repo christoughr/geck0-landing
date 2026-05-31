@@ -13,7 +13,7 @@ interface StaticPageViewProps {
 }
 
 export default function StaticPageView({ slug, showLoginForm }: StaticPageViewProps) {
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const page = getPageContent(locale, slug);
 
   if (!page) return null;
@@ -32,14 +32,20 @@ export default function StaticPageView({ slug, showLoginForm }: StaticPageViewPr
                 window.location.href = siteConfig.appUrl;
               }}
             >
-              <label className="block text-sm text-white/50 mb-2">Email</label>
+              <label htmlFor="login-email" className="block text-sm text-white/50 mb-2">
+                {t.login.email}
+              </label>
               <input
+                id="login-email"
                 type="email"
-                placeholder="you@company.com"
+                placeholder={t.login.emailPlaceholder}
                 className="w-full bg-navy-900/60 border border-navy-600/50 text-white placeholder:text-white/30 px-4 py-3 rounded-xl text-sm mb-4 focus:outline-none focus:border-purple-400/60"
               />
-              <label className="block text-sm text-white/50 mb-2">Password</label>
+              <label htmlFor="login-password" className="block text-sm text-white/50 mb-2">
+                {t.login.password}
+              </label>
               <input
+                id="login-password"
                 type="password"
                 placeholder="••••••••"
                 className="w-full bg-navy-900/60 border border-navy-600/50 text-white placeholder:text-white/30 px-4 py-3 rounded-xl text-sm mb-4 focus:outline-none focus:border-purple-400/60"
@@ -48,14 +54,10 @@ export default function StaticPageView({ slug, showLoginForm }: StaticPageViewPr
                 type="submit"
                 className="w-full bg-purple-400 hover:bg-purple-600 text-white font-semibold py-3 rounded-xl text-sm transition-colors"
               >
-                {locale === "ko" ? "로그인" : "Sign in"}
+                {t.login.signIn}
               </button>
             </form>
-            <p className="text-white/30 text-xs mt-4 text-center">
-              {locale === "ko"
-                ? "베타 기간 — 액세스는 waitlist를 통해 제공됩니다"
-                : "Beta period — access via waitlist"}
-            </p>
+            <p className="text-white/30 text-xs mt-4 text-center">{t.login.betaNote}</p>
           </div>
         )}
 

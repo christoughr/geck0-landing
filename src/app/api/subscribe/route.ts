@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addMailchimpSubscriber, isMailchimpConfigured } from "@/lib/mailchimp";
-
-const fallbackSubscribers = new Map<string, { source?: string; at: string }>();
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const { ok } = rateLimit(`subscribe:${ip}`, 10, 60_000);
+  if (!ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   try {
     const { email, source } = await request.json();
 
@@ -21,13 +26,6 @@ export async function POST(request: NextRequest) {
     if (isMailchimpConfigured()) {
       await addMailchimpSubscriber(trimmed, typeof source === "string" ? source : "waitlist");
     } else {
-      if (fallbackSubscribers.has(trimmed)) {
-        return NextResponse.json({ message: "Already subscribed", email: trimmed });
-      }
-      fallbackSubscribers.set(trimmed, {
-        source: typeof source === "string" ? source : "waitlist",
-        at: new Date().toISOString(),
-      });
       console.log(`[subscribe:fallback] ${trimmed} source=${source ?? "waitlist"}`);
     }
 
@@ -42,9 +40,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const adminKey = process.env.ADMIN_API_KEY;
+  if (!adminKey) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const auth = request.headers.get("authorization");
+  if (auth !== `Bearer ${adminKey}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   return NextResponse.json({
     configured: isMailchimpConfigured(),
-    fallbackCount: fallbackSubscribers.size,
   });
 }

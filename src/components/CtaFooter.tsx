@@ -76,10 +76,12 @@ export function CtaSection() {
             onSubmit={handleSubmit}
           >
             <input
+              id="waitlist-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t.cta.placeholder}
+              aria-label={t.cta.placeholder}
               disabled={status === "loading"}
               className="flex-1 bg-navy-800/80 border border-navy-600/50 text-white placeholder:text-white/30 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 transition-colors disabled:opacity-50"
             />
