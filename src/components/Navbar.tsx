@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -10,6 +10,8 @@ export default function Navbar() {
   const { t } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const onScroll = useCallback(() => {
     setScrolled(window.scrollY > 32);
@@ -35,6 +37,34 @@ export default function Navbar() {
     return () => document.body.classList.remove("nav-scroll-lock");
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!menuOpen || !menuRef.current) return;
+    const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled])'
+    );
+    focusable[0]?.focus();
+
+    const trap = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", trap);
+    return () => document.removeEventListener("keydown", trap);
+  }, [menuOpen]);
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+    menuButtonRef.current?.focus();
+  };
+
   const navLinks = [
     { label: t.nav.product, href: "/#features" },
     { label: t.nav.howItWorks, href: "/#how-it-works" },
@@ -52,7 +82,7 @@ export default function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Logo />
 
         <div className="hidden md:flex items-center gap-6">
@@ -60,7 +90,7 @@ export default function Navbar() {
             <Link
               key={l.href}
               href={l.href}
-              className="text-sm text-white/60 hover:text-white transition-colors duration-200"
+              className="text-sm text-white/60 hover:text-white transition-colors duration-200 focus-visible:text-white focus-visible:underline"
             >
               {l.label}
             </Link>
@@ -71,13 +101,13 @@ export default function Navbar() {
           <LanguageSwitcher />
           <Link
             href="/login"
-            className="text-sm text-white/60 hover:text-white transition-colors"
+            className="text-sm text-white/60 hover:text-white transition-colors focus-visible:underline"
           >
             {t.nav.login}
           </Link>
           <Link
             href="/#contact"
-            className="text-sm bg-purple-400 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium"
+            className="text-sm bg-purple-400 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium focus-visible:ring-2 focus-visible:ring-purple-400/60"
           >
             {t.nav.cta}
           </Link>
@@ -86,7 +116,8 @@ export default function Navbar() {
         <div className="md:hidden flex items-center gap-3">
           <LanguageSwitcher />
           <button
-            className="text-white/70 hover:text-white"
+            ref={menuButtonRef}
+            className="text-white/70 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? t.nav.menuClose : t.nav.menuOpen}
             aria-expanded={menuOpen}
@@ -108,32 +139,33 @@ export default function Navbar() {
 
       {menuOpen && (
         <div
+          ref={menuRef}
           id="mobile-nav"
           role="navigation"
           aria-label={t.nav.menuLabel}
-          className="md:hidden bg-navy-800/98 backdrop-blur-md border-t border-navy-600/50 px-6 py-4 flex flex-col gap-4"
+          className="md:hidden bg-navy-800/98 backdrop-blur-md border-t border-navy-600/50 px-4 sm:px-6 py-4 flex flex-col gap-1"
         >
           {navLinks.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="text-sm text-white/70 hover:text-white transition-colors"
-              onClick={() => setMenuOpen(false)}
+              className="text-sm text-white/70 hover:text-white transition-colors py-3 min-h-[44px] flex items-center focus-visible:text-white"
+              onClick={closeMenu}
             >
               {l.label}
             </Link>
           ))}
           <Link
             href="/login"
-            className="text-sm text-white/70 hover:text-white transition-colors"
-            onClick={() => setMenuOpen(false)}
+            className="text-sm text-white/70 hover:text-white transition-colors py-3 min-h-[44px] flex items-center"
+            onClick={closeMenu}
           >
             {t.nav.login}
           </Link>
           <Link
             href="/#contact"
-            className="text-sm bg-purple-400 text-white px-4 py-2 rounded-lg text-center font-medium"
-            onClick={() => setMenuOpen(false)}
+            className="text-sm bg-purple-400 text-white px-4 py-3 rounded-lg text-center font-medium min-h-[44px] flex items-center justify-center mt-2"
+            onClick={closeMenu}
           >
             {t.nav.cta}
           </Link>

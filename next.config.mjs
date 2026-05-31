@@ -27,6 +27,12 @@ const nextConfig = {
         destination: "https://geck0.ai/login",
         permanent: true,
       },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.geck0.ai" }],
+        destination: "https://geck0.ai/:path*",
+        permanent: true,
+      },
     ];
   },
 

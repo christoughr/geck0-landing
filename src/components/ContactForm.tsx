@@ -1,26 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import Reveal from "./Reveal";
+import HoneypotField from "./HoneypotField";
+import TurnstileWidget from "./TurnstileWidget";
 
 export default function ContactForm() {
   const { t } = useI18n();
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", company: "", message: "" });
+  const [consent, setConsent] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onTurnstile = useCallback((token: string) => setTurnstileToken(token), []);
+  const onTurnstileExpire = useCallback(() => setTurnstileToken(""), []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!consent) return;
+
+    const fd = new FormData(e.currentTarget);
     setStatus("loading");
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          company: form.company,
+          message: form.message,
+          _gotcha: fd.get("_gotcha"),
+          turnstileToken: turnstileToken || undefined,
+        }),
       });
+
       if (!res.ok) throw new Error("failed");
       setStatus("success");
-      setForm({ name: "", email: "", message: "" });
+      setForm({ name: "", email: "", company: "", message: "" });
+      setConsent(false);
+      setTurnstileToken("");
     } catch {
       setStatus("error");
     }
@@ -28,7 +49,9 @@ export default function ContactForm() {
 
   return (
     <Reveal>
-      <form onSubmit={handleSubmit} className="space-y-4 mt-8" noValidate>
+      <form onSubmit={handleSubmit} className="space-y-4 mt-8 relative" noValidate>
+        <HoneypotField />
+
         <div>
           <label htmlFor="contact-name" className="block text-sm text-white/50 mb-2">
             {t.contact.name}
@@ -39,7 +62,7 @@ export default function ContactForm() {
             autoComplete="name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full bg-navy-900/60 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60"
+            className="w-full bg-navy-900/60 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 focus-visible:ring-2 focus-visible:ring-purple-400/40"
           />
         </div>
         <div>
@@ -51,9 +74,22 @@ export default function ContactForm() {
             required
             type="email"
             autoComplete="email"
+            inputMode="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full bg-navy-900/60 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60"
+            className="w-full bg-navy-900/60 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 focus-visible:ring-2 focus-visible:ring-purple-400/40"
+          />
+        </div>
+        <div>
+          <label htmlFor="contact-company" className="block text-sm text-white/50 mb-2">
+            {t.contact.company}
+          </label>
+          <input
+            id="contact-company"
+            autoComplete="organization"
+            value={form.company}
+            onChange={(e) => setForm({ ...form, company: e.target.value })}
+            className="w-full bg-navy-900/60 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 focus-visible:ring-2 focus-visible:ring-purple-400/40"
           />
         </div>
         <div>
@@ -66,14 +102,28 @@ export default function ContactForm() {
             rows={4}
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
-            className="w-full bg-navy-900/60 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 resize-none"
+            className="w-full bg-navy-900/60 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 focus-visible:ring-2 focus-visible:ring-purple-400/40 resize-none"
           />
         </div>
+
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            className="mt-1 accent-purple-400"
+            required
+          />
+          <span className="text-white/45 text-xs leading-relaxed">{t.contact.consent}</span>
+        </label>
+
+        <TurnstileWidget onToken={onTurnstile} onExpire={onTurnstileExpire} />
+
         <button
           type="submit"
-          disabled={status === "loading"}
+          disabled={status === "loading" || !consent}
           aria-busy={status === "loading"}
-          className="bg-purple-400 hover:bg-purple-600 disabled:opacity-50 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors"
+          className="w-full sm:w-auto bg-purple-400 hover:bg-purple-600 disabled:opacity-50 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors focus-visible:ring-2 focus-visible:ring-purple-400/60"
         >
           {status === "loading" ? (
             <span aria-hidden="true">⋯</span>
@@ -81,13 +131,10 @@ export default function ContactForm() {
             t.contact.submit
           )}
         </button>
+
         <div aria-live="polite" aria-atomic="true">
-          {status === "success" && (
-            <p className="text-teal-400 text-sm">{t.contact.success}</p>
-          )}
-          {status === "error" && (
-            <p className="text-coral-400 text-sm">{t.contact.error}</p>
-          )}
+          {status === "success" && <p className="text-teal-400 text-sm">{t.contact.success}</p>}
+          {status === "error" && <p className="text-coral-400 text-sm">{t.contact.error}</p>}
         </div>
       </form>
     </Reveal>

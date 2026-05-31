@@ -13,9 +13,37 @@ function applySecurityHeaders(res: NextResponse): void {
     "Strict-Transport-Security",
     "max-age=63072000; includeSubDomains; preload"
   );
+
+  const plausibleHost = "https://plausible.io";
+  const turnstileHost = "https://challenges.cloudflare.com";
+
+  res.headers.set(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${plausibleHost} ${turnstileHost}`,
+      `connect-src 'self' ${plausibleHost} ${turnstileHost} https://blob.vercel-storage.com`,
+      "img-src 'self' data: blob: https:",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self' data:",
+      `frame-src ${turnstileHost}`,
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join("; ")
+  );
 }
 
 export function middleware(request: NextRequest) {
+  const host = request.headers.get("host") ?? "";
+  if (host === "www.geck0.ai") {
+    const url = request.nextUrl.clone();
+    url.host = "geck0.ai";
+    const redirect = NextResponse.redirect(url, 301);
+    applySecurityHeaders(redirect);
+    return redirect;
+  }
+
   const langParam = request.nextUrl.searchParams.get("lang");
   if (langParam === "en" || langParam === "ko") {
     const url = request.nextUrl.clone();
@@ -36,5 +64,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)"],
 };

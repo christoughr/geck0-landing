@@ -1,0 +1,5 @@
+Contact: mailto:hello@geck0.ai
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: ko, en
+Canonical: https://geck0.ai/.well-known/security.txt
+Policy: https://geck0.ai/privacy

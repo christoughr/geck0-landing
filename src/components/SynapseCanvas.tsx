@@ -269,8 +269,14 @@ export default function SynapseCanvas() {
     const onMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY, active: true };
     };
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (t) mouseRef.current = { x: t.clientX, y: t.clientY, active: true };
+    };
     const onLeave = () => { mouseRef.current.active = false; };
     window.addEventListener("mousemove", onMove);
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    window.addEventListener("touchmove", onTouch, { passive: true });
     window.addEventListener("mouseleave", onLeave);
 
     // ── helpers for drawing ────────────────────
@@ -521,6 +527,8 @@ export default function SynapseCanvas() {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("touchstart", onTouch);
+      window.removeEventListener("touchmove", onTouch);
       window.removeEventListener("mouseleave", onLeave);
     };
   }, []);

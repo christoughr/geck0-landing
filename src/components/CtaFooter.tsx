@@ -1,20 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import Reveal from "./Reveal";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { footerLinks } from "@/config/site";
 import { siteConfig } from "@/config/site";
+import HoneypotField from "./HoneypotField";
+import TurnstileWidget from "./TurnstileWidget";
 
 export function CtaSection() {
   const { t, locale } = useI18n();
   const [email, setEmail] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onTurnstile = useCallback((token: string) => setTurnstileToken(token), []);
+  const onTurnstileExpire = useCallback(() => setTurnstileToken(""), []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email.trim()) {
@@ -26,11 +33,18 @@ export function CtaSection() {
     setStatus("loading");
     setMessage("");
 
+    const fd = new FormData(e.currentTarget);
+
     try {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          source: "footer",
+          _gotcha: fd.get("_gotcha"),
+          turnstileToken: turnstileToken || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -44,6 +58,7 @@ export function CtaSection() {
       setMessage(t.cta.success);
       setStatus("success");
       setEmail("");
+      setTurnstileToken("");
     } catch {
       setMessage(t.cta.error);
       setStatus("error");
@@ -53,7 +68,7 @@ export function CtaSection() {
   return (
     <section
       id="contact"
-      className="relative bg-navy-800/40 py-24 px-6 overflow-hidden"
+      className="relative bg-navy-800/40 py-16 sm:py-24 px-4 sm:px-6 overflow-hidden"
     >
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div
@@ -67,42 +82,51 @@ export function CtaSection() {
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
             {t.cta.title}
           </h2>
-          <p className="text-white/50 text-lg mb-8">{t.cta.subtitle}</p>
+          <p className="text-white/50 text-base sm:text-lg mb-8">{t.cta.subtitle}</p>
         </Reveal>
 
         <Reveal delay={0.15}>
           <form
-            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+            ref={formRef}
+            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto relative"
             onSubmit={handleSubmit}
           >
+            <HoneypotField />
             <input
               id="waitlist-email"
               type="email"
+              inputMode="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t.cta.placeholder}
               aria-label={t.cta.placeholder}
               disabled={status === "loading"}
-              className="flex-1 bg-navy-800/80 border border-navy-600/50 text-white placeholder:text-white/30 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 transition-colors disabled:opacity-50"
+              className="flex-1 min-h-[48px] bg-navy-800/80 border border-navy-600/50 text-white placeholder:text-white/30 px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60 focus-visible:ring-2 focus-visible:ring-purple-400/40 transition-colors disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={status === "loading"}
-              className="bg-purple-400 hover:bg-purple-600 disabled:bg-purple-600/50 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors duration-200 whitespace-nowrap"
+              aria-busy={status === "loading"}
+              className="min-h-[48px] bg-purple-400 hover:bg-purple-600 disabled:bg-purple-600/50 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors duration-200 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-purple-400/60"
             >
-              {status === "loading" ? "..." : t.cta.button}
+              {status === "loading" ? "⋯" : t.cta.button}
             </button>
           </form>
 
-          {message && (
-            <p
-              className={`text-sm mt-4 ${
-                status === "success" ? "text-teal-400" : "text-coral-400"
-              }`}
-            >
-              {message}
-            </p>
-          )}
+          <TurnstileWidget onToken={onTurnstile} onExpire={onTurnstileExpire} />
+
+          <div aria-live="polite" aria-atomic="true">
+            {message && (
+              <p
+                className={`text-sm mt-4 ${
+                  status === "success" ? "text-teal-400" : "text-coral-400"
+                }`}
+              >
+                {message}
+              </p>
+            )}
+          </div>
 
           <p className="text-white/30 text-xs mt-4">
             {locale === "ko" ? (
@@ -138,7 +162,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-navy-900 border-t border-navy-700/50 py-12 px-6">
+    <footer className="bg-navy-900 border-t border-navy-700/50 py-12 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-10">
           <div>
@@ -152,7 +176,7 @@ export function Footer() {
             </a>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 w-full md:w-auto">
             {linkGroups.map(({ title, links, hrefs }) => (
               <div key={title}>
                 <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">
@@ -177,7 +201,7 @@ export function Footer() {
 
         <div className="border-t border-navy-700/50 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
           <p className="text-white/25 text-xs">{t.footer.copyright}</p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             {t.footer.legal.map((label, i) => (
               <Link
                 key={label}

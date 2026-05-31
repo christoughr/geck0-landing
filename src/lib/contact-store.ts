@@ -3,9 +3,9 @@ export interface ContactEntry {
   email: string;
   message: string;
   at: string;
+  company?: string;
 }
 
-/** Append-only: one blob per submission — no read-modify-write race */
 async function persistToBlob(entry: ContactEntry): Promise<boolean> {
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) return false;
@@ -36,11 +36,12 @@ async function notifySlack(entry: ContactEntry): Promise<boolean> {
   if (!webhook) return false;
 
   try {
+    const companyLine = entry.company ? `\nCompany: ${entry.company}` : "";
     const res = await fetch(webhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        text: `📩 New contact from geck0.ai\n*${entry.name}* (${entry.email})\n${entry.message}`,
+        text: `📩 New contact from geck0.ai\n*${entry.name}* (${entry.email})${companyLine}\n${entry.message}`,
       }),
     });
     return res.ok;
@@ -55,7 +56,7 @@ export async function saveContact(entry: ContactEntry): Promise<{ persisted: boo
   const slackOk = await notifySlack(entry);
 
   if (!blobOk && !slackOk) {
-    console.log("[contact:fallback-log]", JSON.stringify(entry));
+    console.error("[contact:fallback-log]", JSON.stringify(entry));
   }
 
   return { persisted: blobOk || slackOk };

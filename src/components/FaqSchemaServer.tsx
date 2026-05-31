@@ -1,14 +1,14 @@
-"use client";
+import { getServerLocale } from "@/lib/locale-server";
+import { translations } from "@/lib/i18n/translations";
 
-import { useI18n } from "@/lib/i18n/I18nProvider";
-
-export default function FaqSchema() {
-  const { t } = useI18n();
+export default async function FaqSchemaServer() {
+  const locale = await getServerLocale();
+  const items = translations[locale].faq.items;
 
   const schema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: t.faq.items.map((item) => ({
+    mainEntity: items.map((item) => ({
       "@type": "Question",
       name: item.q,
       acceptedAnswer: {

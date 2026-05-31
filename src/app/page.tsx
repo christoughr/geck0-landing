@@ -9,13 +9,13 @@ import SocialProof from "@/components/SocialProof";
 import Security from "@/components/Security";
 import Pricing from "@/components/Pricing";
 import Faq from "@/components/Faq";
-import FaqSchema from "@/components/FaqSchema";
+import FaqSchemaServer from "@/components/FaqSchemaServer";
 import { CtaSection, Footer } from "@/components/CtaFooter";
 
 export default function Home() {
   return (
     <>
-      <FaqSchema />
+      <FaqSchemaServer />
       <Navbar />
       <main id="main-content">
         <Hero />

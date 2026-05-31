@@ -5,21 +5,19 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import PageShell from "./PageShell";
 import { ContentPage } from "./ContentPage";
-import Reveal from "./Reveal";
 
 interface HealthData {
   status: string;
+  scope?: string;
   timestamp: string;
   services: Record<string, string>;
-  _meta?: { uptimeSec?: number; deployment?: string };
+  _meta?: { uptimeSec?: number; note?: string };
 }
 
 function formatUptime(seconds: number, locale: "ko" | "en"): string {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
-  if (locale === "ko") {
-    return h > 0 ? `${h}시간 ${m}분` : `${m}분`;
-  }
+  if (locale === "ko") return h > 0 ? `${h}시간 ${m}분` : `${m}분`;
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
@@ -44,10 +42,8 @@ export default function StatusLive() {
   }, []);
 
   const serviceLabels: Record<string, { ko: string; en: string }> = {
+    website: { ko: "웹사이트", en: "Website" },
     api: { ko: "API", en: "API" },
-    knowledgeGraph: { ko: "Knowledge Graph Sync", en: "Knowledge Graph Sync" },
-    aiQa: { ko: "AI Q&A Engine", en: "AI Q&A Engine" },
-    integrations: { ko: "Integrations", en: "Integrations" },
   };
 
   return (
@@ -58,13 +54,15 @@ export default function StatusLive() {
         subtitle={
           health?.status === "operational"
             ? locale === "ko"
-              ? "모든 시스템 정상 운영 중"
-              : "All systems operational"
+              ? "마케팅 사이트 정상 운영 중"
+              : "Marketing site operational"
             : locale === "ko"
             ? "상태 확인 중..."
             : "Checking status..."
         }
       >
+        <p className="text-white/40 text-xs mb-6 leading-relaxed">{t.status.disclaimer}</p>
+
         {loading && !health ? (
           <div className="flex items-center gap-3 text-white/40 text-sm">
             <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
@@ -76,7 +74,7 @@ export default function StatusLive() {
               Object.entries(health.services).map(([key, status]) => (
                 <div
                   key={key}
-                  className="flex items-center justify-between bg-navy-800/60 border border-navy-600/30 rounded-xl px-5 py-4"
+                  className="flex items-center justify-between bg-navy-800/60 border border-navy-600/30 rounded-xl px-4 sm:px-5 py-4 min-h-[52px]"
                 >
                   <span className="text-white text-sm font-medium">
                     {serviceLabels[key]?.[locale] ?? key}
@@ -96,11 +94,13 @@ export default function StatusLive() {
               <p className="text-white/30 text-xs mt-6">
                 {locale === "ko" ? "마지막 확인" : "Last checked"}:{" "}
                 {new Date(health.timestamp).toLocaleString(locale === "ko" ? "ko-KR" : "en-US")}
-                {" · "}
-                {locale === "ko" ? "업타임" : "Uptime"}:{" "}
-                {health._meta?.uptimeSec != null
-                  ? formatUptime(health._meta.uptimeSec, locale)
-                  : "—"}
+                {health._meta?.uptimeSec != null && (
+                  <>
+                    {" · "}
+                    {locale === "ko" ? "업타임" : "Uptime"}:{" "}
+                    {formatUptime(health._meta.uptimeSec, locale)}
+                  </>
+                )}
               </p>
             )}
           </div>
@@ -114,7 +114,7 @@ export default function StatusLive() {
           </p>
           <Link
             href="/support"
-            className="text-purple-400 hover:text-purple-300 text-sm font-medium"
+            className="text-purple-400 hover:text-purple-300 text-sm font-medium focus-visible:underline"
           >
             {locale === "ko" ? "고객 지원 →" : "Customer support →"}
           </Link>

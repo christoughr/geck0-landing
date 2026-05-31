@@ -21,7 +21,7 @@ export async function addMailchimpSubscriber(
 
   const body: MailchimpMember = {
     email_address: email,
-    status: "subscribed",
+    status: process.env.MAILCHIMP_DOUBLE_OPTIN === "true" ? "pending" : "subscribed",
     tags: [source, "geck0-landing"],
   };
 

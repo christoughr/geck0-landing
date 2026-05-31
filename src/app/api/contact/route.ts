@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveContact } from "@/lib/contact-store";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { isHoneypotTriggered, verifyTurnstile } from "@/lib/api-utils";
 
 const MAX_BODY = 8000;
 
@@ -17,7 +18,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Payload too large" }, { status: 413 });
     }
 
-    const { name, email, message } = await request.json();
+    const body = await request.json();
+
+    if (isHoneypotTriggered(body)) {
+      return NextResponse.json({ message: "Received", persisted: true });
+    }
+
+    const turnstileOk = await verifyTurnstile(body.turnstileToken);
+    if (!turnstileOk) {
+      return NextResponse.json({ error: "Verification failed" }, { status: 403 });
+    }
+
+    const { name, email, message, company } = body;
 
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
       return NextResponse.json({ error: "All fields required" }, { status: 400 });
@@ -36,15 +48,22 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       message: message.trim(),
+      company: typeof company === "string" ? company.trim() : undefined,
       at: new Date().toISOString(),
     };
 
     const { persisted } = await saveContact(entry);
 
-    return NextResponse.json({
-      message: "Received",
-      persisted,
-    });
+    if (!persisted) {
+      return NextResponse.json(
+        {
+          error: "Unable to save your message. Please email hello@geck0.ai directly.",
+        },
+        { status: 503 }
+      );
+    }
+
+    return NextResponse.json({ message: "Received", persisted: true });
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
