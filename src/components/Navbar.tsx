@@ -68,6 +68,7 @@ export default function Navbar() {
   const navLinks = [
     { label: t.nav.product, href: "/#features" },
     { label: t.nav.howItWorks, href: "/#how-it-works" },
+    { label: t.nav.demo, href: "/demo" },
     { label: t.nav.pricing, href: "/pricing" },
     { label: t.nav.testimonials, href: "/#testimonials" },
     { label: t.nav.blog, href: "/blog" },

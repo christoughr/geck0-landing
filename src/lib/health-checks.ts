@@ -38,13 +38,20 @@ export async function buildHealthReport(uptimeSec: number): Promise<HealthReport
   }
 
   if (isContactStorageConfigured()) {
+    const channels = [
+      process.env.BLOB_READ_WRITE_TOKEN && "Blob",
+      process.env.RESEND_API_KEY && "Email",
+      process.env.SLACK_WEBHOOK_URL && "Slack",
+    ]
+      .filter(Boolean)
+      .join(" + ");
     services.contact = "operational";
-    checks.contact = { ok: true, detail: "Blob and/or Slack configured" };
+    checks.contact = { ok: true, detail: `Configured: ${channels}` };
   } else {
     services.contact = "unavailable";
     checks.contact = {
       ok: false,
-      detail: "Set BLOB_READ_WRITE_TOKEN and/or SLACK_WEBHOOK_URL",
+      detail: "Set BLOB_READ_WRITE_TOKEN and/or RESEND_API_KEY",
     };
   }
 

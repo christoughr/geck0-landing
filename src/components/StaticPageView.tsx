@@ -23,7 +23,11 @@ export default function StaticPageView({ slug }: StaticPageViewProps) {
     <PageShell>
       <ContentPage label={page.label} title={page.title} subtitle={page.subtitle}>
         {page.blocks.map((block, i) => (
-          <div key={i} className="mb-6">
+          <div
+            key={i}
+            id={block.heading?.toLowerCase().includes("accuracy") ? "accuracy" : undefined}
+            className="mb-6"
+          >
             {block.heading && (
               <h2 className="text-xl font-semibold text-white mb-2">{block.heading}</h2>
             )}

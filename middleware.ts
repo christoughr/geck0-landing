@@ -36,7 +36,25 @@ function applySecurityHeaders(res: NextResponse): void {
 }
 
 export function middleware(request: NextRequest) {
-  const host = request.headers.get("host") ?? "";
+  const host = request.headers.get("host")?.split(":")[0] ?? "";
+
+  if (host === "app.geck0.ai") {
+    const path = request.nextUrl.pathname;
+    if (
+      !path.startsWith("/app") &&
+      !path.startsWith("/_next") &&
+      !path.startsWith("/api") &&
+      path !== "/favicon.ico" &&
+      path !== "/manifest.json"
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = path === "/" ? "/app" : `/app${path}`;
+      const rewrite = NextResponse.rewrite(url);
+      applySecurityHeaders(rewrite);
+      return rewrite;
+    }
+  }
+
   if (host === "www.geck0.ai") {
     const url = request.nextUrl.clone();
     url.host = "geck0.ai";

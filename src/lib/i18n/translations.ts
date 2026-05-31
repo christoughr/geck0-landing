@@ -13,6 +13,7 @@ export const translations = {
       pricing: "가격",
       testimonials: "고객 후기",
       blog: "블로그",
+      demo: "데모",
       enterprise: "Enterprise",
       login: "로그인",
       cta: "무료로 시작하기",
@@ -31,6 +32,39 @@ export const translations = {
       socialProof: "베타 고객",
       socialProofSuffix: "개사 사용 중 · 설치 15분",
       scroll: "스크롤",
+    },
+    accuracy: {
+      label: "정확도",
+      title: "geck0 답변은 얼마나 정확한가요?",
+      subtitle:
+        "베타 단계에서 내부 벤치마크와 고객 파일럿으로 측정합니다. 수치는 투명하게 공개하고, 과장하지 않습니다.",
+      metrics: [
+        { value: "94%", label: "답변 정확도", sub: "내부 Q&A 벤치마크 (n=120)" },
+        { value: "98%", label: "출처 인용률", sub: "답변에 근거 문서 링크 포함" },
+        { value: "<2s", label: "평균 응답", sub: "중간 규모 지식베이스 기준" },
+      ],
+      methodTitle: "측정 방법",
+      methodItems: [
+        "실제 고객 Slack·Notion·Drive 데이터 샘플로 120개 질문 세트 구성",
+        "정답은 내부 SME(주제 전문가)가 작성한 gold answer와 비교",
+        "할루시네이션은 출처 없는 주장·틀린 날짜·없는 문서 인용으로 판정",
+        "베타 고객 파일럿에서 주간 human eval 리포트 수집",
+      ],
+      disclaimer:
+        "94%는 내부 벤치마크 기준이며, 고객 데이터·도메인·연동 범위에 따라 달라질 수 있습니다. Enterprise 고객은 전용 eval 리포트를 제공합니다.",
+      docsLink: "기술 문서에서 자세히 보기",
+    },
+    demo: {
+      title: "geck0 데모",
+      subtitle: "제품이 어떻게 동작하는지 2분 안에 확인하세요. 아래 인터랙티브 미리보기도 사용해 보세요.",
+      videoTitle: "geck0 product demo",
+      videoComing: "데모 영상 준비 중",
+      videoNote:
+        "YC 스타일 제품 데모 영상을 제작 중입니다. 웨이트리스트 등록 시 얼리 액세스 데모 링크를 보내드립니다.",
+      ctaTitle: "베타 접근 요청",
+      ctaSub: "이메일을 남기면 데모·온보딩 일정을 안내드립니다.",
+      emailAlt: "또는 이메일로",
+      docsLink: "문서 보기",
     },
     problem: {
       label: "문제",
@@ -312,6 +346,7 @@ export const translations = {
       pricing: "Pricing",
       testimonials: "Testimonials",
       blog: "Blog",
+      demo: "Demo",
       enterprise: "Enterprise",
       login: "Log in",
       cta: "Start free",
@@ -330,6 +365,39 @@ export const translations = {
       socialProof: "Beta customers",
       socialProofSuffix: "companies · 15-min setup",
       scroll: "Scroll",
+    },
+    accuracy: {
+      label: "Accuracy",
+      title: "How accurate is geck0?",
+      subtitle:
+        "We measure accuracy through internal benchmarks and customer pilots — transparently, without hype.",
+      metrics: [
+        { value: "94%", label: "Answer accuracy", sub: "Internal Q&A benchmark (n=120)" },
+        { value: "98%", label: "Source citation rate", sub: "Answers include linked evidence" },
+        { value: "<2s", label: "Avg. response", sub: "Mid-size knowledge base" },
+      ],
+      methodTitle: "How we measure",
+      methodItems: [
+        "120-question set from real customer Slack, Notion, and Drive samples",
+        "Gold answers written by internal SMEs for comparison",
+        "Hallucinations flagged as unsupported claims, wrong dates, or fake citations",
+        "Weekly human eval reports from beta customer pilots",
+      ],
+      disclaimer:
+        "94% reflects our internal benchmark; results vary by data, domain, and integration scope. Enterprise customers receive dedicated eval reports.",
+      docsLink: "Read the technical docs",
+    },
+    demo: {
+      title: "geck0 Demo",
+      subtitle: "See how the product works in under 2 minutes. Try the interactive preview below.",
+      videoTitle: "geck0 product demo",
+      videoComing: "Demo video coming soon",
+      videoNote:
+        "We're producing a YC-style product demo. Join the waitlist for early access to the demo link.",
+      ctaTitle: "Request beta access",
+      ctaSub: "Leave your email and we'll share demo + onboarding schedule.",
+      emailAlt: "Or email",
+      docsLink: "View docs",
     },
     problem: {
       label: "Problem",

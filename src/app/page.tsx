@@ -5,6 +5,7 @@ import Problem from "@/components/Problem";
 import Features from "@/components/Features";
 import ProductMockup from "@/components/ProductMockup";
 import HowItWorks from "@/components/HowItWorks";
+import AccuracySection from "@/components/AccuracySection";
 import SocialProof from "@/components/SocialProof";
 import Security from "@/components/Security";
 import Pricing from "@/components/Pricing";
@@ -24,6 +25,7 @@ export default function Home() {
         <Features />
         <ProductMockup />
         <HowItWorks />
+        <AccuracySection />
         <SocialProof />
         <Security />
         <Pricing />

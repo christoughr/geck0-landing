@@ -4,6 +4,7 @@ import { getSiteUrl } from "@/lib/site";
 
 const staticPages = [
   "/",
+  "/demo",
   "/pricing",
   "/enterprise",
   "/blog",
