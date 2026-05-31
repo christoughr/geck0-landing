@@ -1,3 +1,10 @@
+/**
+ * In-memory rate limiter.
+ *
+ * NOTE: This Map resets on every serverless cold start — intentional for a
+ * stateless landing page. If stricter limits are needed, replace with an
+ * edge KV store (e.g. Vercel KV / Upstash Redis).
+ */
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
 export function rateLimit(

@@ -9,9 +9,18 @@ import Reveal from "./Reveal";
 
 interface HealthData {
   status: string;
-  uptime: string;
   timestamp: string;
   services: Record<string, string>;
+  _meta?: { uptimeSec?: number; deployment?: string };
+}
+
+function formatUptime(seconds: number, locale: "ko" | "en"): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (locale === "ko") {
+    return h > 0 ? `${h}시간 ${m}분` : `${m}분`;
+  }
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
 export default function StatusLive() {
@@ -88,7 +97,10 @@ export default function StatusLive() {
                 {locale === "ko" ? "마지막 확인" : "Last checked"}:{" "}
                 {new Date(health.timestamp).toLocaleString(locale === "ko" ? "ko-KR" : "en-US")}
                 {" · "}
-                {locale === "ko" ? "업타임" : "Uptime"}: {health.uptime}
+                {locale === "ko" ? "업타임" : "Uptime"}:{" "}
+                {health._meta?.uptimeSec != null
+                  ? formatUptime(health._meta.uptimeSec, locale)
+                  : "—"}
               </p>
             )}
           </div>

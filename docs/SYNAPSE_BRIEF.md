@@ -1,6 +1,6 @@
 # geck0 Hero Synapse Animation — Technical Brief
 
-> For Claude / design review. Current implementation: **v3** in `src/components/SynapseCanvas.tsx`
+> For Claude / design review. Current implementation: **v4** in `src/components/SynapseCanvas.tsx`
 
 ## Goal
 

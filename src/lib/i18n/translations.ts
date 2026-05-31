@@ -261,6 +261,7 @@ export const translations = {
       banner: "당사는 서비스 개선을 위해 쿠키를 사용합니다.",
       learnMore: "자세히 보기",
       accept: "동의",
+      decline: "거부",
     },
     contact: {
       name: "이름",
@@ -552,6 +553,7 @@ export const translations = {
       banner: "We use cookies to improve our service.",
       learnMore: "Learn more",
       accept: "Accept",
+      decline: "Decline",
     },
     contact: {
       name: "Name",

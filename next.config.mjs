@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Redirects for canonical domain — mirrors vercel.json for non-Vercel environments
   async redirects() {
     return [
       {
@@ -25,6 +26,20 @@ const nextConfig = {
         has: [{ type: "host", value: "app.geck0.ai" }],
         destination: "https://geck0.ai/login",
         permanent: true,
+      },
+    ];
+  },
+
+  // Security headers (supplementary — middleware also sets these per-request)
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-DNS-Prefetch-Control", value: "on" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+        ],
       },
     ];
   },

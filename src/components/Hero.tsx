@@ -16,12 +16,12 @@ export default function Hero() {
 
       <div
         className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none"
-        style={{ background: "rgba(127,119,221,0.08)" }}
+        style={{ background: "rgba(127,119,221,0.12)" }}
         aria-hidden="true"
       />
       <div
         className="absolute bottom-1/3 right-1/4 w-64 h-64 rounded-full blur-3xl pointer-events-none"
-        style={{ background: "rgba(29,158,117,0.06)" }}
+        style={{ background: "rgba(29,158,117,0.09)" }}
         aria-hidden="true"
       />
 
