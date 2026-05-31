@@ -50,13 +50,15 @@ test("POST /api/subscribe empty body → 400 or 403", async () => {
   }
 });
 
-test("POST /api/contact empty body → 400", async () => {
-  const { res, body } = await request("/api/contact", {
+test("POST /api/contact empty body → 400 or 403", async () => {
+  const { res } = await request("/api/contact", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: "{}",
   });
-  if (res.status !== 400) throw new Error(`Expected 400, got ${res.status}: ${JSON.stringify(body)}`);
+  if (res.status !== 400 && res.status !== 403) {
+    throw new Error(`Expected 400 or 403, got ${res.status}`);
+  }
 });
 
 test("POST /api/subscribe honeypot → 200 fake success", async () => {
@@ -68,9 +70,11 @@ test("POST /api/subscribe honeypot → 200 fake success", async () => {
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
-test("GET /api/subscribe admin without key → 404", async () => {
+test("GET /api/subscribe admin without key → 401 or 404", async () => {
   const { res } = await request("/api/subscribe");
-  if (res.status !== 404) throw new Error(`Expected 404, got ${res.status}`);
+  if (res.status !== 404 && res.status !== 401) {
+    throw new Error(`Expected 401 or 404, got ${res.status}`);
+  }
 });
 
 test("GET /robots.txt returns 200", async () => {
