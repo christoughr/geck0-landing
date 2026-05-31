@@ -1,0 +1,36 @@
+---
+description: geck0 brand and landing page conventions
+globs: src/**/*
+---
+
+# geck0 Landing Page Rules
+
+## Brand
+- Name is always lowercase: **geck0** (never Geck0, GECK0, catrpillr)
+- Logo: geck + purple "0" → `geck<span style="color:#7F77DD">0</span>`
+- Tagline: "지식이 연결될 때, 회사가 진화합니다"
+- Contact: hello@geck0.ai
+- Domain: geck0.ai (app: app.geck0.ai)
+
+## Colors
+- Primary (purple): #7F77DD — logo, CTA, links
+- Growth (teal): #1D9E75 — success states
+- Energy (coral): #D85A30 — alerts, badges
+- Background (navy): #1A1A2E
+
+## Stack
+- Next.js 14 App Router + TypeScript + Tailwind CSS
+- framer-motion (installed) for animations
+- i18n: ko/en via `src/lib/i18n/` — use `useI18n()` hook in client components
+
+## Structure
+- Main landing: `src/app/page.tsx`
+- Pages: `/blog`, `/pricing`, `/enterprise`
+- API: `/api/subscribe` for email CTA
+- Blog posts: `src/content/blog/*.mdx`
+
+## Conventions
+- Add new copy to `src/lib/i18n/translations.ts` (both ko and en)
+- Wrap sections with `<Reveal>` for scroll animations
+- Use `<Logo />` component for brand mark
+- Tone: intellectual but light, minimize jargon
