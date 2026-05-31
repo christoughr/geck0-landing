@@ -1,12 +1,57 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 const SynapseCanvas = dynamic(() => import("./SynapseCanvas"), { ssr: false });
+
+function HeroSubline({ text }: { text: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
+
+  const fitOneLine = useCallback(() => {
+    const container = containerRef.current;
+    const el = textRef.current;
+    if (!container || !el) return;
+
+    el.style.fontSize = "";
+    const minPx = 6;
+    let fontSize = parseFloat(window.getComputedStyle(el).fontSize);
+
+    while (el.scrollWidth > container.clientWidth && fontSize > minPx) {
+      fontSize -= 0.25;
+      el.style.fontSize = `${fontSize}px`;
+    }
+  }, []);
+
+  useEffect(() => {
+    fitOneLine();
+    const container = containerRef.current;
+    if (!container) return;
+
+    const ro = new ResizeObserver(fitOneLine);
+    ro.observe(container);
+    window.addEventListener("resize", fitOneLine);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", fitOneLine);
+    };
+  }, [text, fitOneLine]);
+
+  return (
+    <div ref={containerRef} className="w-full overflow-hidden">
+      <p
+        ref={textRef}
+        className="whitespace-nowrap text-white/60 leading-snug text-sm sm:text-base md:text-lg mx-auto w-max max-w-full"
+      >
+        {text}
+      </p>
+    </div>
+  );
+}
 
 export default function Hero() {
   const { t } = useI18n();
@@ -62,9 +107,7 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.25 }}
           className="mb-8 sm:mb-10 px-2"
         >
-          <p className="text-[13px] sm:text-sm md:text-base lg:text-lg text-white/60 max-w-[100vw] md:max-w-none md:whitespace-nowrap mx-auto leading-snug">
-            {t.hero.sub}
-          </p>
+          <HeroSubline text={t.hero.sub} />
           <p className="mt-3 text-sm sm:text-base md:text-lg text-white/45 max-w-2xl mx-auto leading-relaxed">
             {t.hero.sub2}
           </p>
