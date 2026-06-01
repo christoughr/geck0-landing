@@ -1,0 +1,54 @@
+openapi: 3.1.0
+info:
+  title: geck0 Product API
+  version: 1.0.0
+  description: Workspace knowledge Q&A API (Bearer API key from app settings).
+servers:
+  - url: https://api.geck0.ai/v1
+    description: Production (alias)
+  - url: https://geck0.ai/api/v1
+    description: Direct
+paths:
+  /health:
+    get:
+      summary: API health
+      responses:
+        "200":
+          description: OK
+  /qa:
+    post:
+      summary: Ask workspace knowledge base
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                locale:
+                  type: string
+                  enum: [ko, en]
+      responses:
+        "200":
+          description: Answer with sources
+        "401":
+          description: Invalid API key
+  /knowledge:
+    get:
+      summary: List indexed documents
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Document list
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: API key from app → Settings → API (prefix gk_)

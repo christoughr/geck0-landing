@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const email = typeof body.email === "string" ? body.email : "";
-    const result = signInEmailOrError(email);
+    const result = await signInEmailOrError(email);
 
     if (!result.ok) {
       const status =

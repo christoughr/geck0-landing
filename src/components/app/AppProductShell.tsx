@@ -16,6 +16,8 @@ function activeKeyFromPath(pathname: string): AppNavKey {
   if (pathname.startsWith("/app/graph")) return "graph";
   if (pathname.startsWith("/app/qa")) return "qa";
   if (pathname.startsWith("/app/insights")) return "insights";
+  if (pathname.startsWith("/app/settings/team")) return "team";
+  if (pathname.startsWith("/app/settings/api")) return "api";
   if (pathname.startsWith("/app/settings")) return "integrations";
   return "dashboard";
 }

@@ -72,6 +72,16 @@ export default function AppLoginForm({ locale, errorCode }: AppLoginFormProps) {
         </p>
       )}
 
+      <div className="mt-4 pt-4 border-t border-navy-600/40">
+        <a
+          href="/api/app/auth/google"
+          className="flex items-center justify-center gap-2 w-full min-h-[44px] rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 text-white text-sm font-medium transition-colors"
+        >
+          <span aria-hidden>G</span>
+          {ko ? "Google로 로그인" : "Sign in with Google"}
+        </a>
+      </div>
+
       <p className="mt-3 text-[11px] text-white/30">
         {ko
           ? "권장 주소: app.geck0.ai/app · 초대됨: hello@geck0.ai"

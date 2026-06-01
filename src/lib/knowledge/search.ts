@@ -1,3 +1,4 @@
+import { embedQuery, cosineSimilarity, loadDocEmbeddings } from "./embeddings";
 import { getAllChunks, listDocuments } from "./store";
 import type { KnowledgeDocument } from "./types";
 
@@ -14,11 +15,35 @@ function tokenize(q: string): string[] {
     .filter((t) => t.length > 1);
 }
 
-export function searchKnowledge(workspaceId: string, query: string, limit = 6): Promise<SearchHit[]> {
-  return scoreChunks(workspaceId, query, limit);
+export async function searchKnowledge(
+  workspaceId: string,
+  query: string,
+  limit = 6
+): Promise<SearchHit[]> {
+  const keywordHits = await scoreChunksKeyword(workspaceId, query, limit);
+  const vectorHits = await scoreChunksVector(workspaceId, query, limit);
+
+  const merged = new Map<string, SearchHit>();
+  for (const h of [...vectorHits, ...keywordHits]) {
+    const prev = merged.get(h.doc.id);
+    if (!prev || h.score > prev.score) {
+      merged.set(h.doc.id, h);
+    }
+  }
+
+  const hits = Array.from(merged.values())
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
+
+  if (hits.length > 0) return hits;
+  return keywordHits;
 }
 
-async function scoreChunks(workspaceId: string, query: string, limit: number): Promise<SearchHit[]> {
+async function scoreChunksKeyword(
+  workspaceId: string,
+  query: string,
+  limit: number
+): Promise<SearchHit[]> {
   const terms = tokenize(query);
   const chunks = await getAllChunks(workspaceId);
 
@@ -60,6 +85,52 @@ async function scoreChunks(workspaceId: string, query: string, limit: number): P
   return hits;
 }
 
+async function scoreChunksVector(
+  workspaceId: string,
+  query: string,
+  limit: number
+): Promise<SearchHit[]> {
+  const qVec = await embedQuery(query);
+  if (!qVec) return [];
+
+  const chunks = await getAllChunks(workspaceId);
+  const byDoc = new Map<string, typeof chunks>();
+  for (const c of chunks) {
+    const list = byDoc.get(c.doc.id) ?? [];
+    list.push(c);
+    byDoc.set(c.doc.id, list);
+  }
+
+  const hits: SearchHit[] = [];
+
+  for (const [docId, docChunks] of Array.from(byDoc.entries())) {
+    const vectors = await loadDocEmbeddings(workspaceId, docId);
+    if (!vectors?.length) continue;
+
+    let bestScore = 0;
+    let bestText = "";
+    docChunks.forEach((c, i) => {
+      const vec = vectors[i];
+      if (!vec) return;
+      const sim = cosineSimilarity(qVec, vec);
+      if (sim > bestScore) {
+        bestScore = sim;
+        bestText = c.text;
+      }
+    });
+
+    if (bestScore > 0.35 && docChunks[0]) {
+      hits.push({
+        doc: docChunks[0].doc,
+        chunkText: bestText,
+        score: bestScore * 10,
+      });
+    }
+  }
+
+  return hits.sort((a, b) => b.score - a.score).slice(0, limit);
+}
+
 export async function synthesizeAnswer(
   query: string,
   hits: SearchHit[],
@@ -98,7 +169,13 @@ ${context}`;
     if (res.ok) {
       const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
       const text = data.choices?.[0]?.message?.content?.trim();
-      if (text) return { answer: text, mode: "openai-rag" };
+      if (text) {
+        const usedVector = hits.some((h) => h.score > 3);
+        return {
+          answer: text,
+          mode: usedVector ? "openai-vector-rag" : "openai-rag",
+        };
+      }
     }
   }
 
@@ -118,11 +195,13 @@ ${context}`;
     .map((h) => `• ${h.chunkText.slice(0, 200)}${h.chunkText.length > 200 ? "…" : ""}`)
     .join("\n");
 
+  const vectorMode = hits.some((h) => h.score > 3);
+
   return {
     answer:
       locale === "ko"
         ? `「${top.doc.title}」 등 ${hits.length}개 문서에서 찾았습니다.\n\n${bullets}`
         : `Found in ${hits.length} document(s), including "${top.doc.title}":\n\n${bullets}`,
-    mode: "keyword-rag",
+    mode: vectorMode ? "vector-rag" : "keyword-rag",
   };
 }

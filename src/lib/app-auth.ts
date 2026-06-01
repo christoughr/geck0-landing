@@ -33,6 +33,13 @@ export function isBetaEmailAllowed(email: string): boolean {
   return false;
 }
 
+/** Async: beta list OR workspace team invite */
+export async function isAppEmailAllowed(email: string): Promise<boolean> {
+  if (isBetaEmailAllowed(email)) return true;
+  const { isWorkspaceInvited } = await import("@/lib/team");
+  return isWorkspaceInvited(email);
+}
+
 export function createSessionToken(email: string): string | null {
   const secret = getSecret();
   if (!secret) return null;
@@ -100,9 +107,9 @@ export function clearSessionCookieOptions() {
   };
 }
 
-export function signInEmailOrError(
+export async function signInEmailOrError(
   email: string
-): { ok: true; token: string } | { ok: false; code: string; message: string } {
+): Promise<{ ok: true; token: string } | { ok: false; code: string; message: string }> {
   const normalized = email.trim().toLowerCase();
   if (!normalized.includes("@")) {
     return { ok: false, code: "invalid_email", message: "Invalid email" };
@@ -114,7 +121,7 @@ export function signInEmailOrError(
       message: "App auth not configured. Set APP_SESSION_SECRET on Vercel.",
     };
   }
-  if (!isBetaEmailAllowed(normalized)) {
+  if (!(await isAppEmailAllowed(normalized))) {
     return {
       ok: false,
       code: "not_invited",

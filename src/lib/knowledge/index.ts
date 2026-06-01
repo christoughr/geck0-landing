@@ -12,6 +12,9 @@ import { searchKnowledge, synthesizeAnswer } from "./search";
 import { buildKnowledgeGraph } from "./graph";
 import { buildInsights } from "./insights";
 import { syncNotionWorkspace } from "./notion";
+import { syncSlackWorkspace } from "./slack";
+import { syncDriveWorkspace } from "./drive";
+import { syncJiraWorkspace } from "./jira";
 
 function redis() {
   try {
@@ -74,6 +77,9 @@ export {
   buildKnowledgeGraph,
   buildInsights,
   syncNotionWorkspace,
+  syncSlackWorkspace,
+  syncDriveWorkspace,
+  syncJiraWorkspace,
   refreshConnectorCounts,
   saveNotionToken,
 };

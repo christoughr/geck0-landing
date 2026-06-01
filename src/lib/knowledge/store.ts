@@ -37,6 +37,12 @@ function historyKey(ws: string) {
 function notionTokenKey(ws: string) {
   return `knowledge:${ws}:notion-token`;
 }
+function oauthTokenKey(ws: string, provider: string) {
+  return `knowledge:${ws}:oauth:${provider}`;
+}
+function embeddingKey(ws: string, docId: string) {
+  return `knowledge:${ws}:emb:${docId}`;
+}
 
 export async function listDocuments(workspaceId: string): Promise<KnowledgeDocument[]> {
   const r = redis();
@@ -83,6 +89,9 @@ export async function upsertDocument(
 
   await r.set(docKey(doc.workspaceId, full.id), full);
   await r.set(chunkKey(doc.workspaceId, full.id), chunks);
+
+  const { indexDocumentEmbeddings } = await import("./embeddings");
+  void indexDocumentEmbeddings(doc.workspaceId, full.id, chunks);
 
   const ids = new Set((await r.get<string[]>(docIndexKey(doc.workspaceId))) ?? []);
   ids.add(full.id);
@@ -152,6 +161,61 @@ export async function getNotionToken(workspaceId: string): Promise<string | null
   return r.get<string>(notionTokenKey(workspaceId));
 }
 
+export async function saveOAuthToken(
+  workspaceId: string,
+  provider: "slack" | "google",
+  token: { access_token: string; refresh_token?: string; scope?: string }
+): Promise<void> {
+  const r = redis();
+  if (!r) return;
+  await r.set(oauthTokenKey(workspaceId, provider), token, { ex: 60 * 60 * 24 * 90 });
+}
+
+export async function getOAuthToken(
+  workspaceId: string,
+  provider: "slack" | "google"
+): Promise<{ access_token: string; refresh_token?: string } | null> {
+  const r = redis();
+  if (!r) return null;
+  return r.get(oauthTokenKey(workspaceId, provider));
+}
+
+export async function saveJiraCredentials(
+  workspaceId: string,
+  creds: { site: string; email: string; token: string }
+): Promise<void> {
+  const r = redis();
+  if (!r) return;
+  await r.set(`knowledge:${workspaceId}:jira`, creds, { ex: 60 * 60 * 24 * 90 });
+}
+
+export async function getJiraCredentials(
+  workspaceId: string
+): Promise<{ site: string; email: string; token: string } | null> {
+  const r = redis();
+  if (!r) return null;
+  return r.get(`knowledge:${workspaceId}:jira`);
+}
+
+export async function getChunkEmbeddings(
+  workspaceId: string,
+  docId: string
+): Promise<number[][] | null> {
+  const r = redis();
+  if (!r) return null;
+  return r.get<number[][]>(embeddingKey(workspaceId, docId));
+}
+
+export async function setChunkEmbeddings(
+  workspaceId: string,
+  docId: string,
+  vectors: number[][]
+): Promise<void> {
+  const r = redis();
+  if (!r) return;
+  await r.set(embeddingKey(workspaceId, docId), vectors, { ex: 60 * 60 * 24 * 120 });
+}
+
 export async function appendQaHistory(
   workspaceId: string,
   entry: Omit<QaHistoryEntry, "id" | "createdAt">
@@ -186,9 +250,6 @@ export async function refreshConnectorCounts(workspaceId: string): Promise<Conne
   const connectors = await getConnectors(workspaceId);
   const updated = await Promise.all(
     connectors.map(async (c) => {
-      if (c.id === "jira") {
-        return { ...c, status: "disconnected" as const, detail: "Coming soon", documentCount: 0 };
-      }
       const count = await countDocumentsByConnector(workspaceId, c.id);
       if (count > 0 && c.status === "disconnected") {
         return {

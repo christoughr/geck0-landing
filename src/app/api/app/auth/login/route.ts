@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
   const form = await request.formData();
   const email = form.get("email")?.toString() ?? "";
-  const result = signInEmailOrError(email);
+  const result = await signInEmailOrError(email);
   const gateUrl = new URL("/app", request.url);
 
   if (!result.ok) {

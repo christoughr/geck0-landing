@@ -1,36 +1,38 @@
-# geck0 Product v2 (in this repo)
+# geck0 Product v2
 
-## What is real now
+## Implemented
 
-| Feature | Implementation |
-|---------|----------------|
-| Workspace per email/domain | `src/lib/workspace.ts` + KV |
-| Knowledge index | Documents + chunks in Upstash KV |
-| Q&A | Keyword RAG + optional OpenAI (`OPENAI_API_KEY`) |
-| Q&A history | KV, last 40 questions |
-| Knowledge Graph | Built from docs (teams, tags) |
-| Insights | Rule-based on indexed content |
-| Notion | Integration token → sync pages API |
-| Manual upload | POST `/api/app/knowledge` |
-| Dashboard stats | Live from KV |
+| Area | Details |
+|------|---------|
+| Workspace + KV | Per email/domain workspace, documents, chunks, embeddings |
+| Q&A | Keyword + vector hybrid RAG, OpenAI synthesis optional |
+| Connectors | Notion token, Slack OAuth + export, Google Drive OAuth, Jira API token |
+| Team | Invite members → login without global beta list |
+| API | `gk_` keys, `POST /api/v1/qa`, `GET /api/v1/knowledge` |
+| Auth | Email beta, Google SSO, workspace invites |
+| Cron | `/api/cron/sync` every 6h (set `CRON_SECRET`) |
+| UI | Dashboard, Graph, Insights, Integrations, Team, API keys |
 
-## Env (Vercel)
+## Vercel env
 
 ```
-APP_SESSION_SECRET=...
-BETA_ALLOWED_EMAILS=hello@geck0.ai
-KV_REST_API_URL=...          # required for knowledge
-KV_REST_API_TOKEN=...
-OPENAI_API_KEY=...           # optional, better answers
-NOTION_INTERNAL_TOKEN=...    # optional, auto-sync on first login
+APP_SESSION_SECRET=
+BETA_ALLOWED_EMAILS=
+KV_REST_API_URL=
+KV_REST_API_TOKEN=
+OPENAI_API_KEY=              # RAG + embeddings
+SLACK_CLIENT_ID=
+SLACK_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+CRON_SECRET=
+NOTION_INTERNAL_TOKEN=       # optional server default
 ```
 
-## Still not enterprise-complete
+## URLs
 
-- Slack / Drive OAuth (upload + Notion only)
-- Vector embeddings (keyword search today)
-- Team RBAC, SSO, billing automation
-- Full api.geck0.ai public API
+- App: https://app.geck0.ai/app
+- API: https://api.geck0.ai/v1/health (or https://geck0.ai/api/v1/health)
 
 ## Test
 

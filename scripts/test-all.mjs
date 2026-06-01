@@ -104,6 +104,14 @@ async function main() {
     fail("/login redirect", `status ${login.res.status} loc ${loc}`);
   }
 
+  console.log("\n--- Product API v1 health ---");
+  const v1 = await fetchText(`${SITE}/api/v1/health`);
+  if (v1.res.status === 200 && v1.json?.version === "v1") {
+    pass("GET /api/v1/health");
+  } else {
+    fail("GET /api/v1/health", `status ${v1.res.status}`);
+  }
+
   console.log("\n--- Form login (hello@geck0.ai) ---");
   const form = await fetchText(`${APP_HOST}/api/app/auth/login`, {
     method: "POST",

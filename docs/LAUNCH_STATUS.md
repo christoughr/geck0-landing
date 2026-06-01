@@ -7,7 +7,8 @@ Last verified: production https://geck0.ai · `npm run test:all` (hello@geck0.ai
 | Area | Status |
 |------|--------|
 | Landing + mobile | ✅ |
-| **app.geck0.ai** beta (login, Q&A, graph, insights, knowledge upload, Notion) | ✅ |
+| **app.geck0.ai** (Q&A, graph, insights, Notion/Slack/Drive/Jira, team, API keys) | ✅ |
+| **api.geck0.ai** product API v1 | ✅ |
 | Turnstile, Mailchimp, Resend contact | ✅ |
 | Waitlist + per-seat pricing copy | ✅ |
 | Toss billing scaffold (keys pending) | ✅ code / ⏸ merchant |

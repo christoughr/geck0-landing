@@ -21,26 +21,44 @@ function applySecurityHeaders(res: NextResponse): void {
   const stripeHost = "https://js.stripe.com https://api.stripe.com https://checkout.stripe.com";
   const tossHost = "https://js.tosspayments.com https://api.tosspayments.com";
   const openaiHost = "https://api.openai.com";
+  const googleHost = "https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com";
+  const slackHost = "https://slack.com https://api.slack.com";
 
   res.headers.set(
     "Content-Security-Policy",
     [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${plausibleHost} ${turnstileHost} ${gaHost} ${stripeHost} ${tossHost}`,
-      `connect-src 'self' ${plausibleHost} ${turnstileHost} ${gaHost} ${sentryHost} ${stripeHost} ${tossHost} ${openaiHost} https://blob.vercel-storage.com`,
+      `connect-src 'self' ${plausibleHost} ${turnstileHost} ${gaHost} ${sentryHost} ${stripeHost} ${tossHost} ${openaiHost} ${googleHost} ${slackHost} https://blob.vercel-storage.com`,
       "img-src 'self' data: blob: https:",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' data:",
       `frame-src ${turnstileHost} ${stripeHost} https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com`,
       "object-src 'none'",
       "base-uri 'self'",
-      "form-action 'self' https://checkout.stripe.com",
+      `form-action 'self' https://checkout.stripe.com ${googleHost}`,
     ].join("; ")
   );
 }
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host")?.split(":")[0] ?? "";
+
+  if (host === "api.geck0.ai") {
+    const path = request.nextUrl.pathname;
+    if (path === "/" || path === "") {
+      const redirect = NextResponse.redirect("https://geck0.ai/docs/api", 302);
+      applySecurityHeaders(redirect);
+      return redirect;
+    }
+    if (path.startsWith("/v1")) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/api${path}`;
+      const rewrite = NextResponse.rewrite(url);
+      applySecurityHeaders(rewrite);
+      return rewrite;
+    }
+  }
 
   if (host === "app.geck0.ai") {
     const path = request.nextUrl.pathname;

@@ -80,7 +80,14 @@ async function main() {
     fail("POST /api/app/qa", "skipped (no session)");
   }
 
-  for (const path of ["/app/graph", "/app/insights", "/app/settings/integrations", "/app/qa"]) {
+  for (const path of [
+    "/app/graph",
+    "/app/insights",
+    "/app/settings/integrations",
+    "/app/settings/team",
+    "/app/settings/api",
+    "/app/qa",
+  ]) {
     const res = await fetch(`${BASE}${path}`, { redirect: "manual", headers: cookieHeader });
     if (!sessionCookie) {
       fail(`GET ${path}`, "skipped");

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { verifySessionToken, APP_SESSION_COOKIE } from "@/lib/app-auth";
 import { prepareWorkspace } from "@/lib/knowledge";
+import { ensureTeamOwner } from "@/lib/team";
 import { workspaceIdFromEmail } from "@/lib/workspace";
 
 export async function getAppSession(): Promise<{
@@ -10,7 +11,9 @@ export async function getAppSession(): Promise<{
   const token = cookies().get(APP_SESSION_COOKIE)?.value;
   const email = token ? verifySessionToken(token) : null;
   if (!email) return null;
-  const workspaceId = await prepareWorkspace(email);
+  const workspaceId = workspaceIdFromEmail(email);
+  await ensureTeamOwner(workspaceId, email);
+  await prepareWorkspace(email);
   return { email, workspaceId };
 }
 
