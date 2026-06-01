@@ -10,7 +10,7 @@
 | Team | Invite members → login without global beta list |
 | API | `gk_` keys, `POST /api/v1/qa`, `GET /api/v1/knowledge` |
 | Auth | Email beta, Google SSO, workspace invites |
-| Cron | `/api/cron/sync` every 6h (set `CRON_SECRET`) |
+| Cron | `/api/cron/sync` daily 03:00 UTC (set `CRON_SECRET`) |
 | UI | Dashboard, Graph, Insights, Integrations, Team, API keys |
 
 ## Vercel env

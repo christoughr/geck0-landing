@@ -29,4 +29,4 @@ Last verified: production https://geck0.ai · `npm run test:all` (hello@geck0.ai
 
 ## Docs
 
-- [APP_BETA.md](./APP_BETA.md) · [PRODUCT_V2.md](./PRODUCT_V2.md) · [STEP_BY_STEP.md](./STEP_BY_STEP.md) · [PAYMENTS.md](./PAYMENTS.md)
+- [HANDOFF_FOR_CLAUDE.md](./HANDOFF_FOR_CLAUDE.md) · [APP_BETA.md](./APP_BETA.md) · [PRODUCT_V2.md](./PRODUCT_V2.md) · [STEP_BY_STEP.md](./STEP_BY_STEP.md) · [PAYMENTS.md](./PAYMENTS.md)
