@@ -73,6 +73,10 @@ export async function getAppSessionEmail(): Promise<string | null> {
   return verifySessionToken(token);
 }
 
+function cookieDomain(): string | undefined {
+  return process.env.NODE_ENV === "production" ? ".geck0.ai" : undefined;
+}
+
 export function sessionCookieOptions(token: string) {
   return {
     name: APP_SESSION_COOKIE,
@@ -82,7 +86,46 @@ export function sessionCookieOptions(token: string) {
     sameSite: "lax" as const,
     path: "/",
     maxAge: SESSION_MAX_AGE,
+    ...(cookieDomain() ? { domain: cookieDomain() } : {}),
   };
+}
+
+export function clearSessionCookieOptions() {
+  return {
+    name: APP_SESSION_COOKIE,
+    value: "",
+    maxAge: 0,
+    path: "/",
+    ...(cookieDomain() ? { domain: cookieDomain() } : {}),
+  };
+}
+
+export function signInEmailOrError(
+  email: string
+): { ok: true; token: string } | { ok: false; code: string; message: string } {
+  const normalized = email.trim().toLowerCase();
+  if (!normalized.includes("@")) {
+    return { ok: false, code: "invalid_email", message: "Invalid email" };
+  }
+  if (!isAppAuthConfigured()) {
+    return {
+      ok: false,
+      code: "not_configured",
+      message: "App auth not configured. Set APP_SESSION_SECRET on Vercel.",
+    };
+  }
+  if (!isBetaEmailAllowed(normalized)) {
+    return {
+      ok: false,
+      code: "not_invited",
+      message: "This email is not on the beta list yet. Join the waitlist at geck0.ai.",
+    };
+  }
+  const token = createSessionToken(normalized);
+  if (!token) {
+    return { ok: false, code: "session_failed", message: "Session failed" };
+  }
+  return { ok: true, token };
 }
 
 export function isAppAuthConfigured(): boolean {

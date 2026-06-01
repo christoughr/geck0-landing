@@ -1,66 +1,82 @@
 "use client";
 
-import { useState } from "react";
 import type { Locale } from "@/lib/i18n/translations";
 
-export default function AppLoginForm({ locale }: { locale: Locale }) {
+type AppLoginFormProps = {
+  locale: Locale;
+  errorCode?: string | null;
+};
+
+const ERROR_MESSAGES: Record<string, { ko: string; en: string }> = {
+  not_invited: {
+    ko: "베타 초대 목록에 없는 이메일입니다. 아래 웨이트리스트에 등록하거나 hello@geck0.ai 로 문의해 주세요.",
+    en: "This email is not on the beta list. Join the waitlist below or email hello@geck0.ai.",
+  },
+  not_configured: {
+    ko: "앱 로그인 설정이 아직 완료되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+    en: "App sign-in is not configured yet. Please try again later.",
+  },
+  rate_limit: {
+    ko: "요청이 너무 많습니다. 1분 후 다시 시도해 주세요.",
+    en: "Too many attempts. Please try again in a minute.",
+  },
+  invalid_email: {
+    ko: "올바른 이메일 주소를 입력해 주세요.",
+    en: "Please enter a valid email address.",
+  },
+  session_failed: {
+    ko: "로그인 세션 생성에 실패했습니다. 다시 시도해 주세요.",
+    en: "Could not create a session. Please try again.",
+  },
+};
+
+export default function AppLoginForm({ locale, errorCode }: AppLoginFormProps) {
   const ko = locale === "ko";
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-  const [message, setMessage] = useState("");
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus("loading");
-    setMessage("");
-
-    try {
-      const res = await fetch("/api/app/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = (await res.json()) as { error?: string; message?: string };
-
-      if (res.ok) {
-        window.location.href = "/app/dashboard";
-        return;
-      }
-
-      if (data.error === "not_invited") {
-        setMessage(
-          ko
-            ? "베타 초대 목록에 없습니다. geck0.ai 웨이트리스트에 먼저 등록해 주세요."
-            : data.message ?? "Not on the beta list. Join the waitlist at geck0.ai first."
-        );
-      } else {
-        setMessage(data.message ?? (ko ? "로그인에 실패했습니다." : "Sign-in failed."));
-      }
-      setStatus("error");
-    } catch {
-      setMessage(ko ? "네트워크 오류" : "Network error");
-      setStatus("error");
-    }
-  };
+  const err = errorCode ? ERROR_MESSAGES[errorCode] : null;
 
   return (
-    <form onSubmit={submit} className="space-y-3 w-full max-w-sm mx-auto">
-      <input
-        type="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder={ko ? "회사 이메일" : "Work email"}
-        className="w-full min-h-[48px] bg-navy-800/80 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60"
-      />
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="w-full min-h-[48px] bg-purple-400 hover:bg-purple-600 disabled:opacity-60 text-white font-semibold rounded-xl text-sm"
-      >
-        {status === "loading" ? (ko ? "확인 중…" : "Checking…") : ko ? "베타 앱 입장" : "Enter beta app"}
-      </button>
-      {message && <p className="text-coral-400 text-xs text-center">{message}</p>}
-    </form>
+    <div className="rounded-2xl border-2 border-purple-400/40 bg-navy-800/50 p-5 text-left shadow-lg shadow-purple-900/20">
+      <p className="text-[10px] uppercase tracking-widest text-purple-300 font-semibold mb-1">
+        {ko ? "1단계 · 베타 로그인" : "Step 1 · Beta sign-in"}
+      </p>
+      <p className="text-white/55 text-xs mb-4 leading-relaxed">
+        {ko
+          ? "보라색 테두리 안의 입력창에 초대받은 이메일을 넣고 「베타 앱 입장」을 누르세요. (아래 웨이트리스트와는 별개입니다.)"
+          : "Enter your invited email in the box below, then tap Enter beta app. (This is separate from the waitlist form.)"}
+      </p>
+
+      <form action="/api/app/auth/login" method="POST" className="space-y-3">
+        <label className="block text-xs text-white/50" htmlFor="app-beta-email">
+          {ko ? "초대 이메일" : "Invite email"}
+        </label>
+        <input
+          id="app-beta-email"
+          name="email"
+          type="email"
+          required
+          autoComplete="email"
+          placeholder={ko ? "예: you@company.com" : "e.g. you@company.com"}
+          className="w-full min-h-[48px] bg-navy-900/80 border border-purple-400/30 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/50"
+        />
+        <button
+          type="submit"
+          className="w-full min-h-[48px] bg-purple-400 hover:bg-purple-600 text-white font-semibold rounded-xl text-sm transition-colors"
+        >
+          {ko ? "베타 앱 입장" : "Enter beta app"}
+        </button>
+      </form>
+
+      {(err || errorCode) && (
+        <p className="mt-3 text-coral-300 text-sm leading-relaxed bg-coral-950/40 border border-coral-500/30 rounded-lg px-3 py-2" role="alert">
+          {err ? (ko ? err.ko : err.en) : errorCode}
+        </p>
+      )}
+
+      <p className="mt-3 text-[11px] text-white/30">
+        {ko
+          ? "권장 주소: app.geck0.ai · 초대 예시: christoughr@gmail.com"
+          : "Use app.geck0.ai · Example invite: christoughr@gmail.com"}
+      </p>
+    </div>
   );
 }

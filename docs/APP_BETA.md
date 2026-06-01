@@ -25,11 +25,14 @@ Product MVP lives in this repo under `/app/*`. **Toss Payments** comes after bet
 
 `APP_SESSION_SECRET` can fall back to `ADMIN_API_KEY` if unset (not recommended long-term).
 
-## Sign-in flow
+## Sign-in flow (use https://app.geck0.ai)
 
-1. User enters work email on `/app`
-2. `POST /api/app/auth` checks allowlist → sets `geck0_app_session` cookie
-3. Redirect to `/app/dashboard`
+1. Open **https://app.geck0.ai** (recommended) or https://geck0.ai/app  
+2. In the **purple-bordered box** (Step 1), enter your invite email → **베타 앱 입장**  
+3. You should land on `/app/dashboard` — tap **Q&A** in the top menu (mobile: tabs under the header)  
+4. The waitlist form below “Step 2” is **not** login — do not use it to enter the app  
+
+Session cookie uses `Domain=.geck0.ai` so login works on both `geck0.ai` and `app.geck0.ai`.
 
 ## Step 2 — Add beta invites (Vercel)
 

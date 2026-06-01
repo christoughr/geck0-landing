@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 
 const CONSENT_KEY = "geck0-cookie-consent";
@@ -13,8 +14,10 @@ function persistConsent(value: "accepted" | "declined") {
 
 export default function CookieConsent() {
   const { t } = useI18n();
+  const pathname = usePathname();
   const [ready, setReady] = useState(false);
   const [visible, setVisible] = useState(false);
+  const hideOnApp = pathname?.startsWith("/app");
 
   useEffect(() => {
     const stored = localStorage.getItem(CONSENT_KEY);
@@ -33,7 +36,7 @@ export default function CookieConsent() {
     setVisible(false);
   };
 
-  if (!ready) return null;
+  if (hideOnApp || !ready) return null;
 
   if (!visible) {
     return (

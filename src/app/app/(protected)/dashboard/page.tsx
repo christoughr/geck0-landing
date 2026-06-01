@@ -56,6 +56,18 @@ export default async function AppDashboardPage() {
         ))}
       </div>
 
+      <Link
+        href="/app/qa"
+        className="block rounded-xl border-2 border-purple-400/50 bg-purple-400/15 px-5 py-4 text-center hover:bg-purple-400/25 transition-colors"
+      >
+        <span className="text-base font-bold text-white">
+          {ko ? "→ Q&A 시작하기" : "→ Start Q&A"}
+        </span>
+        <span className="block text-xs text-white/50 mt-1">
+          {ko ? "예: Q1 고객 이탈 원인은?" : 'Try: "What drove Q1 churn?"'}
+        </span>
+      </Link>
+
       <div className="space-y-3">
         <h2 className="text-sm font-semibold text-white/70">{ko ? "빠른 이동" : "Quick links"}</h2>
         <div className="grid gap-2">
