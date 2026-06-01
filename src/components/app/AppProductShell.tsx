@@ -94,7 +94,11 @@ export default function AppProductShell({ locale, email, children }: AppProductS
           ))}
         </nav>
 
-        <main className="flex-1 min-w-0 p-4 sm:p-6 overflow-x-clip">{children}</main>
+        <main className="flex-1 min-w-0 overflow-x-clip overflow-y-auto">
+          <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 py-6 sm:py-10 min-h-full">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

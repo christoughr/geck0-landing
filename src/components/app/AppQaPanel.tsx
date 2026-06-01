@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Locale } from "@/lib/i18n/translations";
+import AppPageHeader from "@/components/app/AppPageHeader";
 
 type Source = { id: string; title: string; source: string };
 
@@ -50,7 +51,15 @@ export default function AppQaPanel({ locale }: { locale: Locale }) {
       };
 
       if (!res.ok) {
-        setError(data.error === "Unauthorized" ? (ko ? "다시 로그인해 주세요." : "Please sign in again.") : (ko ? "요청 실패" : "Request failed"));
+        setError(
+          data.error === "Unauthorized"
+            ? ko
+              ? "다시 로그인해 주세요."
+              : "Please sign in again."
+            : ko
+              ? "요청 실패"
+              : "Request failed"
+        );
         return;
       }
 
@@ -65,76 +74,107 @@ export default function AppQaPanel({ locale }: { locale: Locale }) {
   };
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-white mb-1">{ko ? "Q&A" : "Q&A"}</h1>
-        <p className="text-white/45 text-sm">
-          {ko
+    <div className="w-full space-y-6 sm:space-y-8">
+      <AppPageHeader
+        title="Q&A"
+        description={
+          ko
             ? "데모 지식 베이스로 답변합니다. 커넥터 연동 후 회사 문서를 검색합니다."
-            : "Answers from the demo knowledge base until your connectors are linked."}
-        </p>
-      </div>
+            : "Answers from the demo knowledge base until your connectors are linked."
+        }
+      />
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void ask(query);
-        }}
-        className="flex flex-col sm:flex-row gap-2"
-      >
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={ko ? "회사 지식에 대해 질문하세요…" : "Ask about your company knowledge…"}
-          className="flex-1 min-h-[48px] bg-navy-800/80 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60"
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="min-h-[48px] px-6 bg-purple-400 hover:bg-purple-600 disabled:opacity-60 text-white font-semibold rounded-xl text-sm shrink-0"
-        >
-          {loading ? (ko ? "검색 중…" : "Searching…") : ko ? "질문" : "Ask"}
-        </button>
-      </form>
-
-      <div className="flex flex-wrap gap-2">
-        {starters[locale].map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => void ask(s)}
-            className="text-xs px-3 py-1.5 rounded-full border border-navy-600/50 text-white/50 hover:text-white/80 hover:border-purple-400/40"
+      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+        <div className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void ask(query);
+            }}
+            className="flex flex-col sm:flex-row gap-2"
           >
-            {s}
-          </button>
-        ))}
-      </div>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={ko ? "회사 지식에 대해 질문하세요…" : "Ask about your company knowledge…"}
+              className="flex-1 min-h-[52px] bg-navy-800/80 border border-navy-600/50 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400/60"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="min-h-[52px] px-8 bg-purple-400 hover:bg-purple-600 disabled:opacity-60 text-white font-semibold rounded-xl text-sm shrink-0"
+            >
+              {loading ? (ko ? "검색 중…" : "Searching…") : ko ? "질문" : "Ask"}
+            </button>
+          </form>
 
-      {error && <p className="text-coral-400 text-sm">{error}</p>}
+          <div className="flex flex-wrap gap-2">
+            {starters[locale].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => void ask(s)}
+                disabled={loading}
+                className="text-xs sm:text-sm px-3 py-2 rounded-full border border-navy-600/50 text-white/55 hover:text-white/90 hover:border-purple-400/40 hover:bg-purple-400/5 transition-colors disabled:opacity-50"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
 
-      {answer && (
-        <div className="rounded-xl border border-navy-600/40 bg-navy-800/40 p-4 space-y-4">
-          <p className="text-white/90 text-sm leading-relaxed whitespace-pre-wrap">{answer}</p>
-          {sources.length > 0 && (
-            <div className="space-y-2 pt-2 border-t border-navy-700/50">
-              <p className="text-[10px] uppercase tracking-wider text-white/35">
-                {ko ? "출처" : "Sources"}
-              </p>
-              {sources.map((s) => (
-                <div key={s.id} className="text-xs text-white/50">
-                  <span className="text-purple-300/90">{s.title}</span>
-                  <span className="text-white/25"> · {s.source}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          {mode && (
-            <p className="text-[10px] text-white/25">
-              {mode === "openai" ? "OpenAI" : ko ? "데모 지식" : "Demo knowledge"}
+          {error && (
+            <p className="text-coral-300 text-sm bg-coral-950/30 border border-coral-500/30 rounded-lg px-3 py-2">
+              {error}
             </p>
           )}
         </div>
-      )}
+
+        <div className="rounded-2xl border border-navy-600/40 bg-navy-800/30 min-h-[280px] lg:min-h-[360px] flex flex-col">
+          {loading && (
+            <div className="flex-1 flex items-center justify-center p-8">
+              <p className="text-white/40 text-sm animate-pulse">
+                {ko ? "답변 생성 중…" : "Generating answer…"}
+              </p>
+            </div>
+          )}
+
+          {!loading && answer && (
+            <div className="p-5 sm:p-6 space-y-4 flex-1">
+              <p className="text-white/90 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
+                {answer}
+              </p>
+              {sources.length > 0 && (
+                <div className="space-y-2 pt-4 border-t border-navy-700/50 mt-auto">
+                  <p className="text-[10px] uppercase tracking-wider text-white/35">
+                    {ko ? "출처" : "Sources"}
+                  </p>
+                  {sources.map((s) => (
+                    <div key={s.id} className="text-xs sm:text-sm text-white/50">
+                      <span className="text-purple-300/90 font-medium">{s.title}</span>
+                      <span className="text-white/25"> · {s.source}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {mode && (
+                <p className="text-[10px] text-white/25">
+                  {mode === "openai" ? "OpenAI" : ko ? "데모 지식" : "Demo knowledge"}
+                </p>
+              )}
+            </div>
+          )}
+
+          {!loading && !answer && !error && (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+              <p className="text-white/35 text-sm max-w-xs leading-relaxed">
+                {ko
+                  ? "질문을 입력하거나 추천 질문을 눌러 보세요. 답변이 여기에 표시됩니다."
+                  : "Type a question or tap a suggestion. Answers appear here."}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

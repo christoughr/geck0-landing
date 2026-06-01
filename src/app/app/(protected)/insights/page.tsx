@@ -1,4 +1,6 @@
 import { getServerLocale } from "@/lib/locale-server";
+import AppPageFrame from "@/components/app/AppPageFrame";
+import AppPageHeader from "@/components/app/AppPageHeader";
 
 export default async function AppInsightsPage() {
   const locale = await getServerLocale();
@@ -8,53 +10,51 @@ export default async function AppInsightsPage() {
     {
       title: ko ? "온보딩 지연 패턴" : "Onboarding delay pattern",
       detail: ko ? "이탈 사례의 42%에서 반복" : "Repeated in 42% of churn cases",
-      severity: "high",
+      severity: "high" as const,
     },
     {
       title: ko ? "API 지연 스파이크" : "API latency spikes",
       detail: ko ? "이탈 상관 31%" : "31% correlation with churn",
-      severity: "medium",
+      severity: "medium" as const,
     },
     {
       title: ko ? "PRD 결정 미배정" : "Unassigned PRD decisions",
       detail: ko ? "프로젝트 A · 2건" : "Project A · 2 items",
-      severity: "low",
+      severity: "low" as const,
     },
   ];
 
-  return (
-    <div className="space-y-6 max-w-2xl">
-      <div>
-        <h1 className="text-xl font-bold text-white mb-1">Insight Pulse</h1>
-        <p className="text-white/45 text-sm">
-          {ko
-            ? "베타 미리보기 — 실제 인사이트는 문서 동기화 후 생성됩니다."
-            : "Beta preview — real insights generate after your docs sync."}
-        </p>
-      </div>
+  const severityColor = {
+    high: "bg-coral-400",
+    medium: "bg-amber-400",
+    low: "bg-teal-400",
+  };
 
-      <div className="space-y-3">
+  return (
+    <AppPageFrame>
+      <AppPageHeader
+        title="Insight Pulse"
+        description={
+          ko
+            ? "베타 미리보기 — 실제 인사이트는 문서 동기화 후 생성됩니다."
+            : "Beta preview — real insights generate after your docs sync."
+        }
+      />
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {pulses.map((p) => (
           <div
             key={p.title}
-            className="rounded-xl border border-navy-600/40 bg-navy-800/30 px-4 py-3 flex gap-3 items-start"
+            className="rounded-xl border border-navy-600/40 bg-navy-800/35 px-4 py-4 flex gap-3 items-start h-full"
           >
-            <span
-              className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
-                p.severity === "high"
-                  ? "bg-coral-400"
-                  : p.severity === "medium"
-                    ? "bg-amber-400"
-                    : "bg-teal-400"
-              }`}
-            />
+            <span className={`mt-1.5 w-2.5 h-2.5 rounded-full shrink-0 ${severityColor[p.severity]}`} />
             <div>
-              <p className="text-sm font-medium text-white">{p.title}</p>
-              <p className="text-xs text-white/40 mt-0.5">{p.detail}</p>
+              <p className="text-sm font-semibold text-white">{p.title}</p>
+              <p className="text-xs text-white/45 mt-1 leading-relaxed">{p.detail}</p>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </AppPageFrame>
   );
 }
