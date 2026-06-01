@@ -18,11 +18,19 @@
 
 ## geck0.ai 도메인 인증 (무료, 필수 권장)
 
+스크린샷 기준: **`Authentication in progress`** — Cloudflare DNS에서 DKIM CNAME **Proxy = DNS only(회색)** 확인.
+
+| Type | Name | Content | Proxy |
+|------|------|---------|-------|
+| CNAME | `k1._domainkey` | `dkim1.mcsv.net` | DNS only |
+| CNAME | `k2._domainkey` | `dkim2.mcsv.net` | DNS only |
+| CNAME | `k3._domainkey` | `dkim3.mcsv.net` | DNS only |
+
+> `k1._domainkey`가 **Proxied(주황)** 이면 Mailchimp 인증 실패.
+
 1. Mailchimp → **Account → Settings → Domains**
-2. **Add & Verify Domain** 클릭
-3. `geck0.ai` 입력
-4. Mailchimp가 알려주는 **SPF / DKIM DNS 레코드**를 도메인 등록업체(Vercel DNS, Cloudflare 등)에 추가
-5. Mailchimp에서 **Verify** 클릭
+2. `geck0.ai` → **Restart Authentication** (또는 24h 대기)
+3. Cloudflare DNS에 위 CNAME 3개 (name.com 패널은 NS가 Cloudflare라 **무효**)
 
 확인:
 ```bash

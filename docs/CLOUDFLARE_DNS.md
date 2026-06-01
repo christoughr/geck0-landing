@@ -52,16 +52,34 @@ ajay.ns.cloudflare.com
 
 ## Turnstile (같은 Cloudflare 계정)
 
-1. **Turnstile** → Add Widget
-2. Name: `geck0-landing`
-3. Hostnames: `geck0.ai`, `www.geck0.ai`, `app.geck0.ai`
-4. Create → Site Key / Secret Key → Vercel env
+1. **Turnstile** → Add Widget → Name: `geck0-landing`
+2. Hostname 입력 후 **「+ Add a hostname」** 클릭 (목록에 들어가야 함)
+3. `geck0.ai`, `www.geck0.ai`, `app.geck0.ai` 각각 Add
+4. 빨간 **「At least 1 hostname must be added」** 없어지면 **Create**
+5. Site Key + Secret Key → Vercel env → redeploy
 
 ---
 
-## Mailchimp SPF/DKIM (Cloudflare DNS에 추가)
+## Mailchimp DKIM (Cloudflare)
 
-Mailchimp → Domains → Verify `geck0.ai` → 안내하는 레코드를 Cloudflare DNS에 **Add record**로 추가.
+**Authentication in progress** 일 때 Cloudflare DNS:
+
+| Type | Name | Content | Proxy |
+|------|------|---------|-------|
+| CNAME | `k1._domainkey` | `dkim1.mcsv.net` | **DNS only (회색)** |
+| CNAME | `k2._domainkey` | `dkim2.mcsv.net` | DNS only |
+| CNAME | `k3._domainkey` | `dkim3.mcsv.net` | DNS only |
+
+> ⚠️ `k1._domainkey`가 **Proxied(주황)** 이면 인증 실패. DKIM/MX/TXT는 DNS only.
+
+Mailchimp에서 **Restart Authentication** 또는 24h 대기.
+
+---
+
+## Mailchimp SPF (선택)
+
+Google Workspace SPF는 이미 있음: `v=spf1 include:_spf.google.com ~all`  
+Mailchimp 발송도 쓰려면 Mailchimp 안내에 따라 SPF에 `include:servers.mcsv.net` 추가.
 
 ---
 
@@ -74,3 +92,20 @@ Mailchimp → Domains → Verify `geck0.ai` → 안내하는 레코드를 Cloudf
 - [ ] https://app.geck0.ai → 앱 셸
 - [ ] Turnstile widget 생성 + Vercel keys
 - [ ] Mailchimp domain verify records
+
+---
+
+## Cloudflare vs Turnstile (봇·스팸 방지)
+
+**DNS를 Cloudflare(오렌지 구름)로 두는 것만으로는 접속 시 CAPTCHA/challenge 페이지가 자동으로 뜨지 않습니다.**  
+프록시는 트래픽을 Vercel로 넘기고 SSL·캐시·DDoS 보호을 제공합니다.
+
+| 방식 | 역할 | geck0 적용 |
+|------|------|------------|
+| **Turnstile** | 폼 제출 시 봇 검증 (CAPTCHA 대체) | 웨이트리스트·문의 폼 + API 서버 검증 ✅ |
+| **Bot Fight Mode** | Cloudflare 대시보드에서 켜는 저비용 봇 차단 | 선택 (대시보드 설정) |
+| **Under Attack Mode** | 전체 사이트 challenge (접속 시 interstitial) | DDoS/어뷰징 급증 시에만 권장 |
+
+**권장:** 폼은 Turnstile(이미 구현), DNS는 Cloudflare 프록시 유지.  
+전역 challenge가 필요하면 Cloudflare → **Security → Settings → Bot Fight Mode** 또는 **Under Attack Mode**를 켜세요.  
+코드 변경 없이 대시보드에서만 설정 가능합니다.

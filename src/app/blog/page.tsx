@@ -1,9 +1,11 @@
-import { getAllPosts } from "@/lib/blog";
 import PageShell from "@/components/PageShell";
 import BlogList from "@/components/BlogList";
+import { getAllPosts } from "@/lib/blog";
+import { getServerLocale } from "@/lib/locale-server";
 
-export default function BlogPage() {
-  const posts = getAllPosts();
+export default async function BlogPage() {
+  const locale = await getServerLocale();
+  const posts = getAllPosts(locale);
 
   return (
     <PageShell>

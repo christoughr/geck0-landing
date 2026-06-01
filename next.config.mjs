@@ -1,9 +1,10 @@
+import { withSentryConfig } from "@sentry/nextjs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
     instrumentationHook: true,
   },
-  // Redirects for canonical domain — mirrors vercel.json for non-Vercel environments
   async redirects() {
     return [
       {
@@ -33,7 +34,6 @@ const nextConfig = {
     ];
   },
 
-  // Security headers (supplementary — middleware also sets these per-request)
   async headers() {
     return [
       {
@@ -48,4 +48,17 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+const hasSentry = Boolean(
+  process.env.SENTRY_DSN?.trim() || process.env.NEXT_PUBLIC_SENTRY_DSN?.trim()
+);
+
+export default hasSentry
+  ? withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG ?? "geck0",
+      project: process.env.SENTRY_PROJECT ?? "geck0-landing",
+      silent: true,
+      widenClientFileUpload: true,
+      disableLogger: true,
+      automaticVercelMonitors: false,
+    })
+  : nextConfig;

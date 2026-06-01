@@ -1,0 +1,91 @@
+openapi: 3.1.0
+info:
+  title: geck0 Landing API
+  version: 1.0.0
+  description: |
+    Public HTTP API for the geck0.ai marketing site (waitlist, contact, health).
+    Product API (`https://api.geck0.ai/v1`) is documented separately for beta customers.
+servers:
+  - url: https://geck0.ai
+    description: Production
+paths:
+  /api/health:
+    get:
+      summary: Service health
+      operationId: getHealth
+      responses:
+        "200":
+          description: Health report (operational or degraded)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [operational, degraded, unavailable]
+                  services:
+                    type: object
+  /api/subscribe:
+    post:
+      summary: Join waitlist (Mailchimp)
+      operationId: subscribe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                source:
+                  type: string
+                  enum: [waitlist, login, hero, footer, enterprise, blog, demo]
+                turnstileToken:
+                  type: string
+      responses:
+        "200":
+          description: Subscribed or confirmation email sent (double opt-in)
+        "400":
+          description: Invalid email
+        "403":
+          description: Turnstile verification failed
+        "429":
+          description: Rate limited
+        "503":
+          description: Mailchimp not configured
+  /api/contact:
+    post:
+      summary: Submit contact form
+      operationId: contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, message]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                company:
+                  type: string
+                message:
+                  type: string
+                turnstileToken:
+                  type: string
+      responses:
+        "200":
+          description: Message saved and notification sent
+        "400":
+          description: Validation error
+        "403":
+          description: Turnstile verification failed
+        "429":
+          description: Rate limited

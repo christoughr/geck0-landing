@@ -31,6 +31,12 @@ export function CtaSection() {
 
         <Reveal delay={0.15}>
           <WaitlistForm source="footer" variant="footer" showLegal />
+          <p className="text-white/40 text-sm mt-5">
+            {t.enterprise.contactAlt}{" "}
+            <Link href="/support" className="text-purple-400 hover:text-purple-300 underline-offset-2 hover:underline">
+              {t.enterprise.contactLink}
+            </Link>
+          </p>
         </Reveal>
       </div>
     </section>

@@ -6,6 +6,7 @@ import Reveal from "./Reveal";
 import HoneypotField from "./HoneypotField";
 import TurnstileWidget from "./TurnstileWidget";
 import { isTurnstileEnabled } from "@/lib/turnstile-client";
+import { trackContactSubmit } from "@/lib/analytics-events";
 
 export default function ContactForm() {
   const { t } = useI18n();
@@ -44,6 +45,7 @@ export default function ContactForm() {
       setForm({ name: "", email: "", company: "", message: "" });
       setConsent(false);
       setTurnstileToken("");
+      trackContactSubmit();
     } catch {
       setStatus("error");
     }

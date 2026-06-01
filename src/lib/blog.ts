@@ -1,11 +1,13 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import type { Locale } from "@/lib/i18n/translations";
 
 const BLOG_DIR = path.join(process.cwd(), "src/content/blog");
 
 export interface BlogPost {
   slug: string;
+  locale: Locale;
   title: string;
   excerpt: string;
   date: string;
@@ -14,44 +16,72 @@ export interface BlogPost {
   content: string;
 }
 
-export function getAllPosts(): BlogPost[] {
+function parseFilename(filename: string): { slug: string; locale: Locale } | null {
+  const localized = filename.match(/^(.+)\.(ko|en)\.mdx$/);
+  if (localized) {
+    return { slug: localized[1], locale: localized[2] as Locale };
+  }
+
+  const legacy = filename.match(/^(.+)\.mdx$/);
+  if (legacy) {
+    return { slug: legacy[1], locale: "ko" };
+  }
+
+  return null;
+}
+
+function readPostFile(slug: string, locale: Locale): BlogPost | null {
+  const candidates = [
+    path.join(BLOG_DIR, `${slug}.${locale}.mdx`),
+    ...(locale === "ko" ? [path.join(BLOG_DIR, `${slug}.mdx`)] : []),
+  ];
+
+  for (const filePath of candidates) {
+    if (!fs.existsSync(filePath)) continue;
+
+    const raw = fs.readFileSync(filePath, "utf-8");
+    const { data, content } = matter(raw);
+
+    return {
+      slug,
+      locale: (data.locale as Locale) ?? locale,
+      title: data.title as string,
+      excerpt: data.excerpt as string,
+      date: data.date as string,
+      author: data.author as string,
+      tags: (data.tags as string[]) ?? [],
+      content,
+    };
+  }
+
+  return null;
+}
+
+export function getAllPosts(locale: Locale = "ko"): BlogPost[] {
   if (!fs.existsSync(BLOG_DIR)) return [];
 
-  const files = fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith(".mdx"));
+  const bySlug = new Map<string, BlogPost>();
 
-  return files
-    .map((filename) => {
-      const slug = filename.replace(/\.mdx$/, "");
-      const raw = fs.readFileSync(path.join(BLOG_DIR, filename), "utf-8");
-      const { data, content } = matter(raw);
+  for (const filename of fs.readdirSync(BLOG_DIR)) {
+    const parsed = parseFilename(filename);
+    if (!parsed) continue;
 
-      return {
-        slug,
-        title: data.title as string,
-        excerpt: data.excerpt as string,
-        date: data.date as string,
-        author: data.author as string,
-        tags: (data.tags as string[]) ?? [],
-        content,
-      };
-    })
+    const post = readPostFile(parsed.slug, parsed.locale);
+    if (!post) continue;
+
+    bySlug.set(`${post.locale}:${post.slug}`, post);
+  }
+
+  return Array.from(bySlug.values())
+    .filter((post) => post.locale === locale)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export function getPostBySlug(slug: string): BlogPost | null {
-  const filePath = path.join(BLOG_DIR, `${slug}.mdx`);
-  if (!fs.existsSync(filePath)) return null;
+export function getPostBySlug(slug: string, locale: Locale = "ko"): BlogPost | null {
+  return readPostFile(slug, locale);
+}
 
-  const raw = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(raw);
-
-  return {
-    slug,
-    title: data.title as string,
-    excerpt: data.excerpt as string,
-    date: data.date as string,
-    author: data.author as string,
-    tags: (data.tags as string[]) ?? [],
-    content,
-  };
+export function getAlternateSlug(slug: string, locale: Locale): string | null {
+  const other: Locale = locale === "ko" ? "en" : "ko";
+  return getPostBySlug(slug, other) ? slug : null;
 }

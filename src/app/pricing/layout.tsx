@@ -8,8 +8,8 @@ export async function generateMetadata() {
       en: "Pricing — geck0",
     },
     description: {
-      ko: "팀 규모에 맞는 geck0 플랜. 14일 무료 체험.",
-      en: "geck0 plans for every team size. 14-day free trial.",
+      ko: "팀 규모에 맞는 geck0 플랜. 좌석당 과금 · 1일 무료 체험.",
+      en: "geck0 plans for every team size. Per-seat · 1-day free trial.",
     },
   });
 }

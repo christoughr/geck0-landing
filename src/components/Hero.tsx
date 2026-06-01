@@ -44,10 +44,11 @@ function HeroSubline({ text }: { text: string }) {
   }, [text, fitOneLine]);
 
   return (
-    <div ref={containerRef} className="w-full overflow-hidden">
+    <div ref={containerRef} className="w-full max-w-full overflow-hidden px-1">
       <p
         ref={textRef}
-        className="whitespace-nowrap text-white/60 leading-snug text-sm sm:text-base md:text-lg mx-auto w-max max-w-full"
+        className="whitespace-nowrap text-white/60 leading-snug text-xs sm:text-sm md:text-base mx-auto max-w-full"
+        style={{ width: "fit-content", maxWidth: "100%" }}
       >
         {text}
       </p>

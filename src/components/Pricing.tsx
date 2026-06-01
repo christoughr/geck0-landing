@@ -18,16 +18,17 @@ export default function Pricing({ showViewAll = true }: PricingProps) {
   ];
 
   return (
-    <section id="pricing" className="bg-navy-900 py-24 px-6">
-      <div className="max-w-5xl mx-auto">
+    <section id="pricing" className="bg-navy-900 py-24 px-4 sm:px-6 overflow-x-clip">
+      <div className="max-w-5xl mx-auto w-full">
         <Reveal className="text-center mb-14">
           <p className="text-sm text-purple-400 font-semibold tracking-widest uppercase mb-3">
             {t.pricing.label}
           </p>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            {t.pricing.title}
-          </h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">{t.pricing.title}</h2>
           <p className="text-white/50">{t.pricing.subtitle}</p>
+          <p className="text-white/35 text-xs mt-3 max-w-2xl mx-auto leading-relaxed">
+            {t.pricing.betaNote}
+          </p>
         </Reveal>
 
         <div className="grid md:grid-cols-3 gap-5 items-start">
@@ -47,10 +48,12 @@ export default function Pricing({ showViewAll = true }: PricingProps) {
                   )}
 
                   <div className="mb-5">
-                    <p className={`text-sm font-semibold mb-1 ${featured ? "text-purple-300" : "text-white/50"}`}>
+                    <p
+                      className={`text-sm font-semibold mb-1 ${featured ? "text-purple-300" : "text-white/50"}`}
+                    >
                       {plan.name}
                     </p>
-                    <div className="flex items-baseline gap-1 mb-1">
+                    <div className="flex flex-wrap items-baseline gap-x-1 gap-y-0 mb-1">
                       <span className="text-3xl font-bold text-white">{plan.price}</span>
                       <span className="text-white/40 text-sm">{plan.period}</span>
                     </div>
@@ -73,7 +76,7 @@ export default function Pricing({ showViewAll = true }: PricingProps) {
                         >
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
-                        {f}
+                        <span className="break-words">{f}</span>
                       </li>
                     ))}
                   </ul>

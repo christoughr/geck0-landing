@@ -49,10 +49,14 @@ export async function POST(request: NextRequest) {
     }
 
     const source = sanitizeSource(body.source);
-    await addMailchimpSubscriber(trimmed, source);
+    const subscribeStatus = await addMailchimpSubscriber(trimmed, source);
 
     return NextResponse.json({
-      message: "Subscribed successfully",
+      message:
+        subscribeStatus === "pending"
+          ? "Confirmation email sent"
+          : "Subscribed successfully",
+      pending: subscribeStatus === "pending",
       email: trimmed,
       persisted: true,
     });

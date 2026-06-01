@@ -4,10 +4,12 @@ interface MailchimpMember {
   tags?: string[];
 }
 
+export type MailchimpSubscribeStatus = "subscribed" | "pending";
+
 export async function addMailchimpSubscriber(
   email: string,
   source = "waitlist"
-): Promise<void> {
+): Promise<MailchimpSubscribeStatus> {
   const apiKey = process.env.MAILCHIMP_API_KEY;
   const listId = process.env.MAILCHIMP_LIST_ID;
   const serverPrefix = process.env.MAILCHIMP_SERVER_PREFIX;
@@ -19,9 +21,12 @@ export async function addMailchimpSubscriber(
   const auth = Buffer.from(`anystring:${apiKey}`).toString("base64");
   const url = `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${listId}/members`;
 
+  const status: MailchimpSubscribeStatus =
+    process.env.MAILCHIMP_DOUBLE_OPTIN === "true" ? "pending" : "subscribed";
+
   const body: MailchimpMember = {
     email_address: email,
-    status: process.env.MAILCHIMP_DOUBLE_OPTIN === "true" ? "pending" : "subscribed",
+    status,
     tags: [source, "geck0-landing"],
   };
 
@@ -34,11 +39,11 @@ export async function addMailchimpSubscriber(
     body: JSON.stringify(body),
   });
 
-  if (res.ok) return;
+  if (res.ok) return status;
 
   const data = (await res.json()) as { title?: string; detail?: string };
 
-  if (data.title === "Member Exists") return;
+  if (data.title === "Member Exists") return status;
 
   throw new Error(data.detail ?? data.title ?? "Mailchimp request failed");
 }

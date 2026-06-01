@@ -18,7 +18,7 @@ export default function Home() {
     <>
       <FaqSchemaServer />
       <Navbar />
-      <main id="main-content">
+      <main id="main-content" className="overflow-x-clip max-w-full">
         <Hero />
         <LogoBar />
         <Problem />

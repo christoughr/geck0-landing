@@ -22,7 +22,7 @@ export default function PricingPage() {
 
       <div className="max-w-2xl mx-auto px-6 pb-20">
         <Reveal>
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">FAQ</h2>
+          <h2 className="text-2xl font-bold text-white mb-8 text-center">{t.pricingPage.faqTitle}</h2>
           <div className="space-y-4">
             {t.pricingPage.faq.map(({ q, a }) => (
               <div
@@ -41,7 +41,7 @@ export default function PricingPage() {
             href="/enterprise"
             className="text-purple-400 hover:text-purple-300 text-sm font-medium"
           >
-            Enterprise →
+            {t.pricingPage.enterpriseLink}
           </Link>
         </Reveal>
       </div>

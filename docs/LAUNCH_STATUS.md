@@ -6,7 +6,8 @@
 - Mailchimp waitlist + double opt-in
 - Vercel Blob contact storage
 - Upstash KV rate limiting (all green on /status)
-- Turnstile wired (dummy keys — replace with Cloudflare real keys)
+- Turnstile wired (dummy keys — replace with Cloudflare real keys after Create widget)
+- Resend contact email (`RESEND_API_KEY` + `CONTACT_FROM_EMAIL` on Vercel)
 - app.geck0.ai app shell at `/app` (middleware rewrite)
 - Sentry SDK ready (add DSN to enable)
 - GA4 CSP ready (add `NEXT_PUBLIC_GA_ID` to enable)
@@ -15,19 +16,17 @@
 
 ## 🔲 You do in browser (screenshots you sent)
 
-### Turnstile (Photo 1) — NOT done yet
+### Turnstile — hostname Add 버튼 필요
 See [TURNSTILE_SETUP.md](./TURNSTILE_SETUP.md)
-1. Widget name: `geck0-landing`
-2. Add hostnames: `geck0.ai`, `www.geck0.ai`, `app.geck0.ai`
-3. Create → paste keys into Vercel → redeploy
+1. Widget name: `geck0-landing` ✓
+2. 각 hostname 입력 후 **「+ Add a hostname」** 클릭 (3개)
+3. **Create** → Vercel에 실키 → redeploy
 
-### Mailchimp (Photo 2) — NOT done yet
+### Mailchimp — DKIM Proxy 수정
 See [MAILCHIMP_SETUP.md](./MAILCHIMP_SETUP.md)
-- **Payment:** Not required today. Free tier works. Add card before 13-day grace ends for continued sends.
-- **Domain:** Click **Add & Verify Domain** → `geck0.ai` → add DNS records
-
-### Contact = email only
-No Slack needed. Form saves to Blob. Add **Resend** (`RESEND_API_KEY`) to also email `hello@geck0.ai` on each submission.
+- Status: **Authentication in progress**
+- Cloudflare에서 `k1._domainkey` **DNS only(회색)** 로 변경 + `k3._domainkey` 확인
+- **Payment:** 당장 필수 아님 (13일 grace)
 
 ### app.geck0.ai
 Domain is on another Vercel project. Either:
@@ -40,10 +39,10 @@ Code at `/app` is ready (beta waitlist shell).
 
 | Item | Action |
 |------|--------|
-| Demo video | Set `NEXT_PUBLIC_DEMO_VIDEO_URL` (YouTube/Loom embed URL) |
-| Sentry | Accept terms at Vercel Integrations → Sentry, or set `SENTRY_DSN` |
-| GA4 | Create GA4 property → `NEXT_PUBLIC_GA_ID` |
-| Resend | [resend.com](https://resend.com) API key → `RESEND_API_KEY` |
+| Demo video | ★ 나중에 — `NEXT_PUBLIC_DEMO_VIDEO_URL` |
+| Sentry | [Vercel에서 약관 수락](https://vercel.com/onlyus/~/integrations/accept-terms/sentry) → `vercel integration add sentry` |
+| GA4 | GA4 속성 생성 후 `G-XXXXXXXX` 알려주면 Vercel에 추가 |
+| Resend domain | resend.com → Domains → `geck0.ai` 인증 후 `hello@geck0.ai` 발신 |
 
 ## Accuracy (honest)
 

@@ -3,6 +3,25 @@ import { isMailchimpConfigured, pingMailchimp } from "@/lib/mailchimp";
 import { isContactStorageConfigured } from "@/lib/contact-store";
 import { isTurnstileConfigured } from "@/lib/api-utils";
 
+async function pingResend(): Promise<{ ok: boolean; detail?: string }> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { ok: false, detail: "Not configured" };
+
+  try {
+    const res = await fetch("https://api.resend.com/domains", {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      next: { revalidate: 0 },
+    });
+    if (res.ok) return { ok: true, detail: "API reachable" };
+    return { ok: false, detail: `HTTP ${res.status}` };
+  } catch (err) {
+    return {
+      ok: false,
+      detail: err instanceof Error ? err.message : "Request failed",
+    };
+  }
+}
+
 export type ServiceStatus = "operational" | "degraded" | "unavailable" | "not_configured";
 
 export interface HealthReport {
@@ -45,8 +64,21 @@ export async function buildHealthReport(uptimeSec: number): Promise<HealthReport
     ]
       .filter(Boolean)
       .join(" + ");
-    services.contact = "operational";
-    checks.contact = { ok: true, detail: `Configured: ${channels}` };
+
+    let contactOk = true;
+    if (process.env.RESEND_API_KEY) {
+      const resend = await pingResend();
+      checks.resend = resend;
+      if (!resend.ok) contactOk = false;
+    }
+
+    services.contact = contactOk ? "operational" : "degraded";
+    checks.contact = {
+      ok: contactOk,
+      detail: contactOk
+        ? `Configured: ${channels}`
+        : `Partial: ${channels} (Resend check failed)`,
+    };
   } else {
     services.contact = "unavailable";
     checks.contact = {

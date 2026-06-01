@@ -1,4 +1,5 @@
 import StaticPageView from "@/components/StaticPageView";
+import OpenApiBanner from "@/components/OpenApiBanner";
 import { buildPageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata() {
@@ -6,5 +7,10 @@ export async function generateMetadata() {
 }
 
 export default function ApiDocsPage() {
-  return <StaticPageView slug="api" />;
+  return (
+    <>
+      <OpenApiBanner />
+      <StaticPageView slug="api" />
+    </>
+  );
 }

@@ -9,7 +9,7 @@ const avatarStyles = [
   "bg-coral-800 text-orange-200",
 ];
 
-const initials = ["K", "L", "P"];
+const initials = ["A", "B", "C"];
 
 export default function SocialProof() {
   const { t } = useI18n();
@@ -29,23 +29,32 @@ export default function SocialProof() {
           ))}
         </div>
 
-        <Reveal className="text-center mb-10">
+        <Reveal className="text-center mb-4">
           <p className="text-sm text-purple-400 font-semibold tracking-widest uppercase mb-3">
             {t.socialProof.label}
           </p>
           <h2 className="text-3xl font-bold text-white">{t.socialProof.title}</h2>
         </Reveal>
 
+        <Reveal className="text-center mb-10">
+          <p className="text-white/35 text-xs">{t.socialProof.betaDisclaimer}</p>
+        </Reveal>
+
         <div className="grid md:grid-cols-3 gap-5">
-          {t.socialProof.items.map(({ quote, name, role, company }, i) => (
+          {t.socialProof.items.map(({ quote, name, role, company, betaBadge }, i) => (
             <Reveal key={name} delay={i * 0.1}>
               <div className="bg-navy-800/60 border border-navy-600/20 rounded-2xl p-6 h-full flex flex-col">
-                <div className="flex gap-0.5 mb-4" aria-label="5 stars">
-                  {Array.from({ length: 5 }).map((_, s) => (
-                    <svg key={s} width="14" height="14" viewBox="0 0 24 24" fill="#7F77DD">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex gap-0.5" aria-label="5 stars">
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <svg key={s} width="14" height="14" viewBox="0 0 24 24" fill="#7F77DD">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider text-teal-400/80 border border-teal-400/20 px-2 py-0.5 rounded-full">
+                    {betaBadge}
+                  </span>
                 </div>
                 <p className="text-white/70 text-sm leading-relaxed mb-6 italic flex-1">
                   &ldquo;{quote}&rdquo;

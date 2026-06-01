@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n/I18nProvider";
 import HoneypotField from "./HoneypotField";
 import TurnstileWidget from "./TurnstileWidget";
 import { isTurnstileEnabled } from "@/lib/turnstile-client";
+import { trackWaitlistSignup } from "@/lib/analytics-events";
 
 export type WaitlistSource =
   | "waitlist"
@@ -13,7 +14,8 @@ export type WaitlistSource =
   | "hero"
   | "footer"
   | "enterprise"
-  | "blog";
+  | "blog"
+  | "demo";
 
 type WaitlistFormProps = {
   source: WaitlistSource;
@@ -71,7 +73,7 @@ export default function WaitlistForm({
         }),
       });
 
-      const data = await res.json();
+      const data = (await res.json()) as { pending?: boolean; error?: string };
 
       if (!res.ok) {
         setMessage(data.error === "Invalid email" ? t.cta.invalid : t.cta.error);
@@ -79,10 +81,11 @@ export default function WaitlistForm({
         return;
       }
 
-      setMessage(t.cta.success);
+      setMessage(data.pending ? t.cta.successPending : t.cta.success);
       setStatus("success");
       setEmail("");
       setTurnstileToken("");
+      trackWaitlistSignup(source);
     } catch {
       setMessage(t.cta.error);
       setStatus("error");
@@ -127,7 +130,7 @@ export default function WaitlistForm({
           aria-busy={status === "loading"}
           className={buttonClass}
         >
-          {status === "loading" ? "⋯" : t.cta.button}
+          {status === "loading" ? t.cta.loading : t.cta.button}
         </button>
       </form>
 

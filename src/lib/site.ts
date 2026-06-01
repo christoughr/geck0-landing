@@ -7,7 +7,7 @@ export function getSiteUrl(path = "") {
 }
 
 export function getOgImageUrl() {
-  return getSiteUrl("/og-image.png");
+  return getSiteUrl("/opengraph-image");
 }
 
 export function getLogoUrl() {

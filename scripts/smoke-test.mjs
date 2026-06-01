@@ -23,6 +23,49 @@ async function request(path, options = {}) {
   return { res, body };
 }
 
+test("GET /api/health status field", async () => {
+  const { body } = await request("/api/health");
+  if (!body?.status) throw new Error("Missing status in health response");
+  if (!["operational", "degraded", "unavailable"].includes(body.status)) {
+    throw new Error(`Unexpected status: ${body.status}`);
+  }
+});
+
+test("GET /demo returns 200", async () => {
+  const res = await fetch(`${BASE}/demo`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /status returns 200", async () => {
+  const res = await fetch(`${BASE}/status`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /app returns 200", async () => {
+  const res = await fetch(`${BASE}/app`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /openapi.yaml returns 200", async () => {
+  const res = await fetch(`${BASE}/openapi.yaml`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /docs/api returns 200", async () => {
+  const res = await fetch(`${BASE}/docs/api`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /blog returns 200", async () => {
+  const res = await fetch(`${BASE}/blog`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /blog/startup-timing returns 200", async () => {
+  const res = await fetch(`${BASE}/blog/startup-timing`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
 test("GET /api/health returns 200", async () => {
   const { res, body } = await request("/api/health");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);

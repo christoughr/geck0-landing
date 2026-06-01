@@ -1,17 +1,19 @@
 # Cloudflare Turnstile 설정 (5분)
 
-> 스크린샷 기준 — **아직 완료되지 않았습니다** (hostname 0개, 위젯 이름 비어 있음)
+> 스크린샷 기준 — hostname은 **입력만** 되어 있고 **Add 안 됨** → 빨간 **「At least 1 hostname must be added」** 표시
 
 ## 1. Widget name
 ```
 geck0-landing
 ```
 
-## 2. Hostname Management → Add a hostname
-아래 3개 모두 추가:
+## 2. Hostname Management
+각 hostname 입력 후 **「+ Add a hostname」** 클릭 (목록에 들어가야 함):
 - `geck0.ai`
 - `www.geck0.ai`
 - `app.geck0.ai`
+
+빨간 에러가 사라질 때까지 반복.
 
 ## 3. Widget Mode
 **Managed (Recommended)** 선택 유지

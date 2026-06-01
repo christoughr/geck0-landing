@@ -1,5 +1,6 @@
 import DemoPageClient from "@/components/DemoPageClient";
 import { buildPageMetadata } from "@/lib/metadata";
+import { getDemoVideoEmbedUrl } from "@/lib/demo-video";
 
 export async function generateMetadata() {
   return buildPageMetadata({
@@ -9,12 +10,13 @@ export async function generateMetadata() {
       en: "Demo — geck0",
     },
     description: {
-      ko: "geck0 제품 데모와 인터랙티브 미리보기",
-      en: "geck0 product demo and interactive preview",
+      ko: "geck0 제품 데모와 샘플 Q&A 미리보기",
+      en: "geck0 product demo and sample Q&A preview",
     },
   });
 }
 
 export default function DemoPage() {
-  return <DemoPageClient />;
+  const videoEmbedUrl = getDemoVideoEmbedUrl();
+  return <DemoPageClient videoEmbedUrl={videoEmbedUrl} />;
 }

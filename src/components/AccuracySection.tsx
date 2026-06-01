@@ -15,7 +15,11 @@ export default function AccuracySection() {
             {t.accuracy.label}
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t.accuracy.title}</h2>
-          <p className="text-white/50 text-base sm:text-lg max-w-2xl mx-auto">{t.accuracy.subtitle}</p>
+          <p className="text-white/50 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+            {t.accuracy.subtitle}
+            <br />
+            {t.accuracy.subtitle2}
+          </p>
         </Reveal>
 
         <div className="grid sm:grid-cols-3 gap-4 mb-10">

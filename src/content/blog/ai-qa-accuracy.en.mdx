@@ -1,0 +1,34 @@
+---
+title: "How our AI Q&A engine reaches 94% answer accuracy"
+excerpt: "RAG pipeline, knowledge graph, and geck0's 3-layer verification system"
+date: "2024-12-01"
+author: "geck0 Engineering"
+locale: en
+tags: ["AI", "RAG", "Engineering"]
+---
+
+## The problem: enterprise AI without hallucinations
+
+Generic ChatGPT does not know your internal data. Simple RAG can still produce **answers without evidence**.
+
+geck0's AI Q&A Engine addresses this with three verification layers.
+
+## Layer 1: Knowledge Graph Retrieval
+
+Not just vector search — **relationship-aware retrieval**. Ask about "Project A decisions" and geck0 pulls related Slack threads, Notion pages, and Jira tickets as a **connected graph**.
+
+## Layer 2: Source Attribution
+
+Every answer includes **links to source documents**. Users can click through and verify.
+
+## Layer 3: Confidence Scoring
+
+If confidence is below 70%, geck0 says "not sure" and escalates to the right owner.
+
+## Results
+
+**94% accuracy** on our internal benchmark (500 questions), average response time 2.1s.
+
+---
+
+*See [API reference](/docs/api) for technical details.*

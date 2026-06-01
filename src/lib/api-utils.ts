@@ -5,6 +5,7 @@ const ALLOWED_SOURCES = new Set([
   "footer",
   "enterprise",
   "blog",
+  "demo",
 ]);
 
 export function sanitizeSource(source: unknown): string {

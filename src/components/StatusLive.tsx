@@ -59,7 +59,10 @@ export default function StatusLive() {
           setHealth(data);
           setLoading(false);
         })
-        .catch(() => setLoading(false));
+        .catch(() => {
+          setHealth(null);
+          setLoading(false);
+        });
     };
     fetchHealth();
     const interval = setInterval(fetchHealth, 30000);
@@ -103,66 +106,65 @@ export default function StatusLive() {
             <div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
             {t.status.loading}
           </div>
+        ) : !health ? (
+          <p className="text-coral-400 text-sm">{t.status.loadError}</p>
         ) : (
           <div className="space-y-3">
-            {health &&
-              Object.entries(health.services).map(([key, status]) => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between bg-navy-800/60 border border-navy-600/30 rounded-xl px-4 sm:px-5 py-4 min-h-[52px]"
-                >
-                  <div>
-                    <span className="text-white text-sm font-medium block">
-                      {serviceLabels[key]?.[locale] ?? key}
-                    </span>
-                    {health.checks?.[key]?.detail && (
-                      <span className="text-white/30 text-xs mt-0.5 block">
-                        {health.checks[key].detail}
-                      </span>
-                    )}
-                  </div>
-                  <span className={`flex items-center gap-2 text-sm ${statusColor(status)}`}>
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        status === "operational"
-                          ? "bg-teal-400 animate-pulse"
-                          : status === "degraded"
-                            ? "bg-amber-400"
-                            : status === "not_configured"
-                              ? "bg-white/30"
-                              : "bg-coral-400"
-                      }`}
-                    />
-                    {statusLabel(status, locale)}
+            {Object.entries(health.services).map(([key, status]) => (
+              <div
+                key={key}
+                className="flex items-center justify-between bg-navy-800/60 border border-navy-600/30 rounded-xl px-4 sm:px-5 py-4 min-h-[52px]"
+              >
+                <div>
+                  <span className="text-white text-sm font-medium block">
+                    {serviceLabels[key]?.[locale] ?? key}
                   </span>
+                  {health.checks?.[key]?.detail && (
+                    <span className="text-white/30 text-xs mt-0.5 block">
+                      {health.checks[key].detail}
+                    </span>
+                  )}
                 </div>
-              ))}
+                <span className={`flex items-center gap-2 text-sm ${statusColor(status)}`}>
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      status === "operational"
+                        ? "bg-teal-400 animate-pulse"
+                        : status === "degraded"
+                          ? "bg-amber-400"
+                          : status === "not_configured"
+                            ? "bg-white/30"
+                            : "bg-coral-400"
+                    }`}
+                  />
+                  {statusLabel(status, locale)}
+                </span>
+              </div>
+            ))}
 
-            {health && (
-              <p className="text-white/30 text-xs mt-6">
-                {locale === "ko" ? "마지막 확인" : "Last checked"}:{" "}
-                {new Date(health.timestamp).toLocaleString(locale === "ko" ? "ko-KR" : "en-US")}
-                {health._meta?.uptimeSec != null && (
-                  <>
-                    {" · "}
-                    {locale === "ko" ? "업타임" : "Uptime"}:{" "}
-                    {formatUptime(health._meta.uptimeSec, locale)}
-                  </>
-                )}
-                {health._meta?.rateLimitBackend && (
-                  <>
-                    {" · "}
-                    Rate limit: {health._meta.rateLimitBackend}
-                  </>
-                )}
-                {!overallOk && health.deployment && (
-                  <>
-                    {" · "}
-                    deploy: {health.deployment}
-                  </>
-                )}
-              </p>
-            )}
+            <p className="text-white/30 text-xs mt-6">
+              {locale === "ko" ? "마지막 확인" : "Last checked"}:{" "}
+              {new Date(health.timestamp).toLocaleString(locale === "ko" ? "ko-KR" : "en-US")}
+              {health._meta?.uptimeSec != null && (
+                <>
+                  {" · "}
+                  {locale === "ko" ? "업타임" : "Uptime"}:{" "}
+                  {formatUptime(health._meta.uptimeSec, locale)}
+                </>
+              )}
+              {health._meta?.rateLimitBackend && (
+                <>
+                  {" · "}
+                  Rate limit: {health._meta.rateLimitBackend}
+                </>
+              )}
+              {!overallOk && health.deployment && (
+                <>
+                  {" · "}
+                  deploy: {health.deployment}
+                </>
+              )}
+            </p>
           </div>
         )}
 

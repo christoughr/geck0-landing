@@ -4,13 +4,19 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import PageShell from "./PageShell";
 import Reveal from "./Reveal";
-import ProductMockup from "./ProductMockup";
+import InteractiveProductMockup from "./InteractiveProductMockup";
 import WaitlistForm from "./WaitlistForm";
+import { resolveDemoEmbedUrl } from "@/lib/demo-video";
 
-const DEMO_VIDEO_URL = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL;
+type DemoPageClientProps = {
+  videoEmbedUrl?: string | null;
+};
 
-export default function DemoPageClient() {
+export default function DemoPageClient({ videoEmbedUrl }: DemoPageClientProps) {
   const { t } = useI18n();
+  const embedUrl =
+    videoEmbedUrl ??
+    resolveDemoEmbedUrl(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL ?? undefined);
 
   return (
     <PageShell>
@@ -24,10 +30,10 @@ export default function DemoPageClient() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          {DEMO_VIDEO_URL ? (
+          {embedUrl ? (
             <div className="aspect-video rounded-2xl overflow-hidden border border-navy-600/40 mb-10 bg-navy-900">
               <iframe
-                src={DEMO_VIDEO_URL}
+                src={embedUrl}
                 title={t.demo.videoTitle}
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -42,14 +48,12 @@ export default function DemoPageClient() {
           )}
         </Reveal>
 
-        <Reveal delay={0.15}>
-          <ProductMockup />
-        </Reveal>
+        <InteractiveProductMockup />
 
         <Reveal delay={0.2} className="mt-16 text-center">
           <h2 className="text-2xl font-bold text-white mb-3">{t.demo.ctaTitle}</h2>
           <p className="text-white/50 text-sm mb-6">{t.demo.ctaSub}</p>
-          <WaitlistForm source="waitlist" variant="inline" className="max-w-md mx-auto mb-6" />
+          <WaitlistForm source="demo" variant="inline" className="max-w-md mx-auto mb-6" />
           <p className="text-white/35 text-sm">
             {t.demo.emailAlt}{" "}
             <a href="mailto:hello@geck0.ai" className="text-purple-400 hover:text-purple-300">
