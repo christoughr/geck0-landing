@@ -44,18 +44,19 @@ export function middleware(request: NextRequest) {
 
   if (host === "app.geck0.ai") {
     const path = request.nextUrl.pathname;
-    if (
-      !path.startsWith("/app") &&
-      !path.startsWith("/_next") &&
-      !path.startsWith("/api") &&
-      path !== "/favicon.ico" &&
-      path !== "/manifest.json"
-    ) {
+    const isAppAsset =
+      path.startsWith("/app") ||
+      path.startsWith("/_next") ||
+      path.startsWith("/api") ||
+      path === "/favicon.ico" ||
+      path === "/manifest.json";
+
+    if (!isAppAsset) {
       const url = request.nextUrl.clone();
       url.pathname = path === "/" ? "/app" : `/app${path}`;
-      const rewrite = NextResponse.rewrite(url);
-      applySecurityHeaders(rewrite);
-      return rewrite;
+      const redirect = NextResponse.redirect(url, 307);
+      applySecurityHeaders(redirect);
+      return redirect;
     }
   }
 
