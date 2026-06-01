@@ -3,7 +3,8 @@ export const siteConfig = {
   tagline: "지식이 연결될 때, 회사가 진화합니다",
   email: "hello@geck0.ai",
   domain: "geck0.ai",
-  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://app.geck0.ai",
+  /** App host (no path). Login URL: getAppLoginUrl() in @/lib/app-url */
+  appUrl: (process.env.NEXT_PUBLIC_APP_URL ?? "https://app.geck0.ai").replace(/\/$/, "").replace(/\/app$/, ""),
   statusUrl: process.env.NEXT_PUBLIC_STATUS_URL ?? "/status",
   twitter: "@geck0_ai",
   linkedin: "https://linkedin.com/company/geck0",

@@ -55,7 +55,7 @@ export default function AppLoginForm({ locale, errorCode }: AppLoginFormProps) {
           type="email"
           required
           autoComplete="email"
-          placeholder={ko ? "예: you@company.com" : "e.g. you@company.com"}
+          placeholder="hello@geck0.ai"
           className="w-full min-h-[48px] bg-navy-900/80 border border-purple-400/30 text-white px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/50"
         />
         <button
@@ -74,8 +74,8 @@ export default function AppLoginForm({ locale, errorCode }: AppLoginFormProps) {
 
       <p className="mt-3 text-[11px] text-white/30">
         {ko
-          ? "권장 주소: app.geck0.ai · 초대 예시: christoughr@gmail.com"
-          : "Use app.geck0.ai · Example invite: christoughr@gmail.com"}
+          ? "권장 주소: app.geck0.ai/app · 초대됨: hello@geck0.ai"
+          : "Use app.geck0.ai/app · Invited: hello@geck0.ai"}
       </p>
     </div>
   );

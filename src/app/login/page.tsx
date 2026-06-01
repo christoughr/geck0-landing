@@ -1,5 +1,7 @@
-import LoginView from "@/components/LoginView";
+import { redirect } from "next/navigation";
+import { getAppLoginUrl } from "@/lib/app-url";
 
+/** Marketing /login → beta app gate */
 export default function LoginPage() {
-  return <LoginView />;
+  redirect(getAppLoginUrl());
 }

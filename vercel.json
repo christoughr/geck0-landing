@@ -1,6 +1,17 @@
 {
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "app.geck0.ai" }],
+      "destination": "/app",
+      "permanent": false
+    },
+    {
+      "source": "/login",
+      "destination": "https://app.geck0.ai/app",
+      "permanent": false
+    },
+    {
       "source": "/:path*",
       "has": [
         {

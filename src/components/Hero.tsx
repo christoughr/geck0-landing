@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { siteConfig } from "@/config/site";
+import { getAppLoginUrl } from "@/lib/app-url";
 import WaitlistForm from "./WaitlistForm";
 
 const SynapseCanvas = dynamic(() => import("./SynapseCanvas"), { ssr: false });
@@ -100,6 +101,14 @@ export default function Hero() {
           className="mt-6 w-full min-w-0 max-w-md mx-auto px-1 scroll-mt-24"
         >
           <WaitlistForm source="hero" variant="compact" showLegal={false} />
+          <p className="mt-4 text-center">
+            <a
+              href={getAppLoginUrl()}
+              className="text-sm text-purple-300 hover:text-purple-200 underline underline-offset-2"
+            >
+              {t.hero.appLoginLink}
+            </a>
+          </p>
         </motion.div>
 
         <motion.p

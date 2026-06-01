@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /** E2E test for app.geck0.ai beta (step 1 checklist). */
-const BASE = process.argv[2] ?? "https://app.geck0.ai";
-const EMAIL = process.argv[3] ?? "christoughr@gmail.com";
+let BASE = (process.argv[2] ?? "https://app.geck0.ai").replace(/\/$/, "");
+if (BASE.endsWith("/app")) BASE = BASE.slice(0, -4);
+const EMAIL = process.argv[3] ?? "hello@geck0.ai";
 
 const results = [];
 

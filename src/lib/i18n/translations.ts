@@ -32,6 +32,7 @@ export const translations = {
       socialProof: "베타 고객",
       socialProofSuffix: "개사 사용 중 · 설치 15분",
       scroll: "스크롤",
+      appLoginLink: "이미 초대됐나요? 베타 앱 입장 →",
     },
     accuracy: {
       label: "정확도",
@@ -432,6 +433,7 @@ export const translations = {
       socialProof: "Beta customers",
       socialProofSuffix: "companies · 15-min setup",
       scroll: "Scroll",
+      appLoginLink: "Already invited? Enter the beta app →",
     },
     accuracy: {
       label: "Accuracy",

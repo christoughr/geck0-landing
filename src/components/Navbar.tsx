@@ -5,6 +5,7 @@ import Link from "next/link";
 import Logo from "./Logo";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import { getAppLoginUrl } from "@/lib/app-url";
 
 export default function Navbar() {
   const { t } = useI18n();
@@ -100,12 +101,12 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-3">
           <LanguageSwitcher />
-          <Link
-            href="/login"
+          <a
+            href={getAppLoginUrl()}
             className="text-sm text-white/60 hover:text-white transition-colors focus-visible:underline"
           >
             {t.nav.login}
-          </Link>
+          </a>
           <Link
             href="/#contact"
             className="text-sm bg-purple-400 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 font-medium focus-visible:ring-2 focus-visible:ring-purple-400/60"
@@ -156,13 +157,13 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/login"
+          <a
+            href={getAppLoginUrl()}
             className="text-sm text-white/70 hover:text-white transition-colors py-3 min-h-[44px] flex items-center"
             onClick={closeMenu}
           >
             {t.nav.login}
-          </Link>
+          </a>
           <Link
             href="/#contact"
             className="text-sm bg-purple-400 text-white px-4 py-3 rounded-lg text-center font-medium min-h-[44px] flex items-center justify-center mt-2"
