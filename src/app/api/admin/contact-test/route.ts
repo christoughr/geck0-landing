@@ -5,6 +5,9 @@ import {
   sendEmailNotification,
 } from "@/lib/contact-store";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /** GET /api/admin/contact-test — Bearer ADMIN_API_KEY */
 export async function GET(request: NextRequest) {
   const adminKey = process.env.ADMIN_API_KEY?.trim();
