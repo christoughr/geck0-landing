@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     if (isHoneypotTriggered(body)) {
-      return NextResponse.json({ message: "Received", persisted: true });
+      return NextResponse.json({ message: "Received", persisted: true, emailSent: true });
     }
 
     const turnstileOk = await verifyTurnstile(body.turnstileToken);
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       at: new Date().toISOString(),
     };
 
-    const { persisted } = await saveContact(entry);
+    const { persisted, emailSent, channels } = await saveContact(entry);
 
     if (!persisted) {
       return NextResponse.json(
@@ -63,8 +63,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ message: "Received", persisted: true });
-  } catch {
+    return NextResponse.json({
+      message: "Received",
+      persisted: true,
+      emailSent,
+      channels,
+    });
+  } catch (err) {
+    console.error("[contact:route]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -9,14 +9,29 @@ export interface ContactEntry {
   company?: string;
 }
 
+export type ContactSaveResult = {
+  persisted: boolean;
+  emailSent: boolean;
+  channels: {
+    blob: boolean;
+    kv: boolean;
+    email: boolean;
+    slack: boolean;
+  };
+};
+
 export function isContactStorageConfigured(): boolean {
   return Boolean(
     process.env.BLOB_READ_WRITE_TOKEN ||
-      process.env.RESEND_API_KEY ||
+      process.env.RESEND_API_KEY?.trim() ||
       process.env.SLACK_WEBHOOK_URL ||
       process.env.KV_REST_API_URL ||
       process.env.UPSTASH_REDIS_REST_URL
   );
+}
+
+function stripEnvQuotes(value: string): string {
+  return value.replace(/^["']+|["']+$/g, "").trim();
 }
 
 function getKv(): Redis | null {
@@ -68,18 +83,33 @@ async function persistToKv(entry: ContactEntry): Promise<boolean> {
   }
 }
 
-function resolveFromAddress(): string {
-  const configured = process.env.CONTACT_FROM_EMAIL?.trim();
-  if (configured) return configured;
-  return "geck0 Contact <onboarding@resend.dev>";
+export function resolveFromAddress(): string {
+  const raw = process.env.CONTACT_FROM_EMAIL?.trim();
+  if (raw) {
+    const cleaned = stripEnvQuotes(raw);
+    if (cleaned.length > 0) return cleaned;
+  }
+  return "geck0 <hello@geck0.ai>";
 }
 
-async function sendEmailNotification(entry: ContactEntry): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_INBOX_EMAIL ?? "hello@geck0.ai";
+export function resolveInboxAddress(): string {
+  const raw = process.env.CONTACT_INBOX_EMAIL?.trim();
+  if (raw) {
+    const cleaned = stripEnvQuotes(raw);
+    if (cleaned.length > 0) return cleaned;
+  }
+  return "hello@geck0.ai";
+}
+
+export async function sendEmailNotification(entry: ContactEntry): Promise<boolean> {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const to = resolveInboxAddress();
   const from = resolveFromAddress();
 
-  if (!apiKey) return false;
+  if (!apiKey) {
+    console.error("[contact-store:email] RESEND_API_KEY is missing or empty");
+    return false;
+  }
 
   try {
     const companyLine = entry.company ? `\nCompany: ${entry.company}` : "";
@@ -100,10 +130,12 @@ async function sendEmailNotification(entry: ContactEntry): Promise<boolean> {
 
     if (!res.ok) {
       const detail = await res.text().catch(() => "");
-      console.error("[contact-store:email]", res.status, detail);
+      console.error("[contact-store:email]", res.status, "from=", from, "to=", to, detail);
       return false;
     }
 
+    const data = (await res.json().catch(() => ({}))) as { id?: string };
+    console.info("[contact-store:email] sent", data.id ?? "ok", "to=", to);
     return true;
   } catch (err) {
     console.error("[contact-store:email]", err);
@@ -131,7 +163,7 @@ async function notifySlack(entry: ContactEntry): Promise<boolean> {
   }
 }
 
-export async function saveContact(entry: ContactEntry): Promise<{ persisted: boolean }> {
+export async function saveContact(entry: ContactEntry): Promise<ContactSaveResult> {
   const [blobOk, kvOk, emailOk, slackOk] = await Promise.all([
     persistToBlob(entry),
     persistToKv(entry),
@@ -139,9 +171,14 @@ export async function saveContact(entry: ContactEntry): Promise<{ persisted: boo
     notifySlack(entry),
   ]);
 
-  if (!blobOk && !kvOk && !emailOk && !slackOk) {
+  const channels = { blob: blobOk, kv: kvOk, email: emailOk, slack: slackOk };
+  const persisted = blobOk || kvOk || emailOk || slackOk;
+
+  if (!persisted) {
     console.error("[contact:fallback-log]", JSON.stringify(entry));
+  } else if (!emailOk) {
+    console.warn("[contact-store] saved without email", JSON.stringify(channels));
   }
 
-  return { persisted: blobOk || kvOk || emailOk || slackOk };
+  return { persisted, emailSent: emailOk, channels };
 }

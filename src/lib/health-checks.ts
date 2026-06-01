@@ -1,6 +1,6 @@
 import { isDistributedRateLimitConfigured } from "@/lib/rate-limit";
 import { isMailchimpConfigured, pingMailchimp } from "@/lib/mailchimp";
-import { isContactStorageConfigured } from "@/lib/contact-store";
+import { isContactStorageConfigured, resolveFromAddress, resolveInboxAddress } from "@/lib/contact-store";
 import { isTurnstileConfigured } from "@/lib/api-utils";
 import { isStripeCheckoutConfigured, isStripeConfigured } from "@/lib/stripe";
 
@@ -71,6 +71,10 @@ export async function buildHealthReport(uptimeSec: number): Promise<HealthReport
     if (process.env.RESEND_API_KEY) {
       const resend = await pingResend();
       checks.resend = resend;
+      checks.contactFrom = {
+        ok: Boolean(resolveFromAddress().includes("@")),
+        detail: `from=${resolveFromAddress()} to=${resolveInboxAddress()}`,
+      };
       if (!resend.ok) contactOk = false;
     }
 

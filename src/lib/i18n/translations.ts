@@ -358,6 +358,8 @@ export const translations = {
       message: "메시지",
       submit: "문의 보내기",
       success: "문의가 접수되었습니다. 곧 연락드리겠습니다.",
+      successNoEmail:
+        "문의는 저장되었습니다. 알림 메일 전송에 실패했습니다. 긴급 시 hello@geck0.ai 으로 직접 연락해 주세요.",
       error: "오류가 발생했습니다. hello@geck0.ai 으로 직접 연락해 주세요.",
       consent: "개인정보 수집·이용에 동의합니다. 자세한 내용은 개인정보처리방침을 참고하세요.",
     },
@@ -755,6 +757,8 @@ export const translations = {
       message: "Message",
       submit: "Send message",
       success: "Message received. We'll be in touch soon.",
+      successNoEmail:
+        "We saved your message but email delivery failed. For urgent issues email hello@geck0.ai directly.",
       error: "Something went wrong. Email us at hello@geck0.ai",
       consent: "I agree to the collection and use of my personal data. See our Privacy Policy for details.",
     },

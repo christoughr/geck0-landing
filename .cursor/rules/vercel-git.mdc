@@ -1,0 +1,11 @@
+---
+description: Vercel Hobby deploy — commit as repo owner only
+globs:
+alwaysApply: true
+---
+
+# Git commits for geck0-landing
+
+- Commit as the GitHub repo owner (`christoughr@gmail.com`). Do **not** use `geck0-bot` or `Co-authored-by: Cursor`.
+- Vercel Hobby blocks deployments when the committer is not linked to the GitHub user.
+- If Git deploy is blocked, run `npx vercel deploy --prod --yes` from the project directory.

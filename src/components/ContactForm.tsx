@@ -14,6 +14,7 @@ export default function ContactForm() {
   const [consent, setConsent] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [statusMessage, setStatusMessage] = useState("");
 
   const onTurnstile = useCallback((token: string) => setTurnstileToken(token), []);
   const onTurnstileExpire = useCallback(() => setTurnstileToken(""), []);
@@ -25,6 +26,7 @@ export default function ContactForm() {
 
     const fd = new FormData(e.currentTarget);
     setStatus("loading");
+    setStatusMessage("");
 
     try {
       const res = await fetch("/api/contact", {
@@ -40,14 +42,19 @@ export default function ContactForm() {
         }),
       });
 
-      if (!res.ok) throw new Error("failed");
-      setStatus("success");
+      const data = (await res.json()) as { emailSent?: boolean; error?: string };
+
+      if (!res.ok) throw new Error(data.error ?? "failed");
+
       setForm({ name: "", email: "", company: "", message: "" });
       setConsent(false);
       setTurnstileToken("");
       trackContactSubmit();
+      setStatus("success");
+      setStatusMessage(data.emailSent === false ? t.contact.successNoEmail : t.contact.success);
     } catch {
       setStatus("error");
+      setStatusMessage(t.contact.error);
     }
   };
 
@@ -141,8 +148,12 @@ export default function ContactForm() {
         </button>
 
         <div aria-live="polite" aria-atomic="true">
-          {status === "success" && <p className="text-teal-400 text-sm">{t.contact.success}</p>}
-          {status === "error" && <p className="text-coral-400 text-sm">{t.contact.error}</p>}
+          {status === "success" && (
+            <p className="text-teal-400 text-sm">{statusMessage || t.contact.success}</p>
+          )}
+          {status === "error" && (
+            <p className="text-coral-400 text-sm">{statusMessage || t.contact.error}</p>
+          )}
         </div>
       </form>
     </Reveal>
