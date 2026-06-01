@@ -1,3 +1,5 @@
+import { createHash } from "crypto";
+
 interface MailchimpMember {
   email_address: string;
   status: "subscribed" | "pending";
@@ -8,7 +10,8 @@ export type MailchimpSubscribeStatus = "subscribed" | "pending";
 
 export async function addMailchimpSubscriber(
   email: string,
-  source = "waitlist"
+  source = "waitlist",
+  extraTags: string[] = []
 ): Promise<MailchimpSubscribeStatus> {
   const apiKey = process.env.MAILCHIMP_API_KEY;
   const listId = process.env.MAILCHIMP_LIST_ID;
@@ -27,7 +30,7 @@ export async function addMailchimpSubscriber(
   const body: MailchimpMember = {
     email_address: email,
     status,
-    tags: [source, "geck0-landing"],
+    tags: [source, "geck0-landing", ...extraTags],
   };
 
   const res = await fetch(url, {
@@ -54,6 +57,41 @@ export function isMailchimpConfigured(): boolean {
       process.env.MAILCHIMP_LIST_ID &&
       process.env.MAILCHIMP_SERVER_PREFIX
   );
+}
+
+function subscriberHash(email: string): string {
+  return createHash("md5").update(email.trim().toLowerCase()).digest("hex");
+}
+
+export async function tagMailchimpMember(
+  email: string,
+  tags: string[]
+): Promise<void> {
+  const apiKey = process.env.MAILCHIMP_API_KEY;
+  const listId = process.env.MAILCHIMP_LIST_ID;
+  const serverPrefix = process.env.MAILCHIMP_SERVER_PREFIX;
+
+  if (!apiKey || !listId || !serverPrefix || tags.length === 0) return;
+
+  const auth = Buffer.from(`anystring:${apiKey}`).toString("base64");
+  const hash = subscriberHash(email);
+  const url = `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${listId}/members/${hash}/tags`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      tags: tags.map((name) => ({ name, status: "active" })),
+    }),
+  });
+
+  if (!res.ok && res.status !== 404) {
+    const data = (await res.json()) as { detail?: string };
+    throw new Error(data.detail ?? `Mailchimp tag failed (${res.status})`);
+  }
 }
 
 export async function pingMailchimp(): Promise<{ ok: boolean; detail?: string }> {

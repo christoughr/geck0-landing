@@ -195,10 +195,15 @@ export const translations = {
     pricing: {
       label: "가격",
       title: "팀 규모에 맞는 플랜",
-      subtitle: "좌석당 과금 · 1일 무료 체험 · 신용카드 불필요",
+      subtitle: "좌석당 과금 · 1일 무료 체험 · 카드 등록 (체험 후 자동 과금, 체험 중 취소 가능)",
       perSeat: "좌석당",
+      seatsLabel: "좌석 수",
+      checkoutLoading: "결제 페이지로 이동 중…",
+      checkoutError: "체크아웃을 시작할 수 없습니다. 잠시 후 다시 시도하거나 웨이트리스트를 이용해 주세요.",
+      waitlistFallback: "결제 연동 전에는 웨이트리스트로 접근 신청:",
+      waitlistLink: "웨이트리스트 등록",
       betaNote:
-        "퍼블릭 베타: 결제는 체험 후 활성화됩니다. 지금은 웨이트리스트로 app.geck0.ai 접근을 신청하세요. /demo에서 Q&A 미리보기 가능.",
+        "퍼블릭 베타: Stripe로 1일 체험(카드 등록) 또는 웨이트리스트로 app.geck0.ai 접근 신청. /demo에서 Q&A 미리보기.",
       featured: "추천",
       viewAll: "전체 가격표 보기 →",
       plans: [
@@ -213,7 +218,7 @@ export const translations = {
             "Slack · Notion · Drive 연동 (베타 앱)",
             "AI Q&A 1,000건/월 (베타 앱)",
             "지식 그래프 + 웹 대시보드 (베타)",
-            "Cloudflare Turnstile 봇 방어",
+            "이메일 지원 + 온보딩 가이드",
           ],
           cta: "1일 체험 시작",
         },
@@ -252,7 +257,7 @@ export const translations = {
     },
     cta: {
       title: "지금 바로 시작하세요",
-      subtitle: "1일 무료 체험 · 신용카드 불필요 · 설치 15분",
+      subtitle: "웨이트리스트 등록 · 신용카드 불필요 · 설치 15분",
       placeholder: "회사 이메일 주소",
       button: "1일 체험 시작 →",
       disclaimer: "가입하면 이용약관 및 개인정보처리방침에 동의하는 것으로 간주됩니다",
@@ -302,7 +307,8 @@ export const translations = {
       faqTitle: "자주 묻는 질문",
       enterpriseLink: "Enterprise →",
       faq: [
-        { q: "무료 체험 기간은?", a: "모든 플랜 1일 무료 체험. 신용카드 불필요." },
+        { q: "무료 체험 기간은?", a: "Starter/Growth 1일 무료 체험. Stripe 체크아웃 시 카드 등록, 체험 종료 전 취소하면 과금 없음." },
+        { q: "좌석당 과금인가요?", a: "네. Starter ₩99,000/seat·월, Growth ₩390,000/seat·월 (EN: $99 / $399 per seat)." },
         { q: "플랜 변경은?", a: "언제든 업그레이드/다운그레이드 가능. 일할 계산 적용." },
         { q: "Enterprise 견적은?", a: "100명 이상 팀은 /enterprise 페이지에서 영업팀에 문의하세요." },
       ],
@@ -312,7 +318,7 @@ export const translations = {
       items: [
         { q: "설치에 얼마나 걸리나요?", a: "Slack, Notion, Drive OAuth 연결 후 15분 내 첫 sync 완료. 별도 마이그레이션 불필요." },
         { q: "데이터는 안전한가요?", a: "읽기 전용 OAuth, AES-256 암호화, SOC 2 Type II 준비 중. 고객 데이터로 AI 학습하지 않습니다." },
-        { q: "무료 체험 후 자동 결제되나요?", a: "1일 체험 종료 후 자동 과금 없음. 유료 전환 시에만 결제 수단 등록." },
+        { q: "무료 체험 후 자동 결제되나요?", a: "Stripe 체크아웃으로 시작한 경우 1일 체험 종료 후 자동 과금됩니다. 체험 중 Stripe 고객 포털 또는 지원팀으로 취소하면 과금되지 않습니다. 웨이트리스트만 등록한 경우 결제 없음." },
         { q: "좌석당 과금인가요?", a: "네. Starter/Growth는 seat당 월 과금입니다. Enterprise는 협의." },
         { q: "기존 도구를 바꿔야 하나요?", a: "아니요. geck0는 기존 Slack, Notion, Drive 위에 연결 레이어로 동작합니다." },
         { q: "Enterprise는 어떻게 문의하나요?", a: "/enterprise 페이지 또는 hello@geck0.ai 으로 연락주세요." },
@@ -328,6 +334,18 @@ export const translations = {
         { title: "GDPR / 개인정보보호법", desc: "EU GDPR 및 한국 개인정보보호법 준수. DPA 제공." },
         { title: "Cloudflare Turnstile", desc: "웨이트리스트·문의 폼에 봇/스팸 방어(CAPTCHA 대체). 레이트 리밋 + 허니팟 병행." },
       ],
+    },
+    checkout: {
+      successBadge: "체험 시작됨",
+      successTitle: "1일 무료 체험이 활성화되었습니다",
+      successBody:
+        "Stripe에서 결제 수단이 등록되었습니다. 체험 종료 전 취소하지 않으면 좌석당 요금이 자동 청구됩니다. app.geck0.ai 베타 접근은 순차적으로 열립니다.",
+      appLink: "app.geck0.ai 열기",
+      demoLink: "데모 보기",
+      cancelTitle: "체크아웃이 취소되었습니다",
+      cancelBody: "언제든 다시 시작하거나 웨이트리스트로 베타 접근을 신청할 수 있습니다.",
+      pricingLink: "가격표로 돌아가기",
+      waitlistLink: "웨이트리스트 등록",
     },
     cookies: {
       banner: "당사는 서비스 개선을 위해 쿠키를 사용합니다.",
@@ -577,10 +595,15 @@ export const translations = {
     pricing: {
       label: "Pricing",
       title: "Plans for every team size",
-      subtitle: "Per-seat billing · 1-day free trial · No credit card",
+      subtitle: "Per-seat billing · 1-day trial · Card required (auto-bill after trial unless canceled)",
       perSeat: "per seat",
+      seatsLabel: "Seats",
+      checkoutLoading: "Redirecting to checkout…",
+      checkoutError: "Could not start checkout. Try again or join the waitlist.",
+      waitlistFallback: "Before billing is live, request access via waitlist:",
+      waitlistLink: "Join waitlist",
       betaNote:
-        "Public beta: billing activates after trial. Join the waitlist for app.geck0.ai access. Preview Q&A at /demo.",
+        "Public beta: 1-day trial via Stripe (card on file) or waitlist for app.geck0.ai. Preview Q&A at /demo.",
       featured: "Popular",
       viewAll: "View full pricing →",
       plans: [
@@ -595,7 +618,7 @@ export const translations = {
             "Slack · Notion · Drive (beta app)",
             "1,000 AI Q&A / month (beta app)",
             "Knowledge graph + web dashboard (beta)",
-            "Cloudflare Turnstile bot protection",
+            "Email support + onboarding guide",
           ],
           cta: "Start 1-day trial",
         },
@@ -634,7 +657,7 @@ export const translations = {
     },
     cta: {
       title: "Get started today",
-      subtitle: "1-day free trial · No credit card · 15-min setup",
+      subtitle: "Join waitlist · No credit card · 15-min setup",
       placeholder: "Work email address",
       button: "Start 1-day trial →",
       disclaimer: "By signing up you agree to our Terms and Privacy Policy",
@@ -684,7 +707,8 @@ export const translations = {
       faqTitle: "FAQ",
       enterpriseLink: "Enterprise →",
       faq: [
-        { q: "Free trial period?", a: "1-day free trial on all plans. No credit card required." },
+        { q: "Free trial period?", a: "1-day trial on Starter/Growth via Stripe checkout. Card required; cancel before trial ends to avoid charge." },
+        { q: "Is it per seat?", a: "Yes. Starter $99/seat/mo, Growth $399/seat/mo (KO: ₩99k / ₩390k per seat)." },
         { q: "Can I change plans?", a: "Upgrade or downgrade anytime. Prorated billing applies." },
         { q: "Enterprise pricing?", a: "Teams of 100+ — contact sales via the /enterprise page." },
       ],
@@ -694,7 +718,7 @@ export const translations = {
       items: [
         { q: "How long does setup take?", a: "OAuth connect Slack, Notion, Drive — first sync within 15 minutes. No migration needed." },
         { q: "Is our data secure?", a: "Read-only OAuth, AES-256 encryption, SOC 2 Type II in progress. We don't train AI on customer data." },
-        { q: "Auto-billing after trial?", a: "No charge after the 1-day trial unless you add a payment method to convert." },
+        { q: "Auto-billing after trial?", a: "Stripe checkout trials auto-bill after 1 day unless you cancel during the trial (Stripe customer portal or support). Waitlist-only signups are never charged." },
         { q: "Is it per seat?", a: "Yes. Starter and Growth are billed per seat per month. Enterprise is custom." },
         { q: "Do we need to switch tools?", a: "No. geck0 is a connection layer on top of your existing Slack, Notion, and Drive." },
         { q: "How to contact Enterprise sales?", a: "Visit /enterprise or email hello@geck0.ai" },
@@ -710,6 +734,18 @@ export const translations = {
         { title: "GDPR compliant", desc: "EU GDPR compliant. DPA available on request." },
         { title: "Cloudflare Turnstile", desc: "Bot/spam protection on waitlist & contact forms (CAPTCHA alternative). Rate limits + honeypot." },
       ],
+    },
+    checkout: {
+      successBadge: "Trial started",
+      successTitle: "Your 1-day free trial is active",
+      successBody:
+        "Your payment method is on file with Stripe. You'll be billed per seat after the trial unless you cancel before it ends. app.geck0.ai beta access rolls out in order.",
+      appLink: "Open app.geck0.ai",
+      demoLink: "View demo",
+      cancelTitle: "Checkout canceled",
+      cancelBody: "You can restart anytime or join the waitlist for beta access.",
+      pricingLink: "Back to pricing",
+      waitlistLink: "Join waitlist",
     },
     cookies: {
       banner: "We use cookies to improve our service.",
@@ -768,3 +804,7 @@ export const translations = {
 } as const;
 
 export type TranslationKey = (typeof translations)[Locale];
+
+export function getTranslations(locale: Locale): TranslationKey {
+  return translations[locale];
+}

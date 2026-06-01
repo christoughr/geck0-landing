@@ -6,8 +6,12 @@
 - Mailchimp waitlist + double opt-in
 - Vercel Blob contact storage
 - Upstash KV rate limiting (all green on /status)
-- Turnstile wired (dummy keys — replace with Cloudflare real keys after Create widget)
+- Turnstile wired (production keys on Vercel — see TURNSTILE_SETUP.md)
 - Resend contact email (`RESEND_API_KEY` + `CONTACT_FROM_EMAIL` on Vercel)
+- Stripe Checkout API + webhook (`docs/STRIPE_SETUP.md`) — set price IDs on Vercel to enable billing
+- Per-seat pricing UI + 1-day trial in code (`src/lib/pricing.ts`)
+- Cloudflare Bot Fight script (`npm run cloudflare:bot-fight`) — needs API token
+- Resend key rotation guide (`docs/RESEND_KEY_ROTATION.md`)
 - app.geck0.ai app shell at `/app` (middleware rewrite)
 - Sentry SDK ready (add DSN to enable)
 - GA4 CSP ready (add `NEXT_PUBLIC_GA_ID` to enable)
@@ -26,7 +30,7 @@ See [TURNSTILE_SETUP.md](./TURNSTILE_SETUP.md)
 See [MAILCHIMP_SETUP.md](./MAILCHIMP_SETUP.md)
 - Status: **Authentication in progress**
 - Cloudflare에서 `k1._domainkey` **DNS only(회색)** 로 변경 + `k3._domainkey` 확인
-- **Payment:** 당장 필수 아님 (13일 grace)
+- **Payment:** Stripe products + Vercel env — see [STRIPE_SETUP.md](./STRIPE_SETUP.md)
 
 ### app.geck0.ai
 Domain is on another Vercel project. Either:

@@ -120,6 +120,28 @@ test("GET /api/subscribe admin without key → 401 or 404", async () => {
   }
 });
 
+test("GET /checkout/success returns 200", async () => {
+  const res = await fetch(`${BASE}/checkout/success`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /api/checkout returns trial metadata", async () => {
+  const { res, body } = await request("/api/checkout");
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+  if (body?.trialDays !== 1) throw new Error(`Expected trialDays=1, got ${body?.trialDays}`);
+});
+
+test("POST /api/checkout invalid plan → 400", async () => {
+  const { res } = await request("/api/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan: "enterprise", seats: 1 }),
+  });
+  if (res.status !== 400 && res.status !== 503) {
+    throw new Error(`Expected 400 or 503, got ${res.status}`);
+  }
+});
+
 test("GET /robots.txt returns 200", async () => {
   const res = await fetch(`${BASE}/robots.txt`);
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);

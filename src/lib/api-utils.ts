@@ -6,12 +6,21 @@ const ALLOWED_SOURCES = new Set([
   "enterprise",
   "blog",
   "demo",
+  "pricing",
 ]);
+
+const ALLOWED_PLANS = new Set(["starter", "growth"]);
 
 export function sanitizeSource(source: unknown): string {
   if (typeof source !== "string") return "waitlist";
   const normalized = source.trim().toLowerCase().slice(0, 32);
   return ALLOWED_SOURCES.has(normalized) ? normalized : "waitlist";
+}
+
+export function sanitizePlan(plan: unknown): string | null {
+  if (typeof plan !== "string") return null;
+  const normalized = plan.trim().toLowerCase();
+  return ALLOWED_PLANS.has(normalized) ? normalized : null;
 }
 
 /** Honeypot field — bots fill hidden inputs */

@@ -2,14 +2,25 @@
 
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
+import { formatSeatPrice, type BillingPlan } from "@/lib/pricing";
 import Reveal from "./Reveal";
+import PlanCheckoutButton from "./PlanCheckoutButton";
 
 interface PricingProps {
   showViewAll?: boolean;
 }
 
+const PLAN_KEYS: (BillingPlan | "enterprise")[] = ["starter", "growth", "enterprise"];
+
+function planDisplayPrice(locale: "ko" | "en", planKey: (typeof PLAN_KEYS)[number]): string {
+  if (planKey === "enterprise") {
+    return locale === "ko" ? "맞춤 견적" : "Custom";
+  }
+  return formatSeatPrice(locale, planKey);
+}
+
 export default function Pricing({ showViewAll = true }: PricingProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   const planStyles = [
     { featured: false, color: "border-navy-600/40" },
@@ -34,6 +45,9 @@ export default function Pricing({ showViewAll = true }: PricingProps) {
         <div className="grid md:grid-cols-3 gap-5 items-start">
           {t.pricing.plans.map((plan, i) => {
             const { featured, color } = planStyles[i];
+            const planKey = PLAN_KEYS[i];
+            const displayPrice = planDisplayPrice(locale, planKey);
+
             return (
               <Reveal key={plan.name} delay={i * 0.1}>
                 <div
@@ -54,7 +68,7 @@ export default function Pricing({ showViewAll = true }: PricingProps) {
                       {plan.name}
                     </p>
                     <div className="flex flex-wrap items-baseline gap-x-1 gap-y-0 mb-1">
-                      <span className="text-3xl font-bold text-white">{plan.price}</span>
+                      <span className="text-3xl font-bold text-white">{displayPrice}</span>
                       <span className="text-white/40 text-sm">{plan.period}</span>
                     </div>
                     <p className="text-white/40 text-xs">{plan.users}</p>
@@ -81,16 +95,16 @@ export default function Pricing({ showViewAll = true }: PricingProps) {
                     ))}
                   </ul>
 
-                  <Link
-                    href={plan.name === "Enterprise" ? "/enterprise" : "/#contact"}
-                    className={`block w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors duration-200 ${
-                      featured
-                        ? "bg-purple-400 hover:bg-purple-600 text-white"
-                        : "border border-white/20 hover:border-white/40 text-white/70 hover:text-white"
-                    }`}
-                  >
-                    {plan.cta}
-                  </Link>
+                  {planKey === "enterprise" ? (
+                    <Link
+                      href="/enterprise"
+                      className="block w-full text-center py-3 rounded-xl text-sm font-semibold transition-colors duration-200 border border-white/20 hover:border-white/40 text-white/70 hover:text-white"
+                    >
+                      {plan.cta}
+                    </Link>
+                  ) : (
+                    <PlanCheckoutButton plan={planKey} featured={featured} label={plan.cta} />
+                  )}
                 </div>
               </Reveal>
             );

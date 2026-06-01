@@ -109,3 +109,16 @@ Mailchimp 발송도 쓰려면 Mailchimp 안내에 따라 SPF에 `include:servers
 **권장:** 폼은 Turnstile(이미 구현), DNS는 Cloudflare 프록시 유지.  
 전역 challenge가 필요하면 Cloudflare → **Security → Settings → Bot Fight Mode** 또는 **Under Attack Mode**를 켜세요.  
 코드 변경 없이 대시보드에서만 설정 가능합니다.
+
+### Bot Fight Mode (CLI)
+
+API 토큰(`Zone Settings Edit`)과 Zone ID가 있으면:
+
+```bash
+# .env.local 또는 셸에 설정
+CLOUDFLARE_API_TOKEN=...
+CLOUDFLARE_ZONE_ID=...
+
+node scripts/enable-cloudflare-bot-fight.mjs
+node scripts/enable-cloudflare-bot-fight.mjs --status
+```

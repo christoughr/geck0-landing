@@ -2,6 +2,7 @@ import { isDistributedRateLimitConfigured } from "@/lib/rate-limit";
 import { isMailchimpConfigured, pingMailchimp } from "@/lib/mailchimp";
 import { isContactStorageConfigured } from "@/lib/contact-store";
 import { isTurnstileConfigured } from "@/lib/api-utils";
+import { isStripeCheckoutConfigured, isStripeConfigured } from "@/lib/stripe";
 
 async function pingResend(): Promise<{ ok: boolean; detail?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
@@ -45,6 +46,7 @@ export async function buildHealthReport(uptimeSec: number): Promise<HealthReport
     mailchimp: "not_configured",
     contact: "not_configured",
     turnstile: "not_configured",
+    stripe: "not_configured",
     rateLimit: isDistributedRateLimitConfigured() ? "operational" : "degraded",
   };
 
@@ -93,6 +95,19 @@ export async function buildHealthReport(uptimeSec: number): Promise<HealthReport
   } else {
     services.turnstile = "not_configured";
     checks.turnstile = { ok: false, detail: "Optional bot protection not enabled" };
+  }
+
+  if (isStripeCheckoutConfigured()) {
+    services.stripe = isStripeConfigured() ? "operational" : "degraded";
+    checks.stripe = {
+      ok: isStripeConfigured(),
+      detail: isStripeConfigured()
+        ? "Checkout + webhook secrets configured"
+        : "Checkout prices set; STRIPE_WEBHOOK_SECRET missing",
+    };
+  } else {
+    services.stripe = "not_configured";
+    checks.stripe = { ok: false, detail: "Optional per-seat billing not enabled" };
   }
 
   checks.rateLimit = {

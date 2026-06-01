@@ -8,7 +8,9 @@ export const sitePricing = {
   },
 } as const;
 
-export function formatSeatPrice(locale: "ko" | "en", plan: "starter" | "growth"): string {
+export type BillingPlan = keyof typeof sitePricing.plans;
+
+export function formatSeatPrice(locale: "ko" | "en", plan: BillingPlan): string {
   if (locale === "ko") {
     const n = sitePricing.plans[plan].pricePerSeatKo;
     return `₩${n.toLocaleString("ko-KR")}`;

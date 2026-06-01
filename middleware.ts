@@ -18,20 +18,21 @@ function applySecurityHeaders(res: NextResponse): void {
   const turnstileHost = "https://challenges.cloudflare.com";
   const gaHost = "https://www.googletagmanager.com https://www.google-analytics.com";
   const sentryHost = "https://*.ingest.us.sentry.io https://*.ingest.sentry.io";
+  const stripeHost = "https://js.stripe.com https://api.stripe.com https://checkout.stripe.com";
 
   res.headers.set(
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${plausibleHost} ${turnstileHost} ${gaHost}`,
-      `connect-src 'self' ${plausibleHost} ${turnstileHost} ${gaHost} ${sentryHost} https://blob.vercel-storage.com`,
+      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${plausibleHost} ${turnstileHost} ${gaHost} ${stripeHost}`,
+      `connect-src 'self' ${plausibleHost} ${turnstileHost} ${gaHost} ${sentryHost} ${stripeHost} https://blob.vercel-storage.com`,
       "img-src 'self' data: blob: https:",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' data:",
-      `frame-src ${turnstileHost} https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com`,
+      `frame-src ${turnstileHost} ${stripeHost} https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.loom.com`,
       "object-src 'none'",
       "base-uri 'self'",
-      "form-action 'self'",
+      "form-action 'self' https://checkout.stripe.com",
     ].join("; ")
   );
 }

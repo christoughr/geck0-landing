@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addMailchimpSubscriber, isMailchimpConfigured, pingMailchimp } from "@/lib/mailchimp";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import { isHoneypotTriggered, sanitizeSource, verifyTurnstile } from "@/lib/api-utils";
+import { isHoneypotTriggered, sanitizePlan, sanitizeSource, verifyTurnstile } from "@/lib/api-utils";
 
 const MAX_BODY = 4096;
 
@@ -49,7 +49,9 @@ export async function POST(request: NextRequest) {
     }
 
     const source = sanitizeSource(body.source);
-    const subscribeStatus = await addMailchimpSubscriber(trimmed, source);
+    const plan = sanitizePlan(body.plan);
+    const extraTags = plan ? [`plan-${plan}`, "waitlist-plan"] : [];
+    const subscribeStatus = await addMailchimpSubscriber(trimmed, source, extraTags);
 
     return NextResponse.json({
       message:
