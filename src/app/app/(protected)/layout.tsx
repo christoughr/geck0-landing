@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getAppSessionEmail } from "@/lib/app-auth";
+import { getAppSession } from "@/lib/app-session";
 import { getServerLocale } from "@/lib/locale-server";
 import AppProductShell from "@/components/app/AppProductShell";
 
@@ -8,15 +8,15 @@ export default async function AppProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const email = await getAppSessionEmail();
-  if (!email) {
+  const session = await getAppSession();
+  if (!session) {
     redirect("/app");
   }
 
   const locale = await getServerLocale();
 
   return (
-    <AppProductShell locale={locale} email={email}>
+    <AppProductShell locale={locale} email={session.email}>
       {children}
     </AppProductShell>
   );

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Locale } from "@/lib/i18n/translations";
 import AppPageHeader from "@/components/app/AppPageHeader";
 
 type Source = { id: string; title: string; source: string };
+type HistoryEntry = { id: string; query: string; answer: string; createdAt: string };
 
 const starters = {
   ko: [
@@ -19,6 +20,13 @@ const starters = {
   ],
 };
 
+const modeLabel = (mode: string, ko: boolean) => {
+  if (mode === "openai-rag") return ko ? "OpenAI + RAG" : "OpenAI + RAG";
+  if (mode === "keyword-rag") return ko ? "키워드 검색" : "Keyword search";
+  if (mode === "no-results") return ko ? "결과 없음" : "No results";
+  return mode;
+};
+
 export default function AppQaPanel({ locale }: { locale: Locale }) {
   const ko = locale === "ko";
   const [query, setQuery] = useState("");
@@ -27,6 +35,19 @@ export default function AppQaPanel({ locale }: { locale: Locale }) {
   const [sources, setSources] = useState<Source[]>([]);
   const [mode, setMode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+  const loadHistory = useCallback(async () => {
+    const res = await fetch("/api/app/history");
+    if (res.ok) {
+      const data = (await res.json()) as { history: HistoryEntry[] };
+      setHistory(data.history.slice(0, 8));
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadHistory();
+  }, [loadHistory]);
 
   const ask = async (text: string) => {
     const q = text.trim();
@@ -41,7 +62,7 @@ export default function AppQaPanel({ locale }: { locale: Locale }) {
       const res = await fetch("/api/app/qa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: q }),
+        body: JSON.stringify({ query: q, locale }),
       });
       const data = (await res.json()) as {
         answer?: string;
@@ -66,6 +87,7 @@ export default function AppQaPanel({ locale }: { locale: Locale }) {
       setAnswer(data.answer ?? "");
       setSources(data.sources ?? []);
       setMode(data.mode ?? null);
+      void loadHistory();
     } catch {
       setError(ko ? "네트워크 오류" : "Network error");
     } finally {
@@ -74,18 +96,18 @@ export default function AppQaPanel({ locale }: { locale: Locale }) {
   };
 
   return (
-    <div className="w-full space-y-6 sm:space-y-8">
+    <div className="w-full space-y-6">
       <AppPageHeader
         title="Q&A"
         description={
           ko
-            ? "데모 지식 베이스로 답변합니다. 커넥터 연동 후 회사 문서를 검색합니다."
-            : "Answers from the demo knowledge base until your connectors are linked."
+            ? "워크스페이스 지식 베이스를 검색합니다. OPENAI_API_KEY가 있으면 AI가 출처 기반으로 답합니다."
+            : "Searches your workspace knowledge index. With OPENAI_API_KEY, AI answers with citations."
         }
       />
 
-      <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-        <div className="space-y-4">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+        <div className="lg:col-span-2 space-y-4">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -115,7 +137,7 @@ export default function AppQaPanel({ locale }: { locale: Locale }) {
                 type="button"
                 onClick={() => void ask(s)}
                 disabled={loading}
-                className="text-xs sm:text-sm px-3 py-2 rounded-full border border-navy-600/50 text-white/55 hover:text-white/90 hover:border-purple-400/40 hover:bg-purple-400/5 transition-colors disabled:opacity-50"
+                className="text-xs sm:text-sm px-3 py-2 rounded-full border border-navy-600/50 text-white/55 hover:text-white/90 hover:border-purple-400/40 disabled:opacity-50"
               >
                 {s}
               </button>
@@ -127,53 +149,66 @@ export default function AppQaPanel({ locale }: { locale: Locale }) {
               {error}
             </p>
           )}
-        </div>
 
-        <div className="rounded-2xl border border-navy-600/40 bg-navy-800/30 min-h-[280px] lg:min-h-[360px] flex flex-col">
-          {loading && (
-            <div className="flex-1 flex items-center justify-center p-8">
-              <p className="text-white/40 text-sm animate-pulse">
-                {ko ? "답변 생성 중…" : "Generating answer…"}
+          <div className="rounded-2xl border border-navy-600/40 bg-navy-800/30 min-h-[280px] lg:min-h-[360px]">
+            {loading && (
+              <p className="p-8 text-center text-white/40 text-sm animate-pulse">
+                {ko ? "지식 베이스 검색 중…" : "Searching knowledge base…"}
               </p>
-            </div>
-          )}
-
-          {!loading && answer && (
-            <div className="p-5 sm:p-6 space-y-4 flex-1">
-              <p className="text-white/90 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
-                {answer}
-              </p>
-              {sources.length > 0 && (
-                <div className="space-y-2 pt-4 border-t border-navy-700/50 mt-auto">
-                  <p className="text-[10px] uppercase tracking-wider text-white/35">
-                    {ko ? "출처" : "Sources"}
-                  </p>
-                  {sources.map((s) => (
-                    <div key={s.id} className="text-xs sm:text-sm text-white/50">
-                      <span className="text-purple-300/90 font-medium">{s.title}</span>
-                      <span className="text-white/25"> · {s.source}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {mode && (
-                <p className="text-[10px] text-white/25">
-                  {mode === "openai" ? "OpenAI" : ko ? "데모 지식" : "Demo knowledge"}
+            )}
+            {!loading && answer && (
+              <div className="p-5 sm:p-6 space-y-4">
+                <p className="text-white/90 text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
+                  {answer}
                 </p>
-              )}
-            </div>
-          )}
-
-          {!loading && !answer && !error && (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-              <p className="text-white/35 text-sm max-w-xs leading-relaxed">
-                {ko
-                  ? "질문을 입력하거나 추천 질문을 눌러 보세요. 답변이 여기에 표시됩니다."
-                  : "Type a question or tap a suggestion. Answers appear here."}
+                {sources.length > 0 && (
+                  <div className="space-y-2 pt-4 border-t border-navy-700/50">
+                    <p className="text-[10px] uppercase tracking-wider text-white/35">
+                      {ko ? "출처" : "Sources"}
+                    </p>
+                    {sources.map((s) => (
+                      <div key={s.id} className="text-xs sm:text-sm text-white/50">
+                        <span className="text-purple-300/90 font-medium">{s.title}</span>
+                        <span className="text-white/25"> · {s.source}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {mode && (
+                  <p className="text-[10px] text-white/30">{modeLabel(mode, ko)}</p>
+                )}
+              </div>
+            )}
+            {!loading && !answer && !error && (
+              <p className="p-8 text-center text-white/35 text-sm">
+                {ko ? "질문을 입력하거나 추천 질문을 선택하세요." : "Ask a question or pick a suggestion."}
               </p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
+
+        <aside className="rounded-2xl border border-navy-600/40 bg-navy-800/20 p-4">
+          <h2 className="text-xs uppercase tracking-wider text-white/40 mb-3">
+            {ko ? "최근 질문" : "Recent questions"}
+          </h2>
+          {history.length === 0 ? (
+            <p className="text-xs text-white/30">{ko ? "아직 기록 없음" : "No history yet"}</p>
+          ) : (
+            <ul className="space-y-2 max-h-[420px] overflow-y-auto">
+              {history.map((h) => (
+                <li key={h.id}>
+                  <button
+                    type="button"
+                    onClick={() => void ask(h.query)}
+                    className="text-left w-full text-xs text-white/55 hover:text-purple-300 line-clamp-2"
+                  >
+                    {h.query}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </aside>
       </div>
     </div>
   );

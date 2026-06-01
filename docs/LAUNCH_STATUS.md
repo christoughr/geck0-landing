@@ -7,7 +7,7 @@ Last verified: production https://geck0.ai · `npm run test:all` (hello@geck0.ai
 | Area | Status |
 |------|--------|
 | Landing + mobile | ✅ |
-| **app.geck0.ai** beta (login, Q&A, graph, insights) | ✅ |
+| **app.geck0.ai** beta (login, Q&A, graph, insights, knowledge upload, Notion) | ✅ |
 | Turnstile, Mailchimp, Resend contact | ✅ |
 | Waitlist + per-seat pricing copy | ✅ |
 | Toss billing scaffold (keys pending) | ✅ code / ⏸ merchant |
@@ -28,4 +28,4 @@ Last verified: production https://geck0.ai · `npm run test:all` (hello@geck0.ai
 
 ## Docs
 
-- [APP_BETA.md](./APP_BETA.md) · [STEP_BY_STEP.md](./STEP_BY_STEP.md) · [PAYMENTS.md](./PAYMENTS.md)
+- [APP_BETA.md](./APP_BETA.md) · [PRODUCT_V2.md](./PRODUCT_V2.md) · [STEP_BY_STEP.md](./STEP_BY_STEP.md) · [PAYMENTS.md](./PAYMENTS.md)

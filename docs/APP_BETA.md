@@ -8,10 +8,10 @@ Product MVP lives in this repo under `/app/*`. **Toss Payments** comes after bet
 |------|---------|
 | `/app` | Beta gate — email sign-in + waitlist |
 | `/app/dashboard` | Workspace overview (protected) |
-| `/app/qa` | Q&A (demo knowledge + optional OpenAI) |
-| `/app/graph` | Knowledge graph preview |
-| `/app/insights` | Insight Pulse preview |
-| `/app/settings/integrations` | Connector stubs |
+| `/app/qa` | Q&A — workspace RAG + optional OpenAI |
+| `/app/graph` | Knowledge graph from indexed docs |
+| `/app/insights` | Insights from indexed content |
+| `/app/settings/integrations` | Notion token sync + manual upload |
 
 ## Vercel env (Production)
 
@@ -21,7 +21,9 @@ Product MVP lives in this repo under `/app/*`. **Toss Payments** comes after bet
 | `BETA_ALLOWED_EMAILS` | One of | Comma-separated invite list |
 | `BETA_ALLOWED_DOMAIN` | optional | e.g. `yourcompany.com` — all `@domain` emails allowed |
 | `APP_BETA_OPEN` | optional | `true` = any valid email can sign in (dev only) |
-| `OPENAI_API_KEY` | optional | Better Q&A answers; falls back to demo knowledge |
+| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | Yes (prod) | Upstash — per-workspace knowledge store |
+| `OPENAI_API_KEY` | optional | OpenAI + RAG answers with citations |
+| `NOTION_INTERNAL_TOKEN` | optional | Server-side Notion sync on workspace prep |
 
 `APP_SESSION_SECRET` can fall back to `ADMIN_API_KEY` if unset (not recommended long-term).
 

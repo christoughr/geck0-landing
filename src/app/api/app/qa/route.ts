@@ -1,42 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken, APP_SESSION_COOKIE } from "@/lib/app-auth";
-import { answerFromDemoKnowledge } from "@/lib/app-knowledge";
+import { answerWorkspaceQuery, prepareWorkspace } from "@/lib/knowledge";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-
 export const runtime = "nodejs";
-
-async function answerWithOpenAI(query: string): Promise<string | null> {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) return null;
-
-  const context = answerFromDemoKnowledge(query);
-  const system = `You are geck0, a company knowledge assistant. Answer using ONLY the context below. Cite sources briefly. If unsure, say so.
-Context documents:
-${context.sources.map((s) => `- ${s.title} (${s.source}): ${s.excerpt}`).join("\n")}`;
-
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: query },
-      ],
-      max_tokens: 600,
-      temperature: 0.2,
-    }),
-  });
-
-  if (!res.ok) return null;
-  const data = (await res.json()) as {
-    choices?: { message?: { content?: string } }[];
-  };
-  return data.choices?.[0]?.message?.content?.trim() ?? null;
-}
 
 export async function POST(request: NextRequest) {
   const token = request.cookies.get(APP_SESSION_COOKIE)?.value;
@@ -58,22 +24,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid query" }, { status: 400 });
     }
 
-    const demo = answerFromDemoKnowledge(query);
-    const aiAnswer = await answerWithOpenAI(query);
-    const answer = aiAnswer ?? demo.answer;
-    const mode = aiAnswer ? "openai" : "demo";
+    const locale = body.locale === "en" ? "en" : "ko";
+    const workspaceId = await prepareWorkspace(email);
+    const result = await answerWorkspaceQuery(workspaceId, query, locale);
 
     return NextResponse.json({
-      answer,
-      sources: demo.sources.map((s) => ({
-        id: s.id,
-        title: s.title,
-        source: s.source,
-      })),
-      mode,
-      latencyMs: mode === "openai" ? undefined : 1200,
+      answer: result.answer,
+      sources: result.sources,
+      mode: result.mode,
+      workspaceId,
     });
-  } catch {
-    return NextResponse.json({ error: "Bad request" }, { status: 400 });
+  } catch (err) {
+    console.error("[app qa]", err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: "Q&A failed" }, { status: 500 });
   }
 }
