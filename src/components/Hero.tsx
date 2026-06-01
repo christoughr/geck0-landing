@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
@@ -9,52 +9,6 @@ import { siteConfig } from "@/config/site";
 import WaitlistForm from "./WaitlistForm";
 
 const SynapseCanvas = dynamic(() => import("./SynapseCanvas"), { ssr: false });
-
-function HeroSubline({ text }: { text: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLParagraphElement>(null);
-
-  const fitOneLine = useCallback(() => {
-    const container = containerRef.current;
-    const el = textRef.current;
-    if (!container || !el) return;
-
-    el.style.fontSize = "";
-    const minPx = 6;
-    let fontSize = parseFloat(window.getComputedStyle(el).fontSize);
-
-    while (el.scrollWidth > container.clientWidth && fontSize > minPx) {
-      fontSize -= 0.25;
-      el.style.fontSize = `${fontSize}px`;
-    }
-  }, []);
-
-  useEffect(() => {
-    fitOneLine();
-    const container = containerRef.current;
-    if (!container) return;
-
-    const ro = new ResizeObserver(fitOneLine);
-    ro.observe(container);
-    window.addEventListener("resize", fitOneLine);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", fitOneLine);
-    };
-  }, [text, fitOneLine]);
-
-  return (
-    <div ref={containerRef} className="w-full max-w-full overflow-hidden px-1">
-      <p
-        ref={textRef}
-        className="whitespace-nowrap text-white/60 leading-snug text-xs sm:text-sm md:text-base mx-auto max-w-full"
-        style={{ width: "fit-content", maxWidth: "100%" }}
-      >
-        {text}
-      </p>
-    </div>
-  );
-}
 
 export default function Hero() {
   const { t } = useI18n();
@@ -68,36 +22,36 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden bg-navy-900 pt-16">
+    <section className="relative min-h-[100dvh] w-full max-w-[100vw] flex flex-col items-center justify-center overflow-x-clip bg-navy-900 pt-16">
       <SynapseCanvas key={canvasKey} />
 
       <div
-        className="absolute top-1/4 left-1/4 w-64 sm:w-96 h-64 sm:h-96 rounded-full blur-3xl pointer-events-none"
+        className="absolute top-1/4 left-1/4 w-48 sm:w-96 h-48 sm:h-96 rounded-full blur-3xl pointer-events-none -translate-x-1/2"
         style={{ background: "rgba(127,119,221,0.12)" }}
         aria-hidden="true"
       />
       <div
-        className="absolute bottom-1/3 right-1/4 w-48 sm:w-64 h-48 sm:h-64 rounded-full blur-3xl pointer-events-none"
+        className="absolute bottom-1/3 right-1/4 w-40 sm:w-64 h-40 sm:h-64 rounded-full blur-3xl pointer-events-none translate-x-1/4"
         style={{ background: "rgba(29,158,117,0.09)" }}
         aria-hidden="true"
       />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
+      <div className="relative z-10 w-full min-w-0 max-w-4xl mx-auto px-4 sm:px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 bg-purple-900/40 border border-purple-600/30 rounded-full px-4 py-1.5 text-xs sm:text-sm text-purple-200 mb-6 sm:mb-8"
+          className="inline-flex max-w-full items-center gap-2 bg-purple-900/40 border border-purple-600/30 rounded-full px-3 sm:px-4 py-1.5 text-xs sm:text-sm text-purple-200 mb-6 sm:mb-8"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-          {t.hero.badge}
+          <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-teal-400 animate-pulse" />
+          <span className="truncate">{t.hero.badge}</span>
         </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-5 sm:mb-6 leading-[1.1]"
+          className="text-[clamp(1.65rem,7.5vw,4.5rem)] font-bold tracking-tight mb-5 sm:mb-6 leading-[1.12] break-words hyphens-auto px-1"
         >
           <span className="text-white">{t.hero.headline1}</span>
           <br />
@@ -108,10 +62,12 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25 }}
-          className="mb-8 sm:mb-10 px-2"
+          className="mb-8 sm:mb-10 w-full min-w-0 px-1"
         >
-          <HeroSubline text={t.hero.sub} />
-          <p className="mt-3 text-sm sm:text-base md:text-lg text-white/45 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-white/60 max-w-2xl mx-auto leading-relaxed break-words">
+            {t.hero.sub}
+          </p>
+          <p className="mt-3 text-sm sm:text-base text-white/45 max-w-2xl mx-auto leading-relaxed break-words">
             {t.hero.sub2}
           </p>
         </motion.div>
@@ -120,17 +76,17 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 px-2"
+          className="flex flex-col w-full min-w-0 max-w-md mx-auto gap-3 px-1 sm:max-w-none sm:flex-row sm:justify-center sm:items-center"
         >
           <Link
             href="#hero-waitlist"
-            className="w-full sm:w-auto min-h-[48px] flex items-center justify-center bg-purple-400 hover:bg-purple-600 text-white font-semibold px-8 py-3.5 rounded-xl transition-colors duration-200 text-base focus-visible:ring-2 focus-visible:ring-purple-400/60"
+            className="w-full min-w-0 sm:w-auto min-h-[48px] flex items-center justify-center bg-purple-400 hover:bg-purple-600 text-white font-semibold px-6 sm:px-8 py-3.5 rounded-xl transition-colors duration-200 text-base focus-visible:ring-2 focus-visible:ring-purple-400/60"
           >
             {t.hero.ctaPrimary}
           </Link>
           <Link
             href="/#how-it-works"
-            className="w-full sm:w-auto min-h-[48px] flex items-center justify-center border border-white/20 hover:border-white/40 text-white/70 hover:text-white font-medium px-8 py-3.5 rounded-xl transition-colors duration-200 text-base focus-visible:ring-2 focus-visible:ring-white/20"
+            className="w-full min-w-0 sm:w-auto min-h-[48px] flex items-center justify-center border border-white/20 hover:border-white/40 text-white/70 hover:text-white font-medium px-6 sm:px-8 py-3.5 rounded-xl transition-colors duration-200 text-base focus-visible:ring-2 focus-visible:ring-white/20"
           >
             {t.hero.ctaSecondary}
           </Link>
@@ -141,7 +97,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.48 }}
           id="hero-waitlist"
-          className="mt-6 px-2 scroll-mt-24"
+          className="mt-6 w-full min-w-0 max-w-md mx-auto px-1 scroll-mt-24"
         >
           <WaitlistForm source="hero" variant="compact" showLegal={false} />
         </motion.div>
@@ -150,7 +106,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.55 }}
-          className="mt-6 sm:mt-8 text-xs sm:text-sm text-white/30"
+          className="mt-6 sm:mt-8 text-xs sm:text-sm text-white/30 px-2 break-words"
         >
           {t.hero.socialProof}{" "}
           <span className="text-white/60 font-medium">{siteConfig.betaCustomerCount}</span>

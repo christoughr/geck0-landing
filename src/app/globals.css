@@ -32,6 +32,13 @@ body {
 #main-content {
   overflow-x: clip;
   max-width: 100%;
+  width: 100%;
+}
+
+/* Prevent embedded widgets / canvas from widening the viewport on mobile */
+iframe,
+canvas {
+  max-width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {

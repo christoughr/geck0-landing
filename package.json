@@ -11,6 +11,7 @@
     "smoke": "node scripts/smoke-test.mjs",
     "smoke:local": "node scripts/smoke-test.mjs http://localhost:3000",
     "check:mailchimp": "node scripts/check-mailchimp-domain.mjs",
+    "diagnose:contact": "node scripts/diagnose-contact.mjs",
     "cloudflare:bot-fight": "node scripts/enable-cloudflare-bot-fight.mjs",
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium"

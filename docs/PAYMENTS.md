@@ -1,29 +1,33 @@
-# Payments — deferred (Korea)
+# Payments — Korea-first (Toss, later Paddle for intl)
 
-**Status:** Online card checkout is **skipped** for now.
+**Status:** Card checkout **skipped**. Waitlist + manual onboarding only.
 
-## Why
+## Stripe
 
-- **Stripe** has limited Korea merchant support for domestic KRW/subscriptions.
-- geck0 targets Korean B2B teams first → waitlist + manual onboarding until a local-friendly provider ships.
+Not used — limited Korea merchant support for KRW subscriptions.
 
-## What works today
+## Toss vs Paddle (recommendation)
 
-| Flow | Status |
-|------|--------|
-| Waitlist (`/#contact`, pricing CTAs) | ✅ Mailchimp + Turnstile |
-| Plan tag (`?plan=starter` / `growth`) | ✅ Mailchimp tags `plan-*` |
-| Per-seat **display** pricing | ✅ `src/lib/pricing.ts` |
-| Card checkout | ❌ Not offered on site |
+| | **토스페이먼츠** | **Paddle** |
+|---|----------------|------------|
+| **Best for** | Korean companies, KRW, domestic cards/계좌 | Global SaaS, USD/EUR, tax as MoR |
+| **International** | Primarily Korea-focused | Yes — 200+ countries |
+| **Subscriptions** | Billing keys, 정기결제 | Built-in subscriptions |
+| **B2B invoices** | 세금계산서 / 국내 정산에 유리 | 해외 B2B에 유리 |
 
-## Future options (pick one later)
+### Recommended path for geck0
 
-1. **토스페이먼츠** — KRW, domestic cards, subscriptions
-2. **Paddle / Lemon Squeezy** — merchant of record, global + less KR friction
-3. **Stripe** — only if/when KR entity + KRW prices are viable
+1. **Now (beta):** Waitlist only — no payment UI.
+2. **Launch KR billing:** **Toss Payments** — per-seat KRW, 1-day trial via billing key or subscription API.
+3. **Later (optional):** **Paddle** (or Lemon Squeezy) on a separate `/en/pricing` flow or `?currency=usd` for non-KR teams — only when you have meaningful overseas demand.
 
-## Code note
+**Do not run Stripe + Toss + Paddle at once on day one.** Start with **Toss only** for Korea; add Paddle when >10% of pipeline is non-KR.
 
-`/api/checkout` and `/api/webhooks/stripe` remain in the repo for a future enable flag but are **not linked from the UI**. Do not set Stripe env vars on Vercel until a provider is chosen.
+## Implementation note (future)
 
-See also: [STRIPE_SETUP.md](./STRIPE_SETUP.md) (reference only, deferred).
+- Keep `/api/checkout` stub; add `/api/billing/toss` when ready.
+- Webhook: subscription status → Mailchimp tags + app access (same pattern as Stripe webhook today).
+
+See [STEP_BY_STEP.md](./STEP_BY_STEP.md) — Step 5 remains skipped until Toss merchant account is ready.
+
+Reference (deferred): [STRIPE_SETUP.md](./STRIPE_SETUP.md)

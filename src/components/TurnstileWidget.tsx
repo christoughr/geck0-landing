@@ -65,5 +65,9 @@ export default function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetPr
 
   if (!siteKey) return null;
 
-  return <div ref={containerRef} className="flex justify-center mt-4" />;
+  return (
+    <div className="w-full min-w-0 flex justify-center mt-4 px-2 overflow-hidden">
+      <div ref={containerRef} className="max-w-[min(100%,304px)] [&_iframe]:max-w-full" />
+    </div>
+  );
 }

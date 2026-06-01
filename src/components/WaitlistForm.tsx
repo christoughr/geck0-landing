@@ -104,10 +104,10 @@ export default function WaitlistForm({
 
   const formLayout =
     variant === "footer"
-      ? "flex flex-col sm:flex-row gap-3 max-w-md mx-auto relative"
+      ? "flex flex-col w-full min-w-0 max-w-md mx-auto gap-3 relative sm:flex-row"
       : variant === "compact"
-        ? "flex flex-col sm:flex-row gap-2 max-w-sm mx-auto relative"
-        : "flex flex-col sm:flex-row gap-3 max-w-lg mx-auto relative";
+        ? "flex flex-col w-full min-w-0 max-w-full gap-2 relative"
+        : "flex flex-col w-full min-w-0 max-w-lg mx-auto gap-3 relative sm:flex-row";
 
   const inputClass =
     variant === "compact"
@@ -120,7 +120,7 @@ export default function WaitlistForm({
       : "min-h-[48px] bg-purple-400 hover:bg-purple-600 disabled:bg-purple-600/50 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors whitespace-nowrap focus-visible:ring-2 focus-visible:ring-purple-400/60";
 
   return (
-    <div className={className}>
+    <div className={`w-full min-w-0 ${className}`}>
       {selectedPlan && (
         <p className="text-purple-300/90 text-xs text-center mb-3">
           {locale === "ko"

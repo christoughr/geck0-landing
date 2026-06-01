@@ -791,7 +791,7 @@ export const translations = {
       noAccess: "Don't have workspace access yet?",
       waitlist: "Request beta access",
       noAccount: "Don't have an account?",
-      signUp: "Start 1-day trial",
+      signUp: "Join waitlist",
       betaNote: "Public beta · 1-day free trial · app.geck0.ai rolls out via waitlist",
     },
   },

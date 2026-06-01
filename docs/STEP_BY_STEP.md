@@ -28,10 +28,14 @@ Details: [MAILCHIMP_SETUP.md](./MAILCHIMP_SETUP.md)
 
 ## Step 3 — Resend (contact form → hello@geck0.ai)
 
-1. resend.com → Domains → verify `geck0.ai`
+1. resend.com → Domains → verify `geck0.ai` (**status must be `verified`**)
 2. **Rotate API key** if it was ever exposed: [RESEND_KEY_ROTATION.md](./RESEND_KEY_ROTATION.md)
-3. Vercel → `RESEND_API_KEY`, `CONTACT_FROM_EMAIL`, `CONTACT_INBOX_EMAIL`
-4. Test https://geck0.ai/support
+3. Vercel → `RESEND_API_KEY`, `CONTACT_FROM_EMAIL`, `CONTACT_INBOX_EMAIL`  
+   - `CONTACT_FROM_EMAIL` example: `geck0 <hello@geck0.ai>` (must use verified domain)
+4. Local: `npm run diagnose:contact` (needs `.env.local` or exported env)
+5. Test https://geck0.ai/support (use a personal email, not only hello@geck0.ai)
+
+If Turnstile passes but form errors: Vercel Function logs → `[contact-store:email]` (usually unverified domain).
 
 ---
 
@@ -53,9 +57,9 @@ Details: [CLOUDFLARE_DNS.md](./CLOUDFLARE_DNS.md)
 
 ---
 
-## Step 5 — Payments ⏸ SKIPPED
+## Step 5 — Payments ⏸ SKIPPED (Toss later)
 
-Stripe/card checkout **not** offered (Korea). Waitlist + per-seat list prices only.
+Stripe not used (Korea). **Toss Payments** when merchant ready; **Paddle** only if you need global MoR later.
 
 Details: [PAYMENTS.md](./PAYMENTS.md)
 
