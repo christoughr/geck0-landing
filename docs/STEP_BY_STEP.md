@@ -1,71 +1,49 @@
-# geck0 launch — step by step (no Stripe)
+# geck0 launch — step by step
 
-Work through in order. Skip anything already green on https://geck0.ai/status .
-
----
-
-## Step 1 — Turnstile (bot protection on forms) ✅ if /status shows turnstile operational
-
-1. Cloudflare → Turnstile → widget `geck0-landing`
-2. Hostnames: `geck0.ai`, `www.geck0.ai`, `app.geck0.ai` (+ Add each)
-3. Vercel → `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
-4. Redeploy → test waitlist on https://geck0.ai/#contact
-
-Details: [TURNSTILE_SETUP.md](./TURNSTILE_SETUP.md)
+Status: https://geck0.ai/status
 
 ---
 
-## Step 2 — Mailchimp DKIM (email deliverability)
+## Step 1 — Turnstile ✅
 
-1. Mailchimp → Domains → `geck0.ai` → copy DNS records
-2. Cloudflare DNS → add CNAME/TXT → **DNS only (grey cloud)** for `k1._domainkey`, `k2`, `k3`
-3. Wait for “Authenticated” in Mailchimp
-4. `npm run check:mailchimp`
-
-Details: [MAILCHIMP_SETUP.md](./MAILCHIMP_SETUP.md)
+- [x] Widget hostnames: geck0.ai, www, app
+- [x] Vercel keys set
+- [x] Preview `*.vercel.app` excluded (no Sentry 110200 spam)
 
 ---
 
-## Step 3 — Resend (contact form → hello@geck0.ai)
+## Step 2 — Mailchimp DKIM ✅
 
-1. resend.com → Domains → verify `geck0.ai` (**status must be `verified`**)
-2. **Rotate API key** if it was ever exposed: [RESEND_KEY_ROTATION.md](./RESEND_KEY_ROTATION.md)
-3. Vercel → `RESEND_API_KEY`, `CONTACT_FROM_EMAIL`, `CONTACT_INBOX_EMAIL`  
-   - `CONTACT_FROM_EMAIL` example: `geck0 <hello@geck0.ai>` (must use verified domain)
-4. Local: `npm run diagnose:contact` (needs `.env.local` or exported env)
-5. Test https://geck0.ai/support (use a personal email, not only hello@geck0.ai)
-
-If Turnstile passes but form errors: Vercel Function logs → `[contact-store:email]` (usually unverified domain).
+- [x] Authenticated in Mailchimp
 
 ---
 
-## Step 4 — Cloudflare Bot Fight Mode (optional site-wide bot friction)
+## Step 3 — Resend / support ✅
 
-Not a CAPTCHA on every page — complements Turnstile on forms.
+- [x] Domain `geck0.ai` verified
+- [x] `CONTACT_FROM_EMAIL` = `geck0 <hello@geck0.ai>`
+- [x] Contact form delivers to inbox
+- [ ] **Rotate Resend API key** (was exposed in chat) → [RESEND_KEY_ROTATION.md](./RESEND_KEY_ROTATION.md)
 
-**Dashboard:** Security → Bots → Bot Fight Mode → On
-
-**CLI** (needs API token with Zone Settings Edit):
-
-```bash
-CLOUDFLARE_API_TOKEN=...
-CLOUDFLARE_ZONE_ID=...
-npm run cloudflare:bot-fight
-```
-
-Details: [CLOUDFLARE_DNS.md](./CLOUDFLARE_DNS.md)
+**Support:** https://geck0.ai/support
 
 ---
 
-## Step 5 — Payments ⏸ SKIPPED (Toss later)
+## Step 4 — Bot Fight Mode ✅
 
-Stripe not used (Korea). **Toss Payments** when merchant ready; **Paddle** only if you need global MoR later.
-
-Details: [PAYMENTS.md](./PAYMENTS.md)
+- [x] Enabled in Cloudflare
 
 ---
 
-## Step 6 — Verify production
+## Step 5 — Payments (Toss) ⏸
+
+Waitlist only until Toss merchant approval.
+
+Roadmap: [TOSS_SETUP.md](./TOSS_SETUP.md) · [PAYMENTS.md](./PAYMENTS.md)
+
+---
+
+## Step 6 — Verify ✅
 
 ```bash
 npm run smoke
@@ -74,11 +52,25 @@ npm run test:e2e
 
 ---
 
-## Step 7 — Optional polish
+## Step 7 — Optional
 
-| Item | Env / action |
-|------|----------------|
-| Demo video | `NEXT_PUBLIC_DEMO_VIDEO_URL` |
-| GA4 | `NEXT_PUBLIC_GA_ID` |
-| Sentry | `NEXT_PUBLIC_SENTRY_DSN` |
-| Beta count | `NEXT_PUBLIC_BETA_COUNT` |
+| Item | Status |
+|------|--------|
+| Demo video `NEXT_PUBLIC_DEMO_VIDEO_URL` | optional |
+| GA4 `NEXT_PUBLIC_GA_ID` | optional |
+| Sentry DSN | configured |
+| Resend key rotation | **recommended** |
+
+---
+
+## Deploy rules
+
+- Commit as `christoughr@gmail.com` (no Cursor co-author)
+- Git blocked on Hobby → `npx vercel deploy --prod --yes`
+- See [VERCEL_DEPLOY.md](./VERCEL_DEPLOY.md)
+
+---
+
+## ADMIN_API_KEY
+
+Vercel hides values after save (greyed out). Only needed for `curl /api/admin/contact-test` — **not required for normal site use.**

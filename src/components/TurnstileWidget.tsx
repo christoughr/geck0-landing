@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { isTurnstileSkippedHost } from "@/lib/turnstile-host";
 
 declare global {
   interface Window {
@@ -10,6 +11,7 @@ declare global {
         opts: {
           sitekey: string;
           callback: (token: string) => void;
+          "error-callback"?: (code?: string) => void;
           "expired-callback"?: () => void;
           theme?: "light" | "dark" | "auto";
         }
@@ -29,8 +31,11 @@ export default function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetPr
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
+  const skipped =
+    typeof window !== "undefined" && isTurnstileSkippedHost(window.location.hostname);
+
   useEffect(() => {
-    if (!siteKey || !containerRef.current) return;
+    if (!siteKey || !containerRef.current || skipped) return;
 
     const renderWidget = () => {
       if (!containerRef.current || !window.turnstile) return;
@@ -41,6 +46,10 @@ export default function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetPr
         sitekey: siteKey,
         callback: onToken,
         "expired-callback": onExpire,
+        "error-callback": (code) => {
+          // 110200 = domain not in widget hostname list (common on *.vercel.app previews)
+          console.warn("[turnstile] error-callback", code);
+        },
         theme: "dark",
       });
     };
@@ -54,6 +63,7 @@ export default function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetPr
     script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
     script.async = true;
     script.onload = renderWidget;
+    script.onerror = () => console.warn("[turnstile] script failed to load");
     document.head.appendChild(script);
 
     return () => {
@@ -61,9 +71,9 @@ export default function TurnstileWidget({ onToken, onExpire }: TurnstileWidgetPr
         window.turnstile.remove(widgetIdRef.current);
       }
     };
-  }, [siteKey, onToken, onExpire]);
+  }, [siteKey, onToken, onExpire, skipped]);
 
-  if (!siteKey) return null;
+  if (!siteKey || skipped) return null;
 
   return (
     <div className="w-full min-w-0 flex justify-center mt-4 px-2 overflow-hidden">

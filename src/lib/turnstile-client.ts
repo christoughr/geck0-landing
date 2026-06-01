@@ -1,4 +1,8 @@
-/** Client-safe Turnstile flag (mirrors server isTurnstileConfigured). */
+/** Client-safe Turnstile flag (hostname + site key). */
+import { isTurnstileSkippedHost } from "@/lib/turnstile-host";
+
 export function isTurnstileEnabled(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim());
+  if (!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim()) return false;
+  if (typeof window === "undefined") return true;
+  return !isTurnstileSkippedHost(window.location.hostname);
 }

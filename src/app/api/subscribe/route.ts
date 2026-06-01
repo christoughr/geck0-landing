@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { addMailchimpSubscriber, isMailchimpConfigured, pingMailchimp } from "@/lib/mailchimp";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { isHoneypotTriggered, sanitizePlan, sanitizeSource, verifyTurnstile } from "@/lib/api-utils";
+import { isTurnstileSkippedHost } from "@/lib/turnstile-host";
 
 const MAX_BODY = 4096;
 
@@ -24,7 +25,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Subscribed successfully" });
     }
 
-    const turnstileOk = await verifyTurnstile(body.turnstileToken);
+    const host = request.headers.get("host");
+    const turnstileOk =
+      isTurnstileSkippedHost(host) || (await verifyTurnstile(body.turnstileToken));
     if (!turnstileOk) {
       return NextResponse.json({ error: "Verification failed" }, { status: 403 });
     }
