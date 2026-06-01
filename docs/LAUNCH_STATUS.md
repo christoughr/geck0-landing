@@ -8,7 +8,7 @@
 - Upstash KV rate limiting (all green on /status)
 - Turnstile wired (production keys on Vercel — see TURNSTILE_SETUP.md)
 - Resend contact email (`RESEND_API_KEY` + `CONTACT_FROM_EMAIL` on Vercel)
-- Stripe Checkout API + webhook (`docs/STRIPE_SETUP.md`) — set price IDs on Vercel to enable billing
+- Stripe Checkout API + webhook (`docs/STRIPE_SETUP.md`) — **deferred** (KR); see `docs/PAYMENTS.md`
 - Per-seat pricing UI + 1-day trial in code (`src/lib/pricing.ts`)
 - Cloudflare Bot Fight script (`npm run cloudflare:bot-fight`) — needs API token
 - Resend key rotation guide (`docs/RESEND_KEY_ROTATION.md`)
@@ -30,7 +30,7 @@ See [TURNSTILE_SETUP.md](./TURNSTILE_SETUP.md)
 See [MAILCHIMP_SETUP.md](./MAILCHIMP_SETUP.md)
 - Status: **Authentication in progress**
 - Cloudflare에서 `k1._domainkey` **DNS only(회색)** 로 변경 + `k3._domainkey` 확인
-- **Payment:** Stripe products + Vercel env — see [STRIPE_SETUP.md](./STRIPE_SETUP.md)
+- **Payment:** Deferred — waitlist only. See [PAYMENTS.md](./PAYMENTS.md)
 
 ### app.geck0.ai
 Domain is on another Vercel project. Either:

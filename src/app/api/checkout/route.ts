@@ -19,9 +19,11 @@ export async function POST(request: NextRequest) {
   if (!isStripeCheckoutConfigured()) {
     return NextResponse.json(
       {
-        error: "Billing is not configured yet",
+        error: "Online billing is not available yet",
+        reason: "billing_deferred",
         fallback: true,
         waitlistUrl: "/#contact",
+        detail: "Korea-friendly payments coming later. Use the waitlist.",
       },
       { status: 503 }
     );

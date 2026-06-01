@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { formatSeatPrice, type BillingPlan } from "@/lib/pricing";
 import Reveal from "./Reveal";
-import PlanCheckoutButton from "./PlanCheckoutButton";
+import PlanWaitlistButton from "./PlanWaitlistButton";
 
 interface PricingProps {
   showViewAll?: boolean;
@@ -103,7 +103,7 @@ export default function Pricing({ showViewAll = true }: PricingProps) {
                       {plan.cta}
                     </Link>
                   ) : (
-                    <PlanCheckoutButton plan={planKey} featured={featured} label={plan.cta} />
+                    <PlanWaitlistButton plan={planKey} featured={featured} label={plan.cta} />
                   )}
                 </div>
               </Reveal>

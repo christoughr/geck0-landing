@@ -1,6 +1,11 @@
 # Stripe billing setup (per-seat + 1-day trial)
 
-geck0 landing uses **Stripe Checkout** for Starter/Growth subscriptions. Enterprise stays sales-led.
+> **DEFERRED** — Not used for geck0.ai while Korea-friendly billing is pending.  
+> See [PAYMENTS.md](./PAYMENTS.md). Do **not** add Stripe keys to Vercel for now.
+
+---
+
+Reference for when/if Stripe is enabled (non-KR or entity ready):
 
 ## 1. Create products & prices (Stripe Dashboard)
 

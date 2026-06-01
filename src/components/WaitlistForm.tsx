@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import HoneypotField from "./HoneypotField";
@@ -37,6 +37,15 @@ export default function WaitlistForm({
   const [turnstileToken, setTurnstileToken] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const plan = new URLSearchParams(window.location.search).get("plan");
+    if (plan === "starter" || plan === "growth") {
+      setSelectedPlan(plan);
+    }
+  }, []);
 
   const onTurnstile = useCallback((token: string) => setTurnstileToken(token), []);
   const onTurnstileExpire = useCallback(() => setTurnstileToken(""), []);
@@ -68,6 +77,7 @@ export default function WaitlistForm({
         body: JSON.stringify({
           email,
           source,
+          plan: selectedPlan ?? undefined,
           _gotcha: fd.get("_gotcha"),
           turnstileToken: turnstileToken || undefined,
         }),
@@ -111,6 +121,13 @@ export default function WaitlistForm({
 
   return (
     <div className={className}>
+      {selectedPlan && (
+        <p className="text-purple-300/90 text-xs text-center mb-3">
+          {locale === "ko"
+            ? `선택 플랜: ${selectedPlan === "starter" ? "Starter" : "Growth"}`
+            : `Selected plan: ${selectedPlan === "starter" ? "Starter" : "Growth"}`}
+        </p>
+      )}
       <form id={id} className={formLayout} onSubmit={handleSubmit}>
         <HoneypotField />
         <input
