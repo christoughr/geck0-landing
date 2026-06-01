@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nProvider";
 import { sitePricing, type BillingPlan } from "@/lib/pricing";
 
@@ -10,11 +11,22 @@ type PlanWaitlistButtonProps = {
   label: string;
 };
 
-/** Waitlist CTA — card billing deferred (Stripe not available in Korea). */
+/** Pricing CTA — Toss checkout when configured, otherwise waitlist. */
 export default function PlanWaitlistButton({ plan, featured, label }: PlanWaitlistButtonProps) {
   const { t } = useI18n();
   const maxSeats = sitePricing.plans[plan].maxSeats;
-  const href = `/#contact?plan=${plan}`;
+  const [tossEnabled, setTossEnabled] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/billing/toss")
+      .then((r) => r.json())
+      .then((d: { enabled?: boolean }) => setTossEnabled(Boolean(d.enabled)))
+      .catch(() => setTossEnabled(false));
+  }, []);
+
+  const waitlistHref = `/#contact?plan=${plan}`;
+  const checkoutHref = `/checkout/toss?plan=${plan}&seats=1`;
+  const href = tossEnabled ? checkoutHref : waitlistHref;
 
   return (
     <div className="space-y-3">
@@ -31,7 +43,9 @@ export default function PlanWaitlistButton({ plan, featured, label }: PlanWaitli
       >
         {label}
       </Link>
-      <p className="text-white/35 text-[11px] text-center leading-relaxed">{t.pricing.paymentDeferred}</p>
+      <p className="text-white/35 text-[11px] text-center leading-relaxed">
+        {tossEnabled ? t.pricing.paymentTossReady : t.pricing.paymentDeferred}
+      </p>
     </div>
   );
 }

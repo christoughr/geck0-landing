@@ -198,7 +198,8 @@ export const translations = {
       subtitle: "좌석당 과금(예정) · 1일 체험 · 지금은 웨이트리스트 · 신용카드 불필요",
       perSeat: "좌석당",
       seatsHint: "베타: 최대 {max} seats · 결제 연동 전 웨이트리스트로 접근",
-      paymentDeferred: "온라인 결제는 한국 시장 준비 중(토스·Paddle 등). 지금은 웨이트리스트만 운영합니다.",
+      paymentDeferred: "토스 가맹점 승인 전 — 웨이트리스트로 접근해 주세요.",
+      paymentTossReady: "토스 결제 · 1일 체험 후 정기결제(빌링키).",
       betaNote:
         "퍼블릭 베타: app.geck0.ai 접근은 웨이트리스트로 신청하세요. /demo에서 Q&A 미리보기. 카드 결제는 추후 오픈.",
       featured: "추천",
@@ -597,7 +598,8 @@ export const translations = {
       subtitle: "Per-seat pricing (planned) · 1-day trial · Waitlist now · No credit card",
       perSeat: "per seat",
       seatsHint: "Beta: up to {max} seats · Join waitlist until billing goes live",
-      paymentDeferred: "Online card checkout deferred (KR market). Waitlist only for now.",
+      paymentDeferred: "Until Toss merchant is live — join the waitlist for access.",
+      paymentTossReady: "Toss Payments · 1-day trial, then subscription billing.",
       betaNote:
         "Public beta: request app.geck0.ai via waitlist. Preview Q&A at /demo. Card billing opens later.",
       featured: "Popular",

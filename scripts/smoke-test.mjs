@@ -46,6 +46,13 @@ test("GET /app returns 200", async () => {
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
+test("GET /app/dashboard redirects or 200", async () => {
+  const res = await fetch(`${BASE}/app/dashboard`, { redirect: "manual" });
+  if (![200, 307, 308].includes(res.status)) {
+    throw new Error(`Expected 200 or redirect, got ${res.status}`);
+  }
+});
+
 test("GET /openapi.yaml returns 200", async () => {
   const res = await fetch(`${BASE}/openapi.yaml`);
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
@@ -122,6 +129,17 @@ test("GET /api/subscribe admin without key → 401 or 404", async () => {
 
 test("GET /checkout/success returns 200", async () => {
   const res = await fetch(`${BASE}/checkout/success`);
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /api/billing/toss returns metadata", async () => {
+  const { res, body } = await request("/api/billing/toss");
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+  if (body?.provider !== "toss") throw new Error("Expected toss provider");
+});
+
+test("GET /checkout/toss returns 200", async () => {
+  const res = await fetch(`${BASE}/checkout/toss?plan=starter&seats=1`);
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 

@@ -19,13 +19,15 @@ function applySecurityHeaders(res: NextResponse): void {
   const gaHost = "https://www.googletagmanager.com https://www.google-analytics.com";
   const sentryHost = "https://*.ingest.us.sentry.io https://*.ingest.sentry.io";
   const stripeHost = "https://js.stripe.com https://api.stripe.com https://checkout.stripe.com";
+  const tossHost = "https://js.tosspayments.com https://api.tosspayments.com";
+  const openaiHost = "https://api.openai.com";
 
   res.headers.set(
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${plausibleHost} ${turnstileHost} ${gaHost} ${stripeHost}`,
-      `connect-src 'self' ${plausibleHost} ${turnstileHost} ${gaHost} ${sentryHost} ${stripeHost} https://blob.vercel-storage.com`,
+      `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${plausibleHost} ${turnstileHost} ${gaHost} ${stripeHost} ${tossHost}`,
+      `connect-src 'self' ${plausibleHost} ${turnstileHost} ${gaHost} ${sentryHost} ${stripeHost} ${tossHost} ${openaiHost} https://blob.vercel-storage.com`,
       "img-src 'self' data: blob: https:",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' data:",
