@@ -14,6 +14,7 @@ export async function embedTexts(texts: string[]): Promise<number[][] | null> {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ model: MODEL, input: texts.slice(0, 32) }),
+    signal: AbortSignal.timeout(12_000),
   });
 
   if (!res.ok) return null;

@@ -24,7 +24,8 @@ function redis() {
   }
 }
 
-export async function prepareWorkspace(email: string): Promise<string> {
+/** Fast path for Q&A — seed once, no Notion sync, no connector refresh. */
+export async function ensureWorkspaceReady(email: string): Promise<string> {
   const workspaceId = workspaceIdFromEmail(email);
   const r = redis();
   const initKey = `knowledge:${workspaceId}:init`;
@@ -36,7 +37,6 @@ export async function prepareWorkspace(email: string): Promise<string> {
       const internalNotion = process.env.NOTION_INTERNAL_TOKEN?.trim();
       if (internalNotion) {
         await saveNotionToken(workspaceId, internalNotion);
-        await syncNotionWorkspace(workspaceId, internalNotion);
       }
       await r.set(initKey, true);
     }
@@ -44,6 +44,12 @@ export async function prepareWorkspace(email: string): Promise<string> {
     await ensureWorkspaceSeeded(workspaceId);
   }
 
+  return workspaceId;
+}
+
+/** Full prep for dashboard / integrations (connector counts only). */
+export async function prepareWorkspace(email: string): Promise<string> {
+  const workspaceId = await ensureWorkspaceReady(email);
   await refreshConnectorCounts(workspaceId);
   return workspaceId;
 }
@@ -61,12 +67,12 @@ export async function answerWorkspaceQuery(
     source: h.doc.source,
   }));
 
-  await appendQaHistory(workspaceId, {
+  void appendQaHistory(workspaceId, {
     query,
     answer,
     sourceIds: sources.map((s) => s.id),
     mode,
-  });
+  }).catch(() => {});
 
   return { answer, sources, mode, hits: hits.length };
 }

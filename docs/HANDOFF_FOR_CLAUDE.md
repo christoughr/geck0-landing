@@ -277,7 +277,18 @@ Last known: **7/8 suites** pass; occasional `app.geck0.ai` Q&A headers timeout o
 
 ---
 
-## 10. What is DONE vs NOT done
+## 10. Recent perf fixes (2026-05-31)
+
+- `ensureWorkspaceReady()` — fast Q&A path (no inline Notion sync, no connector refresh)
+- Notion first-time sync removed from request path (use cron or Integrations → Re-sync)
+- Vector search only on keyword candidate docs; embedding fetch 12s timeout
+- Q&A history write is non-blocking
+- `maxDuration = 60` on `/api/app/qa` and `/api/v1/qa`
+- See `docs/VERCEL_ENV_SETUP.md`, `docs/API_DNS.md`
+
+---
+
+## 11. What is DONE vs NOT done
 
 ### Done (real code in prod)
 
@@ -302,11 +313,11 @@ Last known: **7/8 suites** pass; occasional `app.geck0.ai` Q&A headers timeout o
 | `api.geck0.ai` DNS | Must point to same Vercel project (middleware handles path) |
 | Enterprise SSO (SAML) | Not built |
 | Full multi-tenant admin | Not built |
-| Public API rate limits per plan | Basic IP rate limit only |
+| Public API rate limits per plan | Per-workspace + IP on v1 QA (60/min) |
 
 ---
 
-## 11. Key docs in repo
+## 12. Key docs in repo
 
 | Doc | Topic |
 |-----|--------|
@@ -317,10 +328,12 @@ Last known: **7/8 suites** pass; occasional `app.geck0.ai` Q&A headers timeout o
 | `docs/PAYMENTS.md` | Stripe vs Toss |
 | `docs/STEP_BY_STEP.md` | User onboarding steps |
 | `docs/VERCEL_DEPLOY.md` | Deploy notes |
+| `docs/VERCEL_ENV_SETUP.md` | Env var checklist |
+| `docs/API_DNS.md` | api.geck0.ai CNAME |
 
 ---
 
-## 12. Instructions for Claude
+## 13. Instructions for Claude
 
 1. **Read this file first**, then `src/lib/knowledge/` and `src/lib/app-auth.ts` before large changes.
 2. **User preference:** Do the work; don’t ask permission for every step. Don’t commit unless asked.
@@ -331,7 +344,7 @@ Last known: **7/8 suites** pass; occasional `app.geck0.ai` Q&A headers timeout o
 
 ---
 
-## 13. Copy-paste prompt for Claude
+## 14. Copy-paste prompt for Claude
 
 ```
 You are continuing work on geck0 (geck0-landing repo). Read docs/HANDOFF_FOR_CLAUDE.md in full.

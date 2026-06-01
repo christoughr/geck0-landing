@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken, APP_SESSION_COOKIE } from "@/lib/app-auth";
-import { answerWorkspaceQuery, prepareWorkspace } from "@/lib/knowledge";
+import { answerWorkspaceQuery, ensureWorkspaceReady } from "@/lib/knowledge";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   const token = request.cookies.get(APP_SESSION_COOKIE)?.value;
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     const locale = body.locale === "en" ? "en" : "ko";
-    const workspaceId = await prepareWorkspace(email);
+    const workspaceId = await ensureWorkspaceReady(email);
     const result = await answerWorkspaceQuery(workspaceId, query, locale);
 
     return NextResponse.json({

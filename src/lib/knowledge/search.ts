@@ -20,8 +20,13 @@ export async function searchKnowledge(
   query: string,
   limit = 6
 ): Promise<SearchHit[]> {
-  const keywordHits = await scoreChunksKeyword(workspaceId, query, limit);
-  const vectorHits = await scoreChunksVector(workspaceId, query, limit);
+  const keywordHits = await scoreChunksKeyword(workspaceId, query, limit * 2);
+  const vectorHits = await scoreChunksVector(
+    workspaceId,
+    query,
+    limit,
+    keywordHits.map((h) => h.doc.id)
+  );
 
   const merged = new Map<string, SearchHit>();
   for (const h of [...vectorHits, ...keywordHits]) {
@@ -88,14 +93,17 @@ async function scoreChunksKeyword(
 async function scoreChunksVector(
   workspaceId: string,
   query: string,
-  limit: number
+  limit: number,
+  candidateDocIds: string[] = []
 ): Promise<SearchHit[]> {
   const qVec = await embedQuery(query);
   if (!qVec) return [];
 
   const chunks = await getAllChunks(workspaceId);
+  const candidateSet = new Set(candidateDocIds);
   const byDoc = new Map<string, typeof chunks>();
   for (const c of chunks) {
+    if (candidateSet.size > 0 && !candidateSet.has(c.doc.id)) continue;
     const list = byDoc.get(c.doc.id) ?? [];
     list.push(c);
     byDoc.set(c.doc.id, list);
@@ -145,7 +153,9 @@ export async function synthesizeAnswer(
     .join("\n\n");
 
   if (apiKey) {
-    const system = `You are geck0, a company knowledge assistant. Answer in ${locale === "ko" ? "Korean" : "English"} using ONLY the context below. Be concise, structured, and cite source numbers like [1]. If context is insufficient, say what is missing.
+    const system = `You are geck0, a company knowledge assistant for internal teams.
+Answer in ${locale === "ko" ? "Korean" : "English"} using ONLY the context below.
+Rules: be concise (3–6 bullets or short paragraphs); cite sources as [1], [2]; never invent facts; if context is thin, say what document or connector would help.
 Context:
 ${context}`;
 

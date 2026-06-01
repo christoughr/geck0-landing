@@ -71,6 +71,7 @@ async function main() {
       method: "POST",
       headers: { ...cookieHeader, "Content-Type": "application/json" },
       body: JSON.stringify({ query: "Q1 customer churn?" }),
+      signal: AbortSignal.timeout(120_000),
     });
     const qaBody = await qaRes.json().catch(() => ({}));
     if (qaRes.status !== 200) fail("POST /api/app/qa", `${qaRes.status} ${JSON.stringify(qaBody)}`);

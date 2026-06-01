@@ -4,17 +4,22 @@ import { answerWorkspaceQuery } from "@/lib/knowledge";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
-  const ip = getClientIp(request);
-  const { ok } = await rateLimit(`api-v1-qa:${ip}`, 30, 60_000);
-  if (!ok) {
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
-  }
-
   const auth = await authenticatePublicApi(request);
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const ip = getClientIp(request);
+  const { ok } = await rateLimit(
+    `api-v1-qa:${auth.workspaceId}:${ip}`,
+    60,
+    60_000
+  );
+  if (!ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
   try {
