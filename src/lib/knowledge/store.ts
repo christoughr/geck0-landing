@@ -250,6 +250,31 @@ export async function refreshConnectorCounts(workspaceId: string): Promise<Conne
   const connectors = await getConnectors(workspaceId);
   const updated = await Promise.all(
     connectors.map(async (c) => {
+      if (c.id === "jira") {
+        const jira = await getJiraCredentials(workspaceId);
+        const count = await countDocumentsByConnector(workspaceId, "jira");
+        if (!jira?.token) {
+          return {
+            ...c,
+            status: "disconnected" as const,
+            detail: "Not configured",
+            documentCount: count,
+          };
+        }
+        if (count > 0 && c.status === "disconnected") {
+          return {
+            ...c,
+            status: "connected" as const,
+            detail: `${count} documents indexed`,
+            documentCount: count,
+          };
+        }
+        return {
+          ...c,
+          detail: c.detail ?? "Configured",
+          documentCount: count,
+        };
+      }
       const count = await countDocumentsByConnector(workspaceId, c.id);
       if (count > 0 && c.status === "disconnected") {
         return {
