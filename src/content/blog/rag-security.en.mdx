@@ -1,0 +1,28 @@
+---
+title: "RAG security for B2B knowledge bases"
+excerpt: "What to check before connecting Slack, Notion, and Drive to an AI Q&A layer"
+date: "2026-03-15"
+author: "geck0 Team"
+locale: en
+tags: ["Security", "RAG"]
+---
+
+## Why security matters before you connect sources
+
+Teams want fast answers, but **access control must follow the source system**. If someone cannot read a Notion page today, geck0 should not surface it in Q&A tomorrow.
+
+## Three checks we recommend
+
+1. **Workspace isolation** — each customer tenant gets its own knowledge store and API keys.
+2. **Audit trail** — log who asked what and which documents were cited.
+3. **Rate limits + bot protection** — protect public forms and APIs from abuse.
+
+## geck0 defaults
+
+- Session-gated beta app at `app.geck0.ai`
+- Optional Turnstile on marketing forms
+- Distributed rate limiting when Redis/KV is configured
+
+---
+
+*See the [API docs](/docs/api) or [request beta access](/demo).*

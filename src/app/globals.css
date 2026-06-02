@@ -91,3 +91,17 @@ body.nav-scroll-lock {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #1A1A2E; }
 ::-webkit-scrollbar-thumb { background: #534AB7; border-radius: 3px; }
+
+.hero-headline__line--accent {
+  margin-top: 0.12em;
+}
+
+@media (max-width: 767px) {
+  body.cookie-banner-open .hero-section {
+    padding-bottom: 6.5rem;
+  }
+  body.cookie-banner-open .hero-scroll {
+    bottom: 7.25rem;
+  }
+}
+

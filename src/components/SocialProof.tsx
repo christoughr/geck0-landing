@@ -9,7 +9,7 @@ const avatarStyles = [
   "bg-coral-800 text-orange-200",
 ];
 
-const initials = ["A", "B", "C"];
+const initials = ["A", "B", "C", "D"];
 
 export default function SocialProof() {
   const { t } = useI18n();

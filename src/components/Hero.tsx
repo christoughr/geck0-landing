@@ -23,7 +23,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-[100dvh] w-full max-w-[100vw] flex flex-col items-center justify-center overflow-x-clip bg-navy-900 pt-16">
+    <section className="hero-section relative min-h-[100dvh] w-full max-w-[100vw] flex flex-col items-center justify-center overflow-x-clip bg-navy-900 pt-16">
       <SynapseCanvas key={canvasKey} />
 
       <div
@@ -81,25 +81,34 @@ export default function Hero() {
           className="flex flex-col w-full min-w-0 max-w-md mx-auto gap-3 px-1 sm:max-w-none sm:flex-row sm:justify-center sm:items-center"
         >
           <Link
-            href="#hero-waitlist"
+            href="#contact"
             className="w-full min-w-0 sm:w-auto min-h-[48px] flex items-center justify-center bg-purple-400 hover:bg-purple-600 text-white font-semibold px-6 sm:px-8 py-3.5 rounded-xl transition-colors duration-200 text-base focus-visible:ring-2 focus-visible:ring-purple-400/60"
           >
             {t.hero.ctaPrimary}
           </Link>
           <Link
-            href="/#how-it-works"
+            href="/demo"
             className="w-full min-w-0 sm:w-auto min-h-[48px] flex items-center justify-center border border-white/20 hover:border-white/40 text-white/70 hover:text-white font-medium px-6 sm:px-8 py-3.5 rounded-xl transition-colors duration-200 text-base focus-visible:ring-2 focus-visible:ring-white/20"
           >
             {t.hero.ctaSecondary}
           </Link>
         </motion.div>
 
+        <p className="md:hidden mt-3 text-center">
+          <Link
+            href="#contact"
+            className="text-sm text-purple-300 hover:text-purple-200 underline underline-offset-2"
+          >
+            {t.hero.waitlistMobileLink}
+          </Link>
+        </p>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.48 }}
           id="hero-waitlist"
-          className="mt-6 w-full min-w-0 max-w-md mx-auto px-1 scroll-mt-24"
+          className="mt-6 w-full hidden md:block min-w-0 max-w-md mx-auto px-1 scroll-mt-24"
         >
           <WaitlistForm source="hero" variant="compact" showLegal={false} />
           <p className="mt-4 text-center">
@@ -126,7 +135,7 @@ export default function Hero() {
 
       <Link
         href="/#features"
-        className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 hover:text-white/50 text-xs transition-colors min-h-[44px] justify-end"
+        className="hero-scroll absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 hover:text-white/50 text-xs transition-colors min-h-[44px] justify-end"
       >
         <span>{t.hero.scroll}</span>
         <svg

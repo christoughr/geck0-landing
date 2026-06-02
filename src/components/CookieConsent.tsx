@@ -20,6 +20,11 @@ export default function CookieConsent() {
   const hideOnApp = pathname?.startsWith("/app");
 
   useEffect(() => {
+    document.body.classList.toggle("cookie-banner-open", visible && ready);
+    return () => document.body.classList.remove("cookie-banner-open");
+  }, [visible, ready]);
+
+  useEffect(() => {
     const stored = localStorage.getItem(CONSENT_KEY);
     if (!stored) setVisible(true);
     setReady(true);
@@ -56,25 +61,26 @@ export default function CookieConsent() {
       role="dialog"
       aria-live="polite"
       aria-label={t.cookies.banner}
-      className="fixed bottom-0 left-0 right-0 z-[100] p-4 md:p-6"
+      className="fixed bottom-0 left-0 right-0 z-[100] p-2 sm:p-4 md:p-6"
     >
-      <div className="max-w-4xl mx-auto bg-navy-800 border border-navy-600/50 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center gap-4 shadow-2xl">
-        <p className="text-white/60 text-sm flex-1 leading-relaxed">
-          {t.cookies.banner}{" "}
+      <div className="max-w-4xl mx-auto bg-navy-800/95 border border-navy-600/50 rounded-xl sm:rounded-2xl p-3 sm:p-5 flex flex-col sm:flex-row items-start md:items-center gap-4 shadow-2xl">
+        <p className="text-white/60 text-xs sm:text-sm flex-1 leading-relaxed">
+          <span className="sm:hidden">{t.cookies.bannerShort}</span>
+          <span className="hidden sm:inline">{t.cookies.banner}</span>{" "}
           <Link href="/cookies" className="text-purple-400 hover:text-purple-300 underline">
             {t.cookies.learnMore}
           </Link>
         </p>
-        <div className="flex flex-col sm:flex-row gap-2 shrink-0 w-full sm:w-auto">
+        <div className="flex flex-row gap-2 shrink-0 w-full sm:w-auto">
           <button
             onClick={decline}
-            className="min-h-[44px] border border-white/20 hover:border-white/40 text-white/60 hover:text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
+            className="min-h-[40px] sm:min-h-[44px] flex-1 sm:flex-none border border-white/20 hover:border-white/40 text-white/60 hover:text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors"
           >
             {t.cookies.decline}
           </button>
           <button
             onClick={accept}
-            className="min-h-[44px] bg-purple-400 hover:bg-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
+            className="min-h-[40px] sm:min-h-[44px] flex-1 sm:flex-none bg-purple-400 hover:bg-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors"
           >
             {t.cookies.accept}
           </button>

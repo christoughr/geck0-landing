@@ -50,6 +50,7 @@ export default function DemoPageClient({ videoSource }: DemoPageClientProps) {
               ) : (
                 <video
                   src={resolved.src}
+                  poster="/demo/geck0-product-demo-poster.jpg"
                   title={t.demo.videoTitle}
                   className="w-full h-full object-contain bg-black"
                   controls

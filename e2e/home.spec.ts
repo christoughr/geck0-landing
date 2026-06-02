@@ -3,7 +3,16 @@ import { test, expect } from "@playwright/test";
 test("homepage loads with hero and waitlist", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator("#hero-waitlist, #contact").first()).toBeVisible();
+  await expect(page.locator("#contact")).toBeVisible();
+});
+
+test("homepage hero links to demo and contact", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: /Join waitlist|웨이트리스트 등록/i }).first()).toHaveAttribute(
+    "href",
+    /#contact/
+  );
+  await expect(page.getByRole("link", { name: /Watch demo|데모 보기/i })).toHaveAttribute("href", "/demo");
 });
 
 test("cookie consent enables analytics scripts after accept", async ({ page }) => {

@@ -6,14 +6,26 @@
 
 const BASE = process.argv[2] ?? process.env.SMOKE_BASE_URL ?? "https://geck0.ai";
 
+const FETCH_HEADERS = {
+  "User-Agent": "geck0-smoke-test/1.0 (+https://geck0.ai)",
+  Accept: "text/html,application/json,*/*",
+};
+
 const tests = [];
 
 function test(name, fn) {
   tests.push({ name, fn });
 }
 
+async function fetchPage(path, options = {}) {
+  return fetch(`${BASE}${path}`, {
+    ...options,
+    headers: { ...FETCH_HEADERS, ...options.headers },
+  });
+}
+
 async function request(path, options = {}) {
-  const res = await fetch(`${BASE}${path}`, options);
+  const res = await fetchPage(path, options);
   let body = null;
   try {
     body = await res.json();
@@ -32,51 +44,61 @@ test("GET /api/health status field", async () => {
 });
 
 test("GET /demo returns 200", async () => {
-  const res = await fetch(`${BASE}/demo`);
+  const res = await fetchPage("/demo");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
 test("GET /demo/geck0-product-demo.mp4 returns 200", async () => {
-  const res = await fetch(`${BASE}/demo/geck0-product-demo.mp4`, { method: "HEAD" });
+  const res = await fetchPage("/demo/geck0-product-demo.mp4", { method: "HEAD" });
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
   const type = res.headers.get("content-type") ?? "";
   if (!type.includes("video")) throw new Error(`Expected video content-type, got ${type}`);
 });
 
+test("GET /pricing returns 200", async () => {
+  const res = await fetchPage("/pricing");
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
 test("GET /status returns 200", async () => {
-  const res = await fetch(`${BASE}/status`);
+  const res = await fetchPage("/status");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
 test("GET /app returns 200", async () => {
-  const res = await fetch(`${BASE}/app`);
+  const res = await fetchPage("/app");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
 test("GET /app/dashboard redirects or 200", async () => {
-  const res = await fetch(`${BASE}/app/dashboard`, { redirect: "manual" });
+  const res = await fetchPage("/app/dashboard", { redirect: "manual" });
   if (![200, 307, 308].includes(res.status)) {
     throw new Error(`Expected 200 or redirect, got ${res.status}`);
   }
 });
 
 test("GET /openapi.yaml returns 200", async () => {
-  const res = await fetch(`${BASE}/openapi.yaml`);
+  const res = await fetchPage("/openapi.yaml");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
 test("GET /docs/api returns 200", async () => {
-  const res = await fetch(`${BASE}/docs/api`);
+  const res = await fetchPage("/docs/api");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
 test("GET /blog returns 200", async () => {
-  const res = await fetch(`${BASE}/blog`);
+  const res = await fetchPage("/blog");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
 test("GET /blog/startup-timing returns 200", async () => {
-  const res = await fetch(`${BASE}/blog/startup-timing`);
+  const res = await fetchPage("/blog/startup-timing");
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /blog/rag-security returns 200", async () => {
+  const res = await fetchPage("/blog/rag-security");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
@@ -87,12 +109,12 @@ test("GET /api/health returns 200", async () => {
 });
 
 test("GET / returns 200", async () => {
-  const res = await fetch(`${BASE}/`);
+  const res = await fetchPage("/");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
 test("GET /?lang=ko returns 200", async () => {
-  const res = await fetch(`${BASE}/?lang=ko`);
+  const res = await fetchPage("/?lang=ko");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
@@ -135,7 +157,7 @@ test("GET /api/subscribe admin without key → 401 or 404", async () => {
 });
 
 test("GET /checkout/success returns 200", async () => {
-  const res = await fetch(`${BASE}/checkout/success`);
+  const res = await fetchPage("/checkout/success");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
@@ -146,7 +168,7 @@ test("GET /api/billing/toss returns metadata", async () => {
 });
 
 test("GET /checkout/toss returns 200", async () => {
-  const res = await fetch(`${BASE}/checkout/toss?plan=starter&seats=1`);
+  const res = await fetchPage("/checkout/toss?plan=starter&seats=1");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
@@ -168,12 +190,12 @@ test("POST /api/checkout invalid plan → 400", async () => {
 });
 
 test("GET /robots.txt returns 200", async () => {
-  const res = await fetch(`${BASE}/robots.txt`);
+  const res = await fetchPage("/robots.txt");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
 test("GET /sitemap.xml returns 200", async () => {
-  const res = await fetch(`${BASE}/sitemap.xml`);
+  const res = await fetchPage("/sitemap.xml");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
