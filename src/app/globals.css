@@ -59,6 +59,34 @@ body.nav-scroll-lock {
   background-clip: text;
 }
 
+/* Hero H1 — two fixed lines, no mid-word hyphenation (mobile Safari) */
+.hero-headline {
+  font-size: clamp(1.2rem, 4.6vw + 0.35rem, 4.5rem);
+  line-height: 1.14;
+  letter-spacing: -0.025em;
+  hyphens: none;
+  -webkit-hyphens: none;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+@media (min-width: 390px) {
+  .hero-headline {
+    font-size: clamp(1.45rem, 5.2vw + 0.25rem, 4.5rem);
+  }
+}
+
+.hero-headline__line {
+  display: block;
+  white-space: nowrap;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.hero-headline__line--accent {
+  padding-bottom: 0.06em;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #1A1A2E; }
