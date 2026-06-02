@@ -1,5 +1,10 @@
 import { test, expect } from "@playwright/test";
 
+test("demo page shows product walkthrough video", async ({ page }) => {
+  await page.goto("/demo");
+  await expect(page.locator("video")).toBeVisible();
+});
+
 test("demo page interactive mockup switches scenarios", async ({ page }) => {
   await page.goto("/demo");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/데모|Demo/i);

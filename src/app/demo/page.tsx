@@ -1,6 +1,6 @@
 import DemoPageClient from "@/components/DemoPageClient";
 import { buildPageMetadata } from "@/lib/metadata";
-import { getDemoVideoEmbedUrl } from "@/lib/demo-video";
+import { getDemoVideoSource } from "@/lib/demo-video";
 
 export async function generateMetadata() {
   return buildPageMetadata({
@@ -17,6 +17,6 @@ export async function generateMetadata() {
 }
 
 export default function DemoPage() {
-  const videoEmbedUrl = getDemoVideoEmbedUrl();
-  return <DemoPageClient videoEmbedUrl={videoEmbedUrl} />;
+  const videoSource = getDemoVideoSource();
+  return <DemoPageClient videoSource={videoSource} />;
 }

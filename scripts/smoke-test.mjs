@@ -36,6 +36,13 @@ test("GET /demo returns 200", async () => {
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
+test("GET /demo/geck0-product-demo.mp4 returns 200", async () => {
+  const res = await fetch(`${BASE}/demo/geck0-product-demo.mp4`, { method: "HEAD" });
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+  const type = res.headers.get("content-type") ?? "";
+  if (!type.includes("video")) throw new Error(`Expected video content-type, got ${type}`);
+});
+
 test("GET /status returns 200", async () => {
   const res = await fetch(`${BASE}/status`);
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
