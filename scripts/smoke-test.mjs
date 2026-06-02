@@ -107,6 +107,11 @@ test("GET /blog/startup-timing returns 200", async () => {
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
+test("GET /blog/onboarding-checklist returns 200", async () => {
+  const res = await fetchPage("/blog/onboarding-checklist");
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
 test("GET /blog/rag-security returns 200", async () => {
   const res = await fetchPage("/blog/rag-security");
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);

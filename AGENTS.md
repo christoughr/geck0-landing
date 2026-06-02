@@ -72,3 +72,13 @@ Redis/KV, Mailchimp, Stripe, Turnstile, OAuth, and external analytics are option
 Product walkthrough: `public/demo/geck0-product-demo.mp4` and `.webm` (poster JPG). Do not commit `*-full.mp4` backups (gitignored).
 
 Production CI smoke may 403 on Cloudflare — see `docs/CLOUDFLARE_CI.md`; local `npm run smoke:local` is the gate.
+
+### Lighthouse CI
+
+```bash
+npm run build
+npm run start   # separate terminal or background
+npm run lighthouse
+```
+
+CI runs the same against `http://localhost:3000` after build. Reports upload as the `lighthouse-reports` artifact. Performance thresholds are **warn** only (accessibility/SEO are errors).

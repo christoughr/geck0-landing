@@ -15,7 +15,8 @@
     "diagnose:contact": "node scripts/diagnose-contact.mjs",
     "cloudflare:bot-fight": "node scripts/enable-cloudflare-bot-fight.mjs",
     "test:e2e": "playwright test",
-    "test:e2e:install": "playwright install chromium"
+    "test:e2e:install": "playwright install chromium",
+    "lighthouse": "lhci autorun --config=lighthouserc.cjs"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.55.0",
@@ -34,6 +35,7 @@
     "stripe": "^17.7.0"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.14.0",
     "@playwright/test": "^1.52.0",
     "@types/node": "^20",
     "@types/react": "^18",

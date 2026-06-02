@@ -62,7 +62,7 @@ export const translations = {
       videoTitle: "geck0 product demo",
       videoComing: "데모 영상 준비 중",
       videoNote:
-        "YC 스타일 제품 데모 영상을 제작 중입니다. 웨이트리스트 등록 시 얼리 액세스 데모 링크를 보내드립니다.",
+        "위 플레이어에서 제품 워크스루를 재생할 수 있습니다. 아래 샘플 Q&A로 흐름을 더 살펴보세요.",
       interactiveHint: "샘플 질문을 눌러 geck0 Q&A를 체험해 보세요.",
       scenarios: [
         {
@@ -484,7 +484,7 @@ export const translations = {
       videoTitle: "geck0 product demo",
       videoComing: "Demo video coming soon",
       videoNote:
-        "We're producing a YC-style product demo. Join the waitlist for early access to the demo link.",
+        "Play the walkthrough above, then try the sample Q&A below to explore the flow.",
       interactiveHint: "Click a sample question to try geck0 Q&A.",
       scenarios: [
         {
