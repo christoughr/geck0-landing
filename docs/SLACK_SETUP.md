@@ -26,7 +26,8 @@ https://app.geck0.ai/api/app/oauth/slack/callback
 |-------|------|
 | `channels:read` | 공개 채널 목록 |
 | `channels:history` | 공개 채널 메시지 |
-| `groups:history` | 비공개 채널 (봇 초대된 경우) |
+| `groups:read` | 비공개 채널 목록 (필수) |
+| `groups:history` | 비공개 채널 메시지 |
 | `users:read` | 사용자 정보 |
 
 ## D. Client ID / Secret

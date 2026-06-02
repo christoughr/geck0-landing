@@ -20,7 +20,8 @@ export async function GET() {
 
   const params = new URLSearchParams({
     client_id: clientId,
-    scope: "channels:history,channels:read,groups:history,users:read",
+    scope:
+      "channels:history,channels:read,groups:history,groups:read,users:read",
     redirect_uri: oauthCallbackUrl("slack"),
     state,
   });

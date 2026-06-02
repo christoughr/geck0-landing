@@ -33,11 +33,18 @@ export async function syncSlackWorkspace(workspaceId: string): Promise<{
       error?: string;
     };
     if (!listData.ok) {
-      throw new Error(listData.error ?? "channels.list failed");
+      const err = listData.error ?? "channels.list failed";
+      if (err === "missing_scope") {
+        throw new Error(
+          "Slack scope missing — add groups:read in Slack app, then reconnect OAuth"
+        );
+      }
+      throw new Error(err);
     }
 
     let synced = 0;
-    for (const ch of listData.channels ?? []) {
+    const channels = listData.channels ?? [];
+    for (const ch of channels) {
       const histRes = await fetch(
         `https://slack.com/api/conversations.history?channel=${ch.id}&limit=50`,
         { headers }
@@ -66,6 +73,20 @@ export async function syncSlackWorkspace(workspaceId: string): Promise<{
         team: "Engineering",
       });
       synced += 1;
+    }
+
+    if (synced === 0) {
+      await setConnector(workspaceId, {
+        id: "slack",
+        status: "connected",
+        lastSyncAt: new Date().toISOString(),
+        detail:
+          channels.length === 0
+            ? "Connected — no channels visible. Invite the app to a channel with messages."
+            : "Connected — no messages found. Post in a channel or invite the app, then re-sync.",
+        documentCount: 0,
+      });
+      return { synced: 0 };
     }
 
     await setConnector(workspaceId, {
