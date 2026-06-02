@@ -6,17 +6,24 @@ import PageShell from "./PageShell";
 import Reveal from "./Reveal";
 import InteractiveProductMockup from "./InteractiveProductMockup";
 import WaitlistForm from "./WaitlistForm";
-import { resolveDemoEmbedUrl } from "@/lib/demo-video";
+import {
+  DEFAULT_DEMO_VIDEO_PATH,
+  resolveDemoVideoSource,
+  type DemoVideoSource,
+} from "@/lib/demo-video";
 
 type DemoPageClientProps = {
-  videoEmbedUrl?: string | null;
+  videoSource?: DemoVideoSource | null;
 };
 
-export default function DemoPageClient({ videoEmbedUrl }: DemoPageClientProps) {
+export default function DemoPageClient({ videoSource }: DemoPageClientProps) {
   const { t } = useI18n();
-  const embedUrl =
-    videoEmbedUrl ??
-    resolveDemoEmbedUrl(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL ?? undefined);
+  const resolved =
+    videoSource ??
+    resolveDemoVideoSource(process.env.NEXT_PUBLIC_DEMO_VIDEO_URL ?? undefined) ?? {
+      kind: "native" as const,
+      src: DEFAULT_DEMO_VIDEO_PATH,
+    };
 
   return (
     <PageShell>
@@ -30,15 +37,26 @@ export default function DemoPageClient({ videoEmbedUrl }: DemoPageClientProps) {
         </Reveal>
 
         <Reveal delay={0.1}>
-          {embedUrl ? (
+          {resolved ? (
             <div className="aspect-video rounded-2xl overflow-hidden border border-navy-600/40 mb-10 bg-navy-900">
-              <iframe
-                src={embedUrl}
-                title={t.demo.videoTitle}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              {resolved.kind === "embed" ? (
+                <iframe
+                  src={resolved.src}
+                  title={t.demo.videoTitle}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <video
+                  src={resolved.src}
+                  title={t.demo.videoTitle}
+                  className="w-full h-full object-contain bg-black"
+                  controls
+                  playsInline
+                  preload="metadata"
+                />
+              )}
             </div>
           ) : (
             <div className="aspect-video rounded-2xl border border-dashed border-purple-400/30 bg-navy-800/40 flex flex-col items-center justify-center mb-10 px-6 text-center">

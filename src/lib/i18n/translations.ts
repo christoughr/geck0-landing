@@ -61,7 +61,7 @@ export const translations = {
       videoTitle: "geck0 product demo",
       videoComing: "데모 영상 준비 중",
       videoNote:
-        "YC 스타일 제품 데모 영상을 제작 중입니다. 웨이트리스트 등록 시 얼리 액세스 데모 링크를 보내드립니다.",
+        "아래 영상에서 geck0 사이트 둘러보기(홈, 언어 전환, 블로그, 요금제)를 확인하세요. 베타 앱은 웨이트리스트로 신청할 수 있습니다.",
       interactiveHint: "샘플 질문을 눌러 geck0 Q&A를 체험해 보세요.",
       scenarios: [
         {
