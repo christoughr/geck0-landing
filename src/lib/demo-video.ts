@@ -6,7 +6,10 @@ export type DemoVideoSource =
 
 const NATIVE_VIDEO_RE = /\.(mp4|webm|ogg)(\?.*)?$/i;
 
-export const DEFAULT_DEMO_VIDEO_PATH = "/demo/geck0-product-demo.mp4";
+export const DEFAULT_DEMO_VIDEO_MP4 = "/demo/geck0-product-demo.mp4";
+export const DEFAULT_DEMO_VIDEO_WEBM = "/demo/geck0-product-demo.webm";
+/** @deprecated Use DEFAULT_DEMO_VIDEO_MP4 */
+export const DEFAULT_DEMO_VIDEO_PATH = DEFAULT_DEMO_VIDEO_MP4;
 
 /** Normalize YouTube, Vimeo, or Loom URLs to embeddable iframe src. */
 export function resolveDemoEmbedUrl(raw?: string): string | null {
@@ -58,7 +61,7 @@ export function resolveDemoVideoSource(raw?: string): DemoVideoSource | null {
   const input = raw?.trim();
 
   if (!input) {
-    return { kind: "native", src: DEFAULT_DEMO_VIDEO_PATH };
+    return { kind: "native", src: DEFAULT_DEMO_VIDEO_MP4 };
   }
 
   if (input.startsWith("/") && isNativeVideoPath(input)) {

@@ -12,7 +12,7 @@ test("homepage hero links to demo and contact", async ({ page }) => {
     "href",
     /#contact/
   );
-  await expect(page.getByRole("link", { name: /Watch demo|데모 보기/i })).toHaveAttribute("href", "/demo");
+  await expect(page.getByRole("link", { name: /Watch demo|데모 보기/i }).first()).toHaveAttribute("href", "/demo");
 });
 
 test("cookie consent enables analytics scripts after accept", async ({ page }) => {

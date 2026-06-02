@@ -4,6 +4,7 @@ import LogoBar from "@/components/LogoBar";
 import Problem from "@/components/Problem";
 import Features from "@/components/Features";
 import ProductMockup from "@/components/ProductMockup";
+import DemoCtaBanner from "@/components/DemoCtaBanner";
 import HowItWorks from "@/components/HowItWorks";
 import AccuracySection from "@/components/AccuracySection";
 import SocialProof from "@/components/SocialProof";
@@ -24,11 +25,12 @@ export default function Home() {
         <Problem />
         <Features />
         <ProductMockup />
+        <DemoCtaBanner />
         <HowItWorks />
         <AccuracySection />
         <SocialProof />
         <Security />
-        <Pricing />
+        <Pricing showViewAll homeTeaser />
         <Faq />
         <CtaSection />
       </main>

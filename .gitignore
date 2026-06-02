@@ -26,6 +26,9 @@ npm-debug.log*
 /test-results/
 /playwright-report/
 
+# local demo video backups (do not ship)
+public/demo/*-full.mp4
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

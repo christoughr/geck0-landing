@@ -89,6 +89,13 @@ export const translations = {
       emailAlt: "또는 이메일로",
       docsLink: "문서 보기",
     },
+    demoCta: {
+      label: "제품 데모",
+      title: "2분 안에 geck0를 확인하세요",
+      subtitle: "영상 데모와 샘플 Q&A로 지식 그래프·AI Q&A 흐름을 미리 볼 수 있습니다.",
+      primary: "데모 영상 보기",
+      secondary: "웨이트리스트 등록",
+    },
     problem: {
       label: "문제",
       title: "회사의 지식은 잠자고 있다",
@@ -213,6 +220,7 @@ export const translations = {
         "퍼블릭 베타: app.geck0.ai 접근은 웨이트리스트로 신청하세요. /demo에서 Q&A 미리보기. 카드 결제는 추후 오픈.",
       featured: "추천",
       viewAll: "전체 가격표 보기 →",
+      homeTeaserNote: "플랜 비교·FAQ는 가격 페이지에서 확인하세요.",
       plans: [
         {
           name: "Starter",
@@ -280,7 +288,7 @@ export const translations = {
       company: "회사",
       support: "지원",
       productLinks: ["Knowledge Graph", "AI Q&A Engine", "Insight Pulse", "연동 목록"],
-      companyLinks: ["소개", "블로그", "채용", "언론 보도"],
+      companyLinks: ["소개", "고객 사례", "블로그", "채용", "언론 보도"],
       supportLinks: ["문서", "API 레퍼런스", "고객 지원", "상태 페이지"],
       copyright: "© 2026 geck0 Inc. All rights reserved.",
       legal: ["개인정보처리방침", "이용약관", "쿠키 설정"],
@@ -323,6 +331,10 @@ export const translations = {
     faq: {
       title: "자주 묻는 질문",
       items: [
+        {
+          q: "베타 앱과 웨이트리스트의 차이는?",
+          a: "웨이트리스트는 app.geck0.ai 초대 전 등록입니다. 초대 후 /app에서 로그인해 Q&A·그래프를 사용합니다. /demo는 로그인 없이 미리보기입니다.",
+        },
         { q: "설치에 얼마나 걸리나요?", a: "Slack, Notion, Drive OAuth 연결 후 15분 내 첫 sync 완료. 별도 마이그레이션 불필요." },
         { q: "데이터는 안전한가요?", a: "읽기 전용 OAuth, AES-256 암호화, SOC 2 Type II 준비 중. 고객 데이터로 AI 학습하지 않습니다." },
         { q: "무료 체험 후 자동 결제되나요?", a: "아니요. 웨이트리스트 등록만으로는 결제되지 않습니다. 유료 전환·결제 수단은 한국 결제 연동 후 별도 안내합니다." },
@@ -499,6 +511,13 @@ export const translations = {
       emailAlt: "Or email",
       docsLink: "View docs",
     },
+    demoCta: {
+      label: "Product demo",
+      title: "See geck0 in under 2 minutes",
+      subtitle: "Watch the walkthrough and try sample Q&A to preview the knowledge graph flow.",
+      primary: "Watch demo",
+      secondary: "Join waitlist",
+    },
     problem: {
       label: "Problem",
       title: "Your company's knowledge is asleep",
@@ -623,6 +642,7 @@ export const translations = {
         "Public beta: request app.geck0.ai via waitlist. Preview Q&A at /demo. Card billing opens later.",
       featured: "Popular",
       viewAll: "View full pricing →",
+      homeTeaserNote: "Compare plans and read FAQs on the pricing page.",
       plans: [
         {
           name: "Starter",
@@ -690,7 +710,7 @@ export const translations = {
       company: "Company",
       support: "Support",
       productLinks: ["Knowledge Graph", "AI Q&A Engine", "Insight Pulse", "Integrations"],
-      companyLinks: ["About", "Blog", "Careers", "Press"],
+      companyLinks: ["About", "Customers", "Blog", "Careers", "Press"],
       supportLinks: ["Docs", "API Reference", "Support", "Status"],
       copyright: "© 2026 geck0 Inc. All rights reserved.",
       legal: ["Privacy", "Terms", "Cookies"],
@@ -733,6 +753,10 @@ export const translations = {
     faq: {
       title: "Frequently asked questions",
       items: [
+        {
+          q: "Beta app vs waitlist?",
+          a: "Waitlist is signup before an app.geck0.ai invite. After invite, sign in at /app for Q&A and Graph. /demo is a no-login preview.",
+        },
         { q: "How long does setup take?", a: "OAuth connect Slack, Notion, Drive — first sync within 15 minutes. No migration needed." },
         { q: "Is our data secure?", a: "Read-only OAuth, AES-256 encryption, SOC 2 Type II in progress. We don't train AI on customer data." },
         { q: "Auto-billing after trial?", a: "No. Waitlist signup never charges you. Paid conversion and payment methods will launch with Korea-friendly billing later." },

@@ -8,6 +8,8 @@ import PlanWaitlistButton from "./PlanWaitlistButton";
 
 interface PricingProps {
   showViewAll?: boolean;
+  /** On homepage: emphasize link to /pricing FAQ */
+  homeTeaser?: boolean;
 }
 
 const PLAN_KEYS: (BillingPlan | "enterprise")[] = ["starter", "growth", "enterprise"];
@@ -19,7 +21,7 @@ function planDisplayPrice(locale: "ko" | "en", planKey: (typeof PLAN_KEYS)[numbe
   return formatSeatPrice(locale, planKey);
 }
 
-export default function Pricing({ showViewAll = true }: PricingProps) {
+export default function Pricing({ showViewAll = true, homeTeaser = false }: PricingProps) {
   const { t, locale } = useI18n();
 
   const planStyles = [
@@ -115,10 +117,17 @@ export default function Pricing({ showViewAll = true }: PricingProps) {
           <Reveal className="text-center mt-10">
             <Link
               href="/pricing"
-              className="text-purple-400 hover:text-purple-300 text-sm font-medium"
+              className={
+                homeTeaser
+                  ? "inline-flex items-center justify-center min-h-[48px] px-8 py-3 rounded-xl bg-navy-800 border border-purple-400/40 text-purple-200 hover:bg-navy-700 text-sm font-semibold transition-colors"
+                  : "text-purple-400 hover:text-purple-300 text-sm font-medium"
+              }
             >
               {t.pricing.viewAll}
             </Link>
+            {homeTeaser && (
+              <p className="text-white/35 text-xs mt-3">{t.pricing.homeTeaserNote}</p>
+            )}
           </Reveal>
         )}
       </div>

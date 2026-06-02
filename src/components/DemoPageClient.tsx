@@ -49,14 +49,16 @@ export default function DemoPageClient({ videoSource }: DemoPageClientProps) {
                 />
               ) : (
                 <video
-                  src={resolved.src}
                   poster="/demo/geck0-product-demo-poster.jpg"
                   title={t.demo.videoTitle}
                   className="w-full h-full object-contain bg-black"
                   controls
                   playsInline
                   preload="metadata"
-                />
+                >
+                  <source src="/demo/geck0-product-demo.webm" type="video/webm" />
+                  <source src="/demo/geck0-product-demo.mp4" type="video/mp4" />
+                </video>
               )}
             </div>
           ) : (

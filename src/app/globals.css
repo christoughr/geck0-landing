@@ -93,7 +93,7 @@ body.nav-scroll-lock {
 ::-webkit-scrollbar-thumb { background: #534AB7; border-radius: 3px; }
 
 .hero-headline__line--accent {
-  margin-top: 0.12em;
+  margin-top: 0.18em;
 }
 
 @media (max-width: 767px) {

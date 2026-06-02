@@ -48,6 +48,16 @@ test("GET /demo returns 200", async () => {
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
 });
 
+test("GET /customers returns 200", async () => {
+  const res = await fetchPage("/customers");
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
+test("GET /demo/geck0-product-demo.webm returns 200", async () => {
+  const res = await fetchPage("/demo/geck0-product-demo.webm", { method: "HEAD" });
+  if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);
+});
+
 test("GET /demo/geck0-product-demo.mp4 returns 200", async () => {
   const res = await fetchPage("/demo/geck0-product-demo.mp4", { method: "HEAD" });
   if (res.status !== 200) throw new Error(`Expected 200, got ${res.status}`);

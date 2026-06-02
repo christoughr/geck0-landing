@@ -66,3 +66,9 @@ Follow `.cursor/rules/vercel-git.mdc`: commit as repo owner (`christoughr@gmail.
 ### Services you do **not** need for default dev/smoke
 
 Redis/KV, Mailchimp, Stripe, Turnstile, OAuth, and external analytics are optional for local marketing smoke and most Playwright tests. They are required only when testing those integrations end-to-end.
+
+### Demo media
+
+Product walkthrough: `public/demo/geck0-product-demo.mp4` and `.webm` (poster JPG). Do not commit `*-full.mp4` backups (gitignored).
+
+Production CI smoke may 403 on Cloudflare — see `docs/CLOUDFLARE_CI.md`; local `npm run smoke:local` is the gate.

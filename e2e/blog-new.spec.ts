@@ -10,3 +10,8 @@ test("rag-security post opens", async ({ page }) => {
   await page.goto("/blog/rag-security");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
+
+test("onboarding checklist post opens", async ({ page }) => {
+  await page.goto("/blog/onboarding-checklist");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/온보딩|onboarding/i);
+});
