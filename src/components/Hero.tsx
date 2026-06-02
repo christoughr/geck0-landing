@@ -52,11 +52,10 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-[clamp(1.65rem,7.5vw,4.5rem)] font-bold tracking-tight mb-5 sm:mb-6 leading-[1.12] break-words hyphens-auto px-1"
+          className="text-[clamp(1.65rem,7.5vw,4.5rem)] font-bold tracking-tight mb-5 sm:mb-6 leading-[1.12] hyphens-none px-1"
         >
-          <span className="text-white">{t.hero.headline1}</span>
-          <br />
-          <span className="gradient-text">{t.hero.headline2}</span>
+          <span className="block text-white whitespace-nowrap">{t.hero.headline1}</span>
+          <span className="block gradient-text">{t.hero.headline2}</span>
         </motion.h1>
 
         <motion.div
